@@ -1,0 +1,11 @@
+# 微信开发者工具个人配置（不进仓库）
+project.private.config.json
+
+# 依赖与构建
+node_modules/
+miniprogram_npm/
+
+# 系统与日志
+.DS_Store
+Thumbs.db
+*.log
