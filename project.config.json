@@ -1,0 +1,28 @@
+{
+  "appid": "wx5aa48fa7b914e7ee",
+  "compileType": "miniprogram",
+  "libVersion": "3.5.0",
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "projectname": "mama-gang-community",
+  "description": "守护职业连续性——珠三角妈妈岗实证调查配套小程序",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "coverView": true,
+    "showShadowRootInWxmlPanel": true,
+    "ignoreUploadUnusedFiles": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "condition": {},
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  }
+}
