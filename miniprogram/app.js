@@ -4,7 +4,7 @@ App({
     // 云开发初始化：env 填你自己的云环境 ID（云开发控制台-环境-环境ID，形如 mama-gang-1gxxxxx）
     if (wx.cloud) {
       wx.cloud.init({
-        env: 'YOUR_CLOUD_ENV_ID', // TODO: 开通云开发后替换为真实环境 ID
+        env: 'cloud1-d1gxqkgy5a1f2e31a', // 云开发环境 ID（已开通）
         traceUser: true
       })
     } else {
