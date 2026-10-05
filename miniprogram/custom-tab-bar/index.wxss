@@ -1,0 +1,100 @@
+/* custom-tab-bar/index.wxss —— 自定义底部导航样式（扁平绿系） */
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  background: #FFFFFF;
+  border-top: 1rpx solid #EFEFEF;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 999;
+}
+
+.tab-bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100rpx;
+  position: relative;
+}
+
+/* 图标区（含选中指示条） */
+.tab-bar-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* 选中指示条：图标上方的绿色短横线 */
+.tab-bar-indicator {
+  width: 0;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: transparent;
+  margin-bottom: 6rpx;
+  transition: width 0.2s ease;
+}
+.tab-bar-indicator.active {
+  width: 36rpx;
+  background: #2E7D5B;
+}
+
+.tab-bar-icon-wrap {
+  position: relative;
+}
+
+.tab-bar-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+/* 数字角标：红底白字，超过 99 显示 99+ */
+.tab-bar-badge {
+  position: absolute;
+  top: -8rpx;
+  right: -20rpx;
+  min-width: 30rpx;
+  height: 30rpx;
+  padding: 0 8rpx;
+  border-radius: 15rpx;
+  background: #E5484D;
+  color: #FFFFFF;
+  font-size: 18rpx;
+  line-height: 30rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.tab-bar-text {
+  margin-top: 4rpx;
+  font-size: 20rpx;
+  color: #7A7A7A;
+}
+.tab-bar-text.active {
+  color: #2E7D5B;
+  font-weight: 600;
+}
+
+/* 中间"+"按钮：绿色圆形凸起 */
+.tab-bar-add {
+  justify-content: flex-start;
+}
+.tab-bar-add-circle {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: #2E7D5B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -32rpx;
+  box-shadow: 0 8rpx 16rpx rgba(46, 125, 91, 0.35);
+}
+.tab-bar-add-icon {
+  width: 56rpx;
+  height: 56rpx;
+}

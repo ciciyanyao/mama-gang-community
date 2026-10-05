@@ -1,0 +1,30 @@
+<!-- custom-tab-bar/index.wxml —— 自定义底部导航 -->
+<view class="tab-bar">
+  <view
+    class="tab-bar-item {{item.isAdd ? 'tab-bar-add' : ''}}"
+    wx:for="{{list}}"
+    wx:key="pagePath"
+    bindtap="switchTab"
+    data-path="{{item.pagePath}}"
+  >
+    <!-- 中间"+"：绿色圆形凸起按钮 -->
+    <block wx:if="{{item.isAdd}}">
+      <view class="tab-bar-add-circle">
+        <image class="tab-bar-add-icon" src="/images/add-large-fill-white.svg" mode="aspectFit" />
+      </view>
+    </block>
+    <!-- 普通 tab -->
+    <block wx:else>
+      <view class="tab-bar-top">
+        <!-- 选中指示条：图标上方的绿色短横线 -->
+        <view class="tab-bar-indicator {{selected === index ? 'active' : ''}}"></view>
+        <view class="tab-bar-icon-wrap">
+          <image class="tab-bar-icon" src="{{selected === index ? item.activeIcon : item.icon}}" mode="aspectFit" />
+          <!-- 数字角标（目前只有消息 tab 有 badge） -->
+          <view wx:if="{{item.badge}}" class="tab-bar-badge">{{item.badge > 99 ? '99+' : item.badge}}</view>
+        </view>
+      </view>
+      <text class="tab-bar-text {{selected === index ? 'active' : ''}}">{{item.text}}</text>
+    </block>
+  </view>
+</view>
