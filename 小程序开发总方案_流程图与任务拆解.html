@@ -195,6 +195,7 @@
         <div class="wp-h">WP4 · 功能开发（10/6–10/10）<span class="owner">三人并行，按模块认领</span></div>
         <ul>
           <li>4.1 ✅ 云函数 login 最小实现已部署验证（返回 openid）；正式登录逻辑（查/建 users 记录）A 类开发时补全<span class="role">周勤希</span></li>
+          <li>4.1b（10/8 补充）登录两层实现：进入即静默建 users 记录；「我的」页/参与动作引导设置头像昵称（chooseAvatar + input type=nickname，不用已废弃的 getUserProfile）；游客浏览全开、参与需登录<span class="role">周勤希</span></li>
           <li>4.2 论坛主体：帖子列表（信息流）/ 发帖（图文）/ 详情 / 评论 / 点赞<span class="role">周勤希 + 黄炜怡</span></li>
           <li>4.3 案例库：司法案例列表 / 详情 / 关键词搜索（数据直接用组内司法案例编码成果）<span class="role">李泽亚（数据整理导入）＋周勤希（页面）</span></li>
           <li>4.4 树洞（独立 tab）：情绪倾诉板块发帖带匿名开关（is_anonymous），帖与评论均隐藏昵称头像；复用帖子列表组件按板块过滤<span class="role">黄炜怡</span></li>
@@ -252,7 +253,7 @@
       <div class="layer wx">
         <div class="lname">微信开放能力（免自建认证体系）</div>
         <div class="chips">
-          <span class="chip">wx.login 微信授权登录</span><span class="chip">security.msgSecCheck 内容安全（文字/图片审核）</span><span class="chip">wx.uploadFile 图片上传</span><span class="chip">订阅消息 / 分享</span>
+          <span class="chip">wx.login 微信授权登录</span><span class="chip">security.msgSecCheck 内容安全（文字/图片审核）</span><span class="chip">wx.uploadFile 图片上传</span><span class="chip">订阅消息 / 分享</span><span class="chip">头像昵称填写能力：chooseAvatar + input type=nickname（替代已废弃的 getUserProfile）</span>
         </div>
       </div>
       <div class="arrow-down">▼</div>
@@ -272,6 +273,7 @@
         </div>
       </div>
     </div>
+    <div class="note"><b>登录与游客权限（10/8 补充）：</b>游客可看、参与才要求登录——社区类产品标准打法（工具类如记账/打卡/预约才强制登录；我们是内容类，渐进式降门槛）。<b>微信登录分两层：</b>① <b>静默层</b>——进入小程序即 <code>wx.login()</code> → login 云函数换 openid → 自动查/建 users 记录，用户无感、无弹窗（每个微信用户天然有 openid）；② <b>交互层</b>——用户能感知的"登录" = 设置头像昵称：2021 年后 <code>getUserProfile</code> 授权弹窗已废弃（只能拿匿名灰头像+"微信用户"），改用官方头像昵称填写能力（头像 <code>&lt;button open-type="chooseAvatar"&gt;</code> 弹头像选择器、昵称 <code>&lt;input type="nickname"&gt;</code> 唤起昵称快捷填充）。<b>权限边界：</b>列表/详情/案例库/树洞浏览全开；发帖/评论/点赞/收藏需登录。</div>
     <div class="note"><b>为什么不用 uni-app / Taro：</b>比赛只需微信一端、5 天窗口、成员技术栈未知；原生零构建链、官方文档与云开发无缝集成，出问题查资料最快。若后续要扩 H5 / 多端，再迁移 uni-app（Vue 语法）也不迟。Taro（React）对你们三人学习成本最高，不作考虑。</div>
   </section>
 
@@ -291,6 +293,7 @@
       <tr><td>P2 可以有</td><td>妈妈岗招聘信息</td><td>岗位卡片 / 城市筛选 / 收藏；数据为演示用静态样例（不承诺真实对接企业）</td></tr>
       <tr><td>P2 可以有</td><td>订阅消息 / 分享</td><td>回复通知、案例转发（答辩演示加分项）</td></tr>
     </table>
+    <div class="note"><b>登录方式细化（10/8 补充）：</b>上表 P0「微信授权登录」落地为<b>两层实现</b>——① 静默登录：进入即 wx.login 换 openid 自动建 users 记录（无弹窗）；② 头像昵称填写：在「我的」页/首次参与动作时引导（chooseAvatar + input type=nickname，旧 getUserProfile 弹窗已废弃）。<b>游客浏览全开（列表/详情/案例库/树洞），发帖/评论/点赞/收藏才要求登录。</b></div>
     <h3>竞品功能对照（调研结论，供需求文档引用）</h3>
     <table>
       <tr><th>产品</th><th>形态</th><th>核心功能</th><th>对我们的启示</th></tr>

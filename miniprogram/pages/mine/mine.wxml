@@ -1,4 +1,33 @@
-<view class="container">
-  <view class="page-title">我的</view>
-  <view class="placeholder">页面建设中：我的帖子/收藏/设置（认领类 F）</view>
+<!-- pages/mine/mine.wxml —— 我的页（tab 4）：登录 + 功能入口占位 -->
+<view class="container mine-page">
+
+  <!-- 顶部用户卡片 -->
+  <view class="user-card">
+    <block wx:if="{{isLogin}}">
+      <image class="avatar" src="{{userInfo.avatar}}" mode="aspectFill" />
+      <view class="user-meta">
+        <view class="nickname">{{userInfo.nickname}}</view>
+        <view class="gender">{{userInfo.gender === 'male' ? '男' : '女'}} · 已登录</view>
+      </view>
+    </block>
+    <block wx:else>
+      <view class="avatar avatar-placeholder" bindtap="startLogin">
+        <text class="avatar-text">👤</text>
+      </view>
+      <view class="user-meta">
+        <view class="nickname login-link" bindtap="startLogin">点击登录</view>
+        <view class="gender">登录后可发帖、评论、收藏</view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 功能入口占位（认领类 F，未做） -->
+  <view class="menu-list">
+    <view class="menu-item">我的帖子</view>
+    <view class="menu-item">我的收藏</view>
+    <view class="menu-item">设置</view>
+  </view>
+
+  <!-- 登录弹窗（全站复用组件：点登录/发帖/评论/点赞/收藏都会就地弹出） -->
+  <login-modal id="loginModal" bind:success="onLoginSuccess" />
 </view>

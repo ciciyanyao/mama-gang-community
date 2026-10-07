@@ -1,0 +1,120 @@
+/* components/login-modal/index.wxss —— 登录弹窗（底部滑出） */
+.login-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.login-sheet {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 20rpx 40rpx calc(40rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.sheet-handle {
+  width: 72rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: #E1E6E3;
+  margin: 0 auto 24rpx;
+}
+
+.sheet-title {
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1F2933;
+}
+
+.sheet-sub {
+  margin-top: 10rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #7A7A7A;
+}
+
+.avatar-picker-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 28rpx 0;
+}
+.avatar-picker {
+  width: 160rpx;
+  height: 160rpx;
+  padding: 0;
+  border-radius: 50%;
+  background: #F2F6F4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+  font-size: 24rpx;
+  color: #2E7D5B;
+  border: 2rpx dashed #A8CBB9;
+}
+.avatar-picker::after {
+  border: none;
+}
+.avatar-preview {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+}
+.avatar-picker-text {
+  padding: 0 16rpx;
+  text-align: center;
+}
+
+.nickname-input {
+  background: #F7F9F8;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  color: #1F2933;
+  margin-bottom: 24rpx;
+}
+
+.gender-picker {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+.gender-label {
+  font-size: 28rpx;
+  color: #1F2933;
+  margin-right: 32rpx;
+}
+.gender-option {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 40rpx;
+  font-size: 28rpx;
+  color: #3E4C59;
+}
+
+.save-btn {
+  background: #2E7D5B;
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 16rpx;
+}
+.save-btn::after {
+  border: none;
+}
+
+.sheet-tip {
+  margin-top: 16rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #9AA5B1;
+}

@@ -1,5 +1,6 @@
 // app.js —— 小程序全局入口
 const { CLOUD_ENV_ID } = require('./config/index.js')
+const { silentLogin } = require('./utils/auth.js')
 
 App({
   onLaunch() {
@@ -9,6 +10,8 @@ App({
         env: CLOUD_ENV_ID,
         traceUser: true
       })
+      // A3 静默登录：进入即在 users 集合建/取记录（无感知，不弹窗）
+      silentLogin()
     } else {
       console.error('当前基础库版本过低，无法使用云能力，请升级基础库')
     }
