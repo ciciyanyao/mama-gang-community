@@ -15,7 +15,10 @@ Page({
   switchType(e) { this.setData({ currentType: e.currentTarget.dataset.type }); },
 
   goToDetail(e) {
-    wx.showToast({ title: '详情页正在开发中', icon: 'none' });
-    // 以后可以跳转：wx.navigateTo({ url: `/pages/case-detail/case-detail?id=${e.currentTarget.dataset.id}` });
+    const id = e.currentTarget.dataset.id;
+    // 跳转到详情页，并把 id 当做参数带上
+    wx.navigateTo({
+      url: `/pages/cases/case-detail?id=${id}`
+    });
   }
 });
