@@ -25,5 +25,21 @@ Page({
   // 登录成功回调（来自 login-modal 组件）
   onLoginSuccess() {
     this.refreshLoginState()
+  },
+  // 退出登录：清空本地登录态（仅本地退出，下次进入静默登录会按 DB 记录恢复）
+  logout() {
+    wx.showModal({
+      title: '退出登录',
+      content: '确认退出登录？退出后浏览不受影响，互动需重新登录',
+      confirmText: '退出',
+      confirmColor: '#E54848',
+      success: (res) => {
+        if (res.confirm) {
+          auth.clearUserInfo()
+          this.refreshLoginState()
+          wx.showToast({ title: '已退出登录', icon: 'success' })
+        }
+      }
+    })
   }
 })

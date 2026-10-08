@@ -46,20 +46,17 @@ function silentLogin() {
 }
 
 // 参与门槛：发帖/评论/点赞/收藏前调用
-// 已登录返回 true；未登录弹窗引导去"我的"页并返回 false
-function requireLogin() {
+// page = 当前页面实例（this），页面需嵌入 <login-modal id="loginModal" />
+// 已登录返回 true，可继续操作；未登录就地弹出登录弹窗（保持原操作界面），返回 false
+// 若页面未嵌入 login-modal 组件，兜底跳转"我的"页登录
+function requireLogin(page) {
   if (isLogin()) return true
-  wx.showModal({
-    title: '需要登录',
-    content: '登录后才能发帖、评论和互动，去"我的"页设置头像昵称即可',
-    confirmText: '去登录',
-    cancelText: '再看看',
-    success(res) {
-      if (res.confirm) {
-        wx.switchTab({ url: '/pages/mine/mine' })
-      }
-    }
-  })
+  const modal = page && page.selectComponent && page.selectComponent('#loginModal')
+  if (modal) {
+    modal.show()
+  } else {
+    wx.switchTab({ url: '/pages/mine/mine' })
+  }
   return false
 }
 

@@ -1,16 +1,25 @@
-/* custom-tab-bar/index.wxss —— 自定义底部导航样式（扁平绿系） */
+/* custom-tab-bar/index.wxss —— 自定义底部导航（整条 iOS 毛玻璃栏，不分成一块一块） */
+/* z-index 1100 > login-modal(1000)：登录弹窗弹出时 tab 栏仍可见可点击，
+   配合 login-sheet 的 bottom padding，"完成登录"按钮位于本栏上方，无重叠 */
 .tab-bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   display: flex;
-  background: #FFFFFF;
-  border-top: 1rpx solid #EFEFEF;
+  /* iOS 毛玻璃：半透明白 + backdrop-filter 模糊折射，玻璃质感统一在整条容器上 */
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(40rpx) saturate(180%);
+  -webkit-backdrop-filter: blur(40rpx) saturate(180%);
+  /* 顶部 hairline 高光边 + 柔和上阴影，模拟 iOS 底部栏 */
+  border-top: 1rpx solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 -1rpx 0 rgba(0, 0, 0, 0.05), 0 -12rpx 32rpx rgba(0, 0, 0, 0.08);
   padding-bottom: env(safe-area-inset-bottom);
-  z-index: 999;
+  z-index: 1100;
 }
 
+/* 5 个 tab 项：透明平铺、连续一条（无独立背景/边框/圆角/间距），
+   选中反馈交给图标/文字变色 + 顶部绿色指示条 */
 .tab-bar-item {
   flex: 1;
   display: flex;
@@ -19,6 +28,9 @@
   justify-content: center;
   height: 100rpx;
   position: relative;
+  background: transparent;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease;
 }
 
 /* 图标区（含选中指示条） */
@@ -79,7 +91,7 @@
   font-weight: 600;
 }
 
-/* 中间"+"按钮：绿色圆形凸起 */
+/* 中间"+"按钮：保留主色绿圆形凸起（CTA 需突出），透明容器、不参与分块 */
 .tab-bar-add {
   justify-content: flex-start;
 }

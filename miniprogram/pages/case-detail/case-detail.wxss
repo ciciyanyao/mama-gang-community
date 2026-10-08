@@ -1,1 +1,31 @@
-/* pages/case-detail/case-detail.wxss */
+/* pages/case-detail/case-detail.wxss —— 案例详情 + 底部互动栏 */
+
+/* 底部互动栏：固定在页面底部 */
+.action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  background: #FFFFFF;
+  border-top: 1rpx solid #F2F4F3;
+  padding: 16rpx 0 calc(16rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+.action-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.action-icon {
+  font-size: 40rpx;
+  line-height: 1.2;
+}
+.action-text {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #3E4C59;
+}

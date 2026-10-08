@@ -28,6 +28,9 @@
     <view class="menu-item">设置</view>
   </view>
 
+  <!-- 退出登录：仅登录态显示 -->
+  <view wx:if="{{isLogin}}" class="logout-btn" bindtap="logout">退出登录</view>
+
   <!-- 登录弹窗（全站复用组件：点登录/发帖/评论/点赞/收藏都会就地弹出） -->
   <login-modal id="loginModal" bind:success="onLoginSuccess" />
 </view>

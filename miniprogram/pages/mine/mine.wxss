@@ -61,3 +61,14 @@
 .menu-item:last-child {
   border-bottom: none;
 }
+
+/* 退出登录按钮 */
+.logout-btn {
+  margin-top: 32rpx;
+  text-align: center;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #E54848;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+}
