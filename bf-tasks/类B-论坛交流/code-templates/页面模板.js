@@ -1,7 +1,11 @@
 // 页面模板
 // 使用方法：复制此文件，修改页面名称和业务逻辑
+// 适用于：B6热门榜、B7置顶帖等BF类任务的页面
 
 const app = getApp();
+
+// 常量定义
+const DEFAULT_PAGE_SIZE = 20;
 
 Page({
   data: {
@@ -9,11 +13,15 @@ Page({
     list: [],
     // 分页参数
     page: 1,
-    pageSize: 20,
+    pageSize: DEFAULT_PAGE_SIZE,
     hasMore: true,
     loading: false,
+    // 错误状态
+    error: null,
     // 其他数据
-    currentTab: 'all'
+    currentTab: 'all',
+    // 搜索关键词
+    keyword: ''
   },
 
   onLoad(options) {

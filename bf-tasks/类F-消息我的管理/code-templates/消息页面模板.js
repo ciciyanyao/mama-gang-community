@@ -1,7 +1,11 @@
 // 消息页面模板
 // 使用方法：复制此文件，修改业务逻辑
+// 适用于：F1消息列表、F2TabBar红点等任务
 
 const app = getApp();
+
+// 常量定义
+const DEFAULT_PAGE_SIZE = 20;
 
 Page({
   data: {
@@ -9,11 +13,15 @@ Page({
     messageList: [],
     // 分页参数
     page: 1,
-    pageSize: 20,
+    pageSize: DEFAULT_PAGE_SIZE,
     hasMore: true,
     loading: false,
     // 未读状态
-    hasUnread: false
+    hasUnread: false,
+    // 错误状态
+    error: null,
+    // 当前筛选类型
+    filterType: 'all' // all, unread, read
   },
 
   onLoad() {

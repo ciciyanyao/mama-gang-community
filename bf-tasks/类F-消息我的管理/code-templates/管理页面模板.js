@@ -1,7 +1,11 @@
 // 管理页面模板
 // 使用方法：复制此文件，修改业务逻辑
+// 适用于：F5管理端任务
 
 const app = getApp();
+
+// 常量定义
+const DEFAULT_PAGE_SIZE = 20;
 
 Page({
   data: {
@@ -16,11 +20,17 @@ Page({
     reports: [],
     // 分页参数
     page: 1,
-    pageSize: 20,
+    pageSize: DEFAULT_PAGE_SIZE,
     hasMore: true,
     loading: false,
+    // 错误状态
+    error: null,
     // 当前标签
-    currentTab: 'stats' // stats, reports
+    currentTab: 'stats', // stats, reports
+    // 操作确认弹窗
+    showConfirm: false,
+    confirmAction: null,
+    confirmData: null
   },
 
   onLoad() {
