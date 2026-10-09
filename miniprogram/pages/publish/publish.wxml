@@ -1,8 +1,148 @@
-<!-- pages/publish/publish.wxml —— 发帖页（tab 2，中间"+"） -->
-<view class="container">
-  <view class="page-title">发帖</view>
-  <view class="placeholder">页面建设中：中间+发布：选板块/图文/匿名（认领类 C）</view>
+<!-- pages/publish/publish.wxml —— 发帖页（小红书风格编辑页） -->
+<view class="publish-page">
 
-  <!-- 登录弹窗：未登录进发帖页就就地弹出 -->
+  <!-- 顶部操作栏：取消 / 发布（自定义导航栏，需适配状态栏高度） -->
+  <view class="nav-bar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="nav-cancel" bindtap="onCancel">取消</view>
+    <view class="nav-title">发布</view>
+    <view class="nav-publish {{publishing ? 'disabled' : ''}}" bindtap="onPublish">
+      {{publishing ? '发布中...' : '发布'}}
+    </view>
+  </view>
+
+  <!-- 编辑区（可滚动） -->
+  <scroll-view class="edit-scroll" scroll-y>
+
+    <!-- 媒体网格（图片/视频） -->
+    <view class="media-grid">
+      <view
+        class="media-item"
+        wx:for="{{images}}"
+        wx:key="path"
+        data-index="{{index}}"
+      >
+        <!-- 视频角标 -->
+        <view class="video-tag" wx:if="{{item.isVideo}}">▶</view>
+        <image
+          class="media-thumb"
+          src="{{item.path}}"
+          mode="aspectFill"
+          data-index="{{index}}"
+          bindtap="onPreviewMedia"
+        />
+        <!-- 删除按钮 -->
+        <view class="media-remove" data-index="{{index}}" catchtap="onRemoveMedia">×</view>
+      </view>
+      <!-- 添加按钮（未达上限时显示） -->
+      <view class="media-add" wx:if="{{images.length < 9}}" bindtap="onChooseMedia">
+        <view class="media-add-icon">+</view>
+        <view class="media-add-count">{{images.length}}/9</view>
+      </view>
+    </view>
+
+    <!-- 标题输入 -->
+    <view class="form-section">
+      <input
+        class="title-input"
+        type="text"
+        placeholder="添加标题"
+        placeholder-class="ph"
+        maxlength="50"
+        value="{{title}}"
+        bindinput="onTitleInput"
+      />
+    </view>
+
+    <!-- 正文输入 -->
+    <view class="form-section">
+      <textarea
+        class="content-input"
+        placeholder="分享你的经历、观点或求助…"
+        placeholder-class="ph"
+        maxlength="2000"
+        value="{{content}}"
+        bindinput="onContentInput"
+        auto-height
+      />
+    </view>
+
+    <!-- 标签区（已选 + 推荐 + 自定义输入） -->
+    <view class="tags-section">
+      <!-- 已选标签 -->
+      <view class="tags-row" wx:if="{{tags.length > 0}}">
+        <view
+          class="tag-item tag-selected"
+          wx:for="{{tags}}"
+          wx:key="*this"
+          data-tag="{{item}}"
+          bindtap="onRemoveTag"
+        >
+          #{{item}} <text class="tag-remove">×</text>
+        </view>
+      </view>
+      <!-- 推荐标签 -->
+      <view class="tags-row" wx:if="{{recommendTags.length > 0}}">
+        <text class="tags-label">推荐：</text>
+        <view
+          class="tag-item tag-recommend"
+          wx:for="{{recommendTags}}"
+          wx:key="*this"
+          data-tag="{{item}}"
+          bindtap="onTapRecommendTag"
+        >
+          #{{item}}
+        </view>
+      </view>
+      <view class="tags-hint" wx:if="{{tags.length === 0 && recommendTags.length === 0}}">
+        在正文中输入 # 即可自动生成标签，如 #生活的小碎片
+      </view>
+    </view>
+
+    <!-- 板块选择（平铺多选） -->
+    <view class="category-section">
+      <text class="category-title">发布至</text>
+      <view class="category-list">
+        <view
+          class="category-chip {{item.selected ? 'active' : ''}}"
+          wx:for="{{categoryList}}"
+          wx:key="value"
+          data-value="{{item.value}}"
+          bindtap="onToggleCategory"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 匿名开关 -->
+    <view class="form-row">
+      <view class="row-left">
+        <text class="row-label">匿名发布</text>
+        <text class="row-desc">开启后不显示你的昵称和头像</text>
+      </view>
+      <switch
+        checked="{{isAnonymous}}"
+        color="#2E7D5B"
+        bindchange="onAnonymousToggle"
+      />
+    </view>
+
+    <!-- 底部占位，避免内容被底部发布栏遮挡 -->
+    <view style="height: 120rpx;"></view>
+  </scroll-view>
+
+  <!-- 底部固定发布按钮 -->
+  <view class="bottom-bar">
+    <button
+      class="publish-btn {{publishing ? 'disabled' : ''}}"
+      bindtap="onPublish"
+      disabled="{{publishing}}"
+    >
+      {{publishing ? '发布中...' : '发布'}}
+    </button>
+  </view>
+
+  <!-- 登录弹窗：未登录进发帖页就地弹出 -->
   <login-modal id="loginModal" bind:success="onLoginSuccess" />
+
 </view>
