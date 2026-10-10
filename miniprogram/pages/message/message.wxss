@@ -1,1 +1,204 @@
-/* pages/message/message.wxss */
+/* pages/message/message.wxss —— 消息列表样式 */
+
+.page-wrap {
+  min-height: 100vh;
+  background: #F7F3EA;
+  padding-bottom: 120rpx;
+}
+
+/* ==================== 空状态 ==================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 240rpx 0 0;
+}
+
+.empty-icon-wrap {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  background: rgba(46, 125, 91, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40rpx;
+}
+
+.empty-icon {
+  width: 96rpx;
+  height: 96rpx;
+  opacity: 0.4;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+}
+
+.empty-hint {
+  font-size: 26rpx;
+  color: #C0C0C0;
+}
+
+/* ==================== 消息列表 ==================== */
+.message-list {
+  padding: 20rpx 24rpx;
+}
+
+.message-card {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+/* 左侧图标 */
+.msg-icon-area {
+  position: relative;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.msg-icon-circle {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: rgba(46, 125, 91, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.msg-icon {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.msg-badge {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  padding: 0 10rpx;
+  border-radius: 16rpx;
+  background: #E5484D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.msg-badge-text {
+  font-size: 18rpx;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+/* 中间内容 */
+.msg-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.msg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.msg-post-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 16rpx;
+}
+
+.msg-time {
+  font-size: 22rpx;
+  color: #B0B0B0;
+  flex-shrink: 0;
+}
+
+.msg-previews {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.msg-preview-text {
+  font-size: 26rpx;
+  color: #777;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.msg-more {
+  font-size: 22rpx;
+  color: #2E7D5B;
+  margin-top: 4rpx;
+}
+
+/* 右侧箭头 */
+.msg-arrow {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.arrow-text {
+  font-size: 40rpx;
+  color: #CCC;
+  line-height: 1;
+}
+
+/* ==================== 加载状态 ==================== */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 0;
+}
+
+.loading-spinner {
+  width: 48rpx;
+  height: 48rpx;
+  border: 4rpx solid #E8E8E8;
+  border-top: 4rpx solid #2E7D5B;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* ==================== 没有更多 ==================== */
+.no-more {
+  text-align: center;
+  padding: 32rpx 0;
+}
+
+.no-more-text {
+  font-size: 24rpx;
+  color: #C0C0C0;
+}

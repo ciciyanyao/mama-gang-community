@@ -1,0 +1,44 @@
+<view class="container">
+  <!-- 设置列表 -->
+  <view class="section">
+    <view class="setting-item">
+      <view class="setting-info">
+        <text class="setting-label">消息通知</text>
+        <text class="setting-desc">接收新消息推送通知</text>
+      </view>
+      <switch checked="{{settings.notification}}" bindchange="onNotificationChange" color="#2E7D5B" />
+    </view>
+
+    <view class="setting-item">
+      <view class="setting-info">
+        <text class="setting-label">深色模式</text>
+        <text class="setting-desc">切换深色主题（开发中）</text>
+      </view>
+      <switch checked="{{settings.darkMode}}" bindchange="onDarkModeChange" color="#2E7D5B" disabled />
+    </view>
+  </view>
+
+  <!-- 其他设置 -->
+  <view class="section">
+    <view class="setting-item" bindtap="onClearCache">
+      <view class="setting-info">
+        <text class="setting-label">清除缓存</text>
+        <text class="setting-desc">清除本地缓存数据</text>
+      </view>
+      <image class="arrow-icon" src="/images/arrow-right.svg" />
+    </view>
+
+    <view class="setting-item" bindtap="onAboutTap">
+      <view class="setting-info">
+        <text class="setting-label">关于</text>
+        <text class="setting-desc">查看版本信息和团队</text>
+      </view>
+      <image class="arrow-icon" src="/images/arrow-right.svg" />
+    </view>
+  </view>
+
+  <!-- 版本信息 -->
+  <view class="version-info">
+    <text class="version-text">妈妈岗社区 v1.0.0</text>
+  </view>
+</view>

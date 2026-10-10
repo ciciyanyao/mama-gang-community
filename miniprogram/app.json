@@ -8,7 +8,12 @@
     "pages/post-detail/post-detail",
     "pages/cases/cases",
     "pages/case-detail/case-detail",
-    "pages/test"
+    "pages/my-posts/my-posts",
+    "pages/my-favorites/my-favorites",
+    "pages/admin/admin",
+    "pages/jobs/jobs",
+    "pages/about/about",
+    "pages/settings/settings"
   ],
   "window": {
     "navigationBarTitleText": "妈妈岗社区",

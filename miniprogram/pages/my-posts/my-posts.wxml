@@ -1,0 +1,48 @@
+<!-- pages/my-posts/my-posts.wxml —— 我的帖子 -->
+<view class="page-wrap">
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{isEmpty && !loading}}">
+    <view class="empty-icon-wrap">
+      <text class="empty-emoji">📝</text>
+    </view>
+    <text class="empty-text">还没有发布过帖子</text>
+    <text class="empty-hint">去论坛发一条帖子吧</text>
+  </view>
+
+  <!-- 帖子列表 -->
+  <view class="post-list" wx:if="{{!isEmpty}}">
+    <view
+      class="post-card"
+      wx:for="{{postList}}"
+      wx:key="_id"
+      bindtap="onPostTap"
+      data-id="{{item._id}}"
+    >
+      <view class="post-header">
+        <view class="status-tag {{item.status === 1 ? 'status-normal' : 'status-deleted'}}">
+          <text class="status-text">{{item.status === 1 ? '已发布' : '已删除'}}</text>
+        </view>
+        <text class="post-time">{{item.timeText}}</text>
+      </view>
+      <text class="post-title" wx:if="{{item.title}}">{{item.title}}</text>
+      <text class="post-content">{{item.contentPreview}}</text>
+      <view class="post-stats">
+        <text class="stat">👍 {{item.likeCount || 0}}</text>
+        <text class="stat">💬 {{item.commentCount || 0}}</text>
+        <text class="stat category" wx:if="{{item.category}}">{{item.category}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 没有更多 -->
+  <view class="no-more" wx:if="{{noMore && postList.length > 0 && !loading}}">
+    <text class="no-more-text">— 没有更多了 —</text>
+  </view>
+</view>
