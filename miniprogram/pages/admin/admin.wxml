@@ -1,0 +1,116 @@
+<!-- pages/admin/admin.wxml —— 管理后台（F5） -->
+<view class="page-wrap" wx:if="{{hasPermission}}">
+
+  <!-- ==================== Tab 栏 ==================== -->
+  <view class="tab-bar">
+    <view
+      class="tab-item {{currentTab === 'stats' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="stats"
+    >
+      <text class="tab-text">数据统计</text>
+      <view class="tab-indicator" wx:if="{{currentTab === 'stats'}}"></view>
+    </view>
+    <view
+      class="tab-item {{currentTab === 'reports' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="reports"
+    >
+      <text class="tab-text">举报处理</text>
+      <view class="tab-badge" wx:if="{{stats.pendingReports > 0}}">
+        <text class="tab-badge-text">{{stats.pendingReports > 99 ? '99+' : stats.pendingReports}}</text>
+      </view>
+      <view class="tab-indicator" wx:if="{{currentTab === 'reports'}}"></view>
+    </view>
+  </view>
+
+  <!-- ==================== 数据统计 ==================== -->
+  <view class="stats-section" wx:if="{{currentTab === 'stats'}}">
+    <view class="stats-grid">
+      <view class="stat-card">
+        <text class="stat-num">{{stats.todayPosts}}</text>
+        <text class="stat-label">今日新帖</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-num">{{stats.todayComments}}</text>
+        <text class="stat-label">今日评论</text>
+      </view>
+      <view class="stat-card highlight">
+        <text class="stat-num">{{stats.pendingReports}}</text>
+        <text class="stat-label">待处理举报</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-num">{{stats.totalUsers}}</text>
+        <text class="stat-label">总用户数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 举报列表 ==================== -->
+  <view class="reports-section" wx:if="{{currentTab === 'reports'}}">
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{reports.length === 0 && !reportLoading}}">
+      <view class="empty-icon-wrap">
+        <text class="empty-emoji">✅</text>
+      </view>
+      <text class="empty-text">暂无待处理举报</text>
+      <text class="empty-hint">所有举报已处理完毕</text>
+    </view>
+
+    <!-- 举报卡片 -->
+    <view class="report-list" wx:if="{{reports.length > 0}}">
+      <view class="report-card" wx:for="{{reports}}" wx:key="_id">
+        <!-- 头部：类型标签 + 时间 -->
+        <view class="report-header">
+          <view class="report-tags">
+            <view class="type-tag {{item.targetType === 'post' ? 'type-post' : 'type-comment'}}">
+              <text class="type-tag-text">{{item.typeLabel}}</text>
+            </view>
+            <text class="report-reason">{{item.reason}}</text>
+          </view>
+          <text class="report-time">{{item.timeText}}</text>
+        </view>
+
+        <!-- 被举报内容预览 -->
+        <view class="report-content">
+          <text class="content-text" wx:if="{{item.targetInfo}}">
+            {{item.targetType === 'post' ? item.targetInfo.title : item.targetInfo.content}}
+          </text>
+          <text class="content-text deleted" wx:else>内容已被删除</text>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="report-actions">
+          <view
+            class="action-btn btn-approve"
+            catchtap="onHandleReport"
+            data-report-id="{{item._id}}"
+            data-action="approve"
+          >
+            <text class="btn-text">批准删除</text>
+          </view>
+          <view
+            class="action-btn btn-reject"
+            catchtap="onHandleReport"
+            data-report-id="{{item._id}}"
+            data-action="reject"
+          >
+            <text class="btn-text">驳回举报</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-wrap" wx:if="{{reportLoading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more" wx:if="{{reportNoMore && reports.length > 0 && !reportLoading}}">
+      <text class="no-more-text">— 没有更多了 —</text>
+    </view>
+  </view>
+</view>

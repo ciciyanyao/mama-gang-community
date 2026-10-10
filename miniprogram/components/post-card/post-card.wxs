@@ -1,0 +1,22 @@
+// components/post-card/post-card.wxs
+// WXS 辅助模块（用于模板中的数据处理）
+module.exports = {
+  // 截取内容摘要
+  getSummary: function(content, maxLen) {
+    if (!content) return ''
+    maxLen = maxLen || 100
+    if (content.length <= maxLen) return content
+    return content.substring(0, maxLen) + '...'
+  },
+  // 格式化数字（如 1000 -> 1k）
+  formatNum: function(num) {
+    if (!num) return '0'
+    if (num >= 10000) {
+      return (num / 10000).toFixed(1) + 'w'
+    }
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k'
+    }
+    return '' + num
+  }
+}
