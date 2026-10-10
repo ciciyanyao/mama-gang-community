@@ -27,6 +27,13 @@ Page({
     this.loadPosts()
   },
 
+  // 进入页面：同步自定义 tabBar 选中态（树洞 = index 3）
+  onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 3 })
+    }
+  },
+
   // ========== 加载树洞列表 ==========
   async loadPosts() {
     if (this.data.loading) return

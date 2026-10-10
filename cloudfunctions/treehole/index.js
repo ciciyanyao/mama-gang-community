@@ -69,30 +69,19 @@ async function listTreehole(event) {
       treehole.count()
     ])
 
-    // 首次访问：集合为空时写入初始种子内容（幂等，只在空集合时触发）
-    if (countRes.total === 0) {
-      await seedTreehole()
-      // 重新读取
-      const seedRes = await treehole
-        .orderBy('created_at', 'desc')
-        .skip(skip)
-        .limit(pageSize)
-        .get()
-      const seedList = seedRes.data.map(stripPrivate)
-      return {
-        code: 0,
-        data: {
-          list: seedList,
-          total: seedList.length,
-          page,
-          pageSize,
-          hasMore: false
-        }
-      }
-    }
+    // 幂等补写示例：集合中没有示例内容时才写入（已有用户内容也不影响）
+    await seedTreehole()
+    const seedRefetch = countRes.total === 0
+    const finalListRes = seedRefetch
+      ? await treehole
+          .orderBy('created_at', 'desc')
+          .skip(skip)
+          .limit(pageSize)
+          .get()
+      : listRes
 
     // 只返回展示字段，剥掉 huggers（匿名性）
-    const list = listRes.data.map(stripPrivate)
+    const list = finalListRes.data.map(stripPrivate)
 
     return {
       code: 0,
@@ -122,14 +111,19 @@ function stripPrivate(p) {
   }
 }
 
-// 初始种子内容（原前端假数据，保留情绪标签展示效果）
+// 初始示例内容（原前端假数据，保留情绪标签展示效果；幂等：已存在则跳过）
 async function seedTreehole() {
+  // 用第一条示例的正文作为"是否已写入示例"的判据
+  const marker = '今天老二发烧到 39 度，老大在幼儿园又摔了。一边发烧一边抱着娃往医院跑，站在急诊走廊上突然就哭了，觉得自己好没用。'
+  const existRes = await treehole.where({ content: marker }).count()
+  if (existRes.total > 0) return // 示例已存在，跳过
+
   const now = Date.now()
   const seeds = [
     {
       nickname: '晚风没说话',
       mood: '崩溃',
-      content: '今天老二发烧到 39 度，老大在幼儿园又摔了。一边发烧一边抱着娃往医院跑，站在急诊走廊上突然就哭了，觉得自己好没用。',
+      content: marker,
       hug_count: 46,
       huggers: [],
       created_at: new Date(now - 2 * 3600 * 1000) // 2小时前
@@ -154,7 +148,7 @@ async function seedTreehole() {
   for (const seed of seeds) {
     await treehole.add({ data: seed })
   }
-  console.log('treehole 集合为空，已写入初始种子内容')
+  console.log('treehole 集合无示例内容，已补写初始示例')
 }
 
 // ========== 抱抱 / 取消抱抱（openid 去重 toggle） ==========
