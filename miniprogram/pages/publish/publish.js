@@ -1,7 +1,11 @@
 // pages/publish/publish.js —— 发帖页（类 C：发帖与内容安全）
 // 正文使用 <editor> 富文本组件，#标签 自动蓝色高亮
-// 策略：仅在 #标签 集合变化时才用 setContents 重建 delta，避免光标跳动
-// 守卫 _settingContents 防止 setContents → bindinput → setContents 递归循环
+// 策略：onEditorInput 中用 format/removeFormat 增量控制光标处输入格式，不调用 setContents
+//   - 光标在 #标签 内 → format({color: blue})，后续输入蓝色
+//   - 光标在标签外   → removeFormat()，后续输入普通色
+// 这样既不会出现"空格后文字继承蓝色"，也不会因 setContents 导致光标跳动
+// setContents 仅用于草稿恢复（onEditorReady / onContinueDraft），此时光标位置不重要
+// 守卫 _settingContents 防止 setContents 触发的 bindinput 被重复处理
 const auth = require('../../utils/auth.js')
 const draftUtil = require('../../utils/draft.js')
 const { CATEGORIES, TAG_RULES, MAX_MEDIA_COUNT } = require('../../config/index.js')
@@ -148,39 +152,60 @@ Page({
   },
 
   // editor 的 bindinput：处理富文本变化
+  // 策略：用 format/removeFormat 增量控制光标处的输入格式，不调用 setContents
+  //   - 光标在 #标签 内 → format({color: blue})，后续输入蓝色
+  //   - 光标在标签外   → removeFormat()，后续输入普通色
+  // 这样既不会出现"空格后文字继承蓝色"，也不会因 setContents 导致光标跳动
   onEditorInput(e) {
-    // 解除 setContents 递归
+    // 守卫：草稿恢复/discard 时的 setContents 不处理
     if (this._settingContents) return
 
     const plain = e.detail.text || ''
     const prevContent = this.data.content || ''
 
-    // 1. 同步 content（纯文本，用于草稿/发布/推荐匹配）
+    // 同步 content 纯文本
     this.setData({
       content: plain,
       editorHeight: e.detail.height || 240
     })
 
-    // 2. 检测标签集合是否变化
-    const prevTags = this._tagSet(prevContent)
-    const nowTags = this._tagSet(plain)
-    const changed =
-      prevTags.size !== nowTags.size ||
-      [...prevTags].some(t => !nowTags.has(t)) ||
-      [...nowTags].some(t => !prevTags.has(t))
+    // 计算光标位置 + 判断是否在标签内
+    const cursorPos = this._getCursorPosition(prevContent, plain)
+    const inTag = this._isPositionInTag(plain, cursorPos)
 
-    // 3. 仅在标签集变化时重建 delta（给 #标签 上色）
-    if (changed) {
-      this._settingContents = true
-      const delta = this.buildColoredDelta(plain)
-      this.editorCtx.setContents({ delta })
-      setTimeout(() => { this._settingContents = false }, 0)
+    // 增量设置格式（不重建内容，光标不跳）
+    if (inTag) {
+      this.editorCtx.format({ name: 'color', value: TAG_COLOR })
+    } else {
+      this.editorCtx.removeFormat()
     }
 
     this.updateTopicChips()
   },
 
-  // 从纯文本中提取 #标签 集合
+  // 基于 prevContent 与 plain 的差异，推算光标位置
+  _getCursorPosition(prev, next) {
+    let i = 0
+    while (i < prev.length && i < next.length && prev[i] === next[i]) i++
+    if (next.length > prev.length) {
+      // 插入：光标在新插入字符之后
+      return i + (next.length - prev.length)
+    }
+    // 删除或相同：光标在差异位置
+    return i
+  },
+
+  // 判断指定光标位置是否处于 #标签 内部
+  // 规则：从光标位置往前找最近的 #，若 # 到光标之间无空格/#/换行，则在标签内
+  _isPositionInTag(text, pos) {
+    const before = text.slice(0, pos)
+    const hashIdx = before.lastIndexOf('#')
+    if (hashIdx === -1) return false
+    const segment = before.slice(hashIdx + 1)
+    return !/[\s#]/.test(segment)
+  },
+
+  // 从纯文本中提取 #标签 集合（用于推荐去重，不参与上色判断）
   _tagSet(text) {
     const s = new Set()
     const regex = /#([^\s#]+)/g
@@ -259,7 +284,7 @@ Page({
     }
   },
 
-  // 点击话题 chip → 在光标位置插入 #标签
+  // 点击话题 chip → 在光标位置插入蓝色 #标签 + 无色空格
   onTapTopicChip(e) {
     const tag = e.currentTarget.dataset.tag
     if (!tag || !this.editorCtx) return
@@ -267,8 +292,13 @@ Page({
       wx.showToast({ title: `已添加 #${tag}`, icon: 'none' })
       return
     }
-    // 在当前光标位置插入（editor 会自动触发 bindinput → 同步 content）
-    this.editorCtx.insertText({ text: `#${tag} ` })
+    // 插入蓝色的 #标签（attributes 只作用于插入文本，不影响光标后续格式）
+    this.editorCtx.insertText({
+      text: `#${tag}`,
+      attributes: { color: TAG_COLOR }
+    })
+    // 再插入一个无色空格，分隔标签与后续内容
+    this.editorCtx.insertText({ text: ' ' })
   },
 
   // ========== 板块选择 ==========
