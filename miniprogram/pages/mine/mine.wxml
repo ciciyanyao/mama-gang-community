@@ -1,36 +1,64 @@
-<!-- pages/mine/mine.wxml —— 我的页（tab 4）：登录 + 功能入口占位 -->
-<view class="container mine-page">
+<!-- pages/mine/mine.wxml —— 我的页（F3） -->
+<view class="page-wrap">
 
-  <!-- 顶部用户卡片 -->
-  <view class="user-card">
-    <block wx:if="{{isLogin}}">
-      <image class="avatar" src="{{userInfo.avatar}}" mode="aspectFill" />
-      <view class="user-meta">
-        <view class="nickname">{{userInfo.nickname}}</view>
-        <view class="gender">{{userInfo.gender === 'male' ? '男' : '女'}} · 已登录</view>
+  <!-- ==================== 用户信息区域 ==================== -->
+  <view class="user-section">
+    <!-- 已登录 -->
+    <view class="user-info" wx:if="{{hasUserInfo && userInfo}}">
+      <image
+        class="user-avatar"
+        src="{{userInfo.avatarUrl || '/images/user-3-line.svg'}}"
+        mode="aspectFill"
+      />
+      <view class="user-detail">
+        <text class="user-name">{{userInfo.nickName || '妈妈岗用户'}}</text>
+        <text class="user-subtitle">妈妈岗社区成员</text>
       </view>
-    </block>
-    <block wx:else>
-      <view class="avatar avatar-placeholder" bindtap="startLogin">
-        <text class="avatar-text">👤</text>
+    </view>
+
+    <!-- 未登录 -->
+    <view class="user-info" wx:else>
+      <view class="avatar-placeholder">
+        <image class="avatar-placeholder-icon" src="/images/user-3-line.svg" mode="aspectFit" />
       </view>
-      <view class="user-meta">
-        <view class="nickname login-link" bindtap="startLogin">点击登录</view>
-        <view class="gender">登录后可发帖、评论、收藏</view>
+      <view class="user-detail">
+        <text class="user-name login-prompt" bindtap="_loadUserInfo">点击获取用户信息</text>
+        <text class="user-subtitle">登录后享受更多功能</text>
       </view>
-    </block>
+    </view>
   </view>
 
-  <!-- 功能入口占位（认领类 F，未做） -->
-  <view class="menu-list">
-    <view class="menu-item">我的帖子</view>
-    <view class="menu-item">我的收藏</view>
-    <view class="menu-item">设置</view>
+  <!-- ==================== 菜单列表 ==================== -->
+  <view class="menu-section">
+    <view
+      class="menu-item"
+      wx:for="{{menuList}}"
+      wx:key="id"
+      bindtap="onMenuTap"
+      data-url="{{item.url}}"
+      data-id="{{item.id}}"
+      data-adminonly="{{item.adminOnly}}"
+      wx:if="{{!item.adminOnly || isAdmin}}"
+    >
+      <view class="menu-icon-wrap">
+        <text class="menu-emoji">{{item.icon}}</text>
+      </view>
+      <text class="menu-title">{{item.title}}</text>
+      <view class="menu-arrow">
+        <text class="arrow-symbol">›</text>
+      </view>
+    </view>
   </view>
 
-  <!-- 退出登录：仅登录态显示 -->
-  <view wx:if="{{isLogin}}" class="logout-btn" bindtap="logout">退出登录</view>
+  <!-- ==================== 退出登录 ==================== -->
+  <view class="logout-section" wx:if="{{hasUserInfo}}">
+    <view class="logout-btn" bindtap="onLogout">
+      <text class="logout-text">退出登录</text>
+    </view>
+  </view>
 
-  <!-- 登录弹窗（全站复用组件：点登录/发帖/评论/点赞/收藏都会就地弹出） -->
-  <login-modal id="loginModal" bind:success="onLoginSuccess" />
+  <!-- ==================== 版本信息 ==================== -->
+  <view class="version-info">
+    <text class="version-text">妈妈岗社区 v1.0.0</text>
+  </view>
 </view>

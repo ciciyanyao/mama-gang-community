@@ -1,5 +1,6 @@
 {
   "usingComponents": {
     "login-modal": "/components/login-modal/index"
-  }
+  },
+  "navigationBarTitleText": "案例详情"
 }

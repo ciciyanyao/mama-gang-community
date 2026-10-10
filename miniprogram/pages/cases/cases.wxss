@@ -1,1 +1,35 @@
 /* pages/cases/cases.wxss */
+page { background-color: #f5f7fa; font-family: sans-serif; }
+.container { padding: 20rpx 30rpx; }
+
+/* 搜索框 */
+.search-box {
+  display: flex; align-items: center;
+  background: #ffffff; border-radius: 36rpx;
+  padding: 16rpx 30rpx; margin-bottom: 20rpx;
+}
+.search-input { flex: 1; font-size: 28rpx; margin-left: 16rpx; }
+
+/* 筛选标签 */
+.tags-scroll { white-space: nowrap; margin-bottom: 20rpx; }
+.tags-container { display: inline-flex; gap: 20rpx; }
+.tag {
+  background: #ffffff; color: #666;
+  padding: 10rpx 30rpx; border-radius: 30rpx; font-size: 26rpx;
+}
+.tag.active { background: #059669; color: #ffffff; font-weight: bold; }
+
+/* 案例卡片 */
+.case-list { display: flex; flex-direction: column; gap: 20rpx; }
+.case-card {
+  background: #ffffff; padding: 30rpx;
+  border-radius: 20rpx; box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
+}
+.case-title { font-size: 32rpx; font-weight: bold; color: #333; margin-bottom: 16rpx; }
+.case-info { margin-bottom: 16rpx; }
+.case-city, .case-type {
+  font-size: 22rpx; color: #059669;
+  background: #e6f7f3; padding: 4rpx 16rpx;
+  border-radius: 10rpx; margin-right: 16rpx;
+}
+.case-summary { font-size: 28rpx; color: #666; line-height: 1.5; }

@@ -1,35 +1,50 @@
-// cloudfunctions/post/index.js —— 帖子云函数（类 C：发帖与内容安全）
-// action: create / list / detail / delete
-// create 内含：文本审核 msgSecCheck + 图片/视频审核 mediaCheckAsync，不过审直接拦截
+// cloudfunctions/post/index.js —— 帖子相关云函数
+// actions: create / list / detail / hot / myPosts / like / delete
+// 说明：融合版 —— main（类B论坛交流：list/detail/hot/myPosts/like）
+//       + cici（类C发帖与内容安全：create 含文本/媒体审核、delete 软删）
+// 返回协议：论坛 action 用 {code, message, data}，发帖 action 用 {code, msg, data}
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
+
 const posts = db.collection('posts')
 const users = db.collection('users')
 
-// 板块枚举（与 config/index.js 保持一致）
+// 每页条数
+const PAGE_SIZE = 20
+
+// 板块枚举（与 miniprogram/config/index.js 保持一致）
 const CATEGORIES = ['求职交流', '职场经验', '育儿互助', '情绪倾诉', '政策资讯']
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const action = event.action || 'list'
+  const { action } = event
 
   switch (action) {
     case 'create':
       return await createPost(event, OPENID)
     case 'list':
-      return await getPostList(event)
+      return await handleList(event)
     case 'detail':
-      return await getPostDetail(event)
+      return await handleDetail(event)
+    case 'hot':
+      return await handleHot(event)
+    case 'myPosts':
+      return await handleMyPosts(event, OPENID)
+    case 'like':
+      return await handleLike(event, OPENID)
     case 'delete':
       return await deletePost(event, OPENID)
     default:
-      return { code: -1, msg: '未知操作' }
+      return { code: -1, message: '未知操作' }
   }
 }
 
 // ========== 创建帖子（含内容安全审核） ==========
+// 来自 cici 分支（类C发帖）。写库字段已对齐论坛版读取：
+//   authorId 存 openid（论坛 detail/hot 按 users.where({openid: authorId}) 查作者）
+//   时间字段同时写 create_time（论坛 list/hot/myPosts 按此排序）与 created_at
 async function createPost(event, openid) {
   const { title, content, images = [], category, categories = [], is_anonymous = false } = event
 
@@ -85,7 +100,7 @@ async function createPost(event, openid) {
 
   // 5. 写入 posts 集合
   const postData = {
-    authorId: user._id,
+    authorId: user.openid || user._id, // 论坛版按 openid 查作者，冗余兼容 _id
     openid,               // 冗余 openid 方便查询（仅服务端可见，不外泄）
     title: title.trim(),
     content: content.trim(),
@@ -97,6 +112,7 @@ async function createPost(event, openid) {
     likeCount: 0,
     commentCount: 0,
     status: 1,            // 0待审 / 1已发布 / 2已删除（审核通过直接已发布）
+    create_time: db.serverDate(), // 论坛版排序字段
     created_at: db.serverDate(),
     updated_at: db.serverDate()
   }
@@ -166,58 +182,8 @@ async function pollMediaResult(traceId, maxSeconds) {
   return null  // 超时未拿到结果
 }
 
-// ========== 帖子列表（分页） ==========
-async function getPostList(event) {
-  const { category, is_anonymous, page = 1, pageSize = 20 } = event
-  const query = {}
-  if (category) query.category = category
-  if (typeof is_anonymous === 'boolean') query.is_anonymous = is_anonymous
-  query.status = 1  // 只返回已发布
-
-  const skip = (page - 1) * pageSize
-  const res = await posts
-    .where(query)
-    .orderBy('created_at', 'desc')
-    .skip(skip)
-    .limit(pageSize)
-    .get()
-
-  // 补充作者昵称头像（匿名帖不返回）
-  const list = await Promise.all(res.data.map(async p => {
-    if (p.is_anonymous) {
-      return { ...p, authorNickname: '匿名用户', authorAvatar: '' }
-    }
-    const uRes = await users.doc(p.authorId).get().catch(() => null)
-    const u = uRes && uRes.data
-    return { ...p, authorNickname: u ? u.nickname : '匿名用户', authorAvatar: u ? u.avatar : '' }
-  }))
-
-  return { code: 0, data: list }
-}
-
-// ========== 帖子详情 ==========
-async function getPostDetail(event) {
-  const { id } = event
-  if (!id) return { code: -1, msg: '缺少帖子ID' }
-  const res = await posts.doc(id).get().catch(() => null)
-  if (!res || !res.data) return { code: -1, msg: '帖子不存在或已删除' }
-  const post = res.data
-  if (post.status !== 1) return { code: -1, msg: '帖子不存在或已删除' }
-
-  // 补充作者信息
-  if (!post.is_anonymous) {
-    const uRes = await users.doc(post.authorId).get().catch(() => null)
-    const u = uRes && uRes.data
-    post.authorNickname = u ? u.nickname : '匿名用户'
-    post.authorAvatar = u ? u.avatar : ''
-  } else {
-    post.authorNickname = '匿名用户'
-    post.authorAvatar = ''
-  }
-  return { code: 0, data: post }
-}
-
 // ========== 删除帖子（仅本人或管理员） ==========
+// 来自 cici 分支（类C）。软删除：status 置 2
 async function deletePost(event, openid) {
   const { id } = event
   if (!id) return { code: -1, msg: '缺少帖子ID' }
@@ -235,4 +201,210 @@ async function deletePost(event, openid) {
 
   await posts.doc(id).update({ data: { status: 2, updated_at: db.serverDate() } })
   return { code: 0, msg: '已删除' }
+}
+
+/**
+ * 获取帖子列表（分页）
+ * 参数：page(从1开始), pageSize, category(可选筛选板块)
+ * 排序：is_top desc, create_time desc
+ * 只返回 status=1 的帖子
+ */
+async function handleList(event) {
+  try {
+    const { page = 1, pageSize = PAGE_SIZE, category } = event
+    const skip = (Math.max(1, parseInt(page)) - 1) * parseInt(pageSize)
+
+    // 构建查询条件：已发布 + 可选板块筛选
+    const where = { status: 1 }
+    if (category && category !== '全部') {
+      where.category = category
+    }
+
+    // 并行查询总数和列表数据
+    const [countRes, listRes] = await Promise.all([
+      db.collection('posts').where(where).count(),
+      db.collection('posts')
+        .where(where)
+        .orderBy('is_top', 'desc')
+        .orderBy('create_time', 'desc')
+        .skip(skip)
+        .limit(parseInt(pageSize))
+        .get()
+    ])
+
+    return {
+      code: 0,
+      message: '获取成功',
+      data: {
+        list: listRes.data,
+        total: countRes.total,
+        page: parseInt(page),
+        pageSize: parseInt(pageSize),
+        hasMore: skip + listRes.data.length < countRes.total
+      }
+    }
+  } catch (err) {
+    return { code: -1, message: '获取帖子列表失败', error: err.message }
+  }
+}
+
+/**
+ * 获取帖子详情
+ * 参数：postId
+ * 同时返回帖子作者信息（昵称、头像）
+ */
+async function handleDetail(event) {
+  try {
+    const { postId } = event
+    if (!postId) {
+      return { code: -1, message: '缺少帖子ID' }
+    }
+
+    const res = await db.collection('posts').doc(postId).get()
+    const post = res.data
+
+    // 如果帖子不是匿名的，获取作者信息
+    if (!post.is_anonymous && post.authorId) {
+      try {
+        const userRes = await db.collection('users')
+          .where({ openid: post.authorId })
+          .limit(1)
+          .get()
+        if (userRes.data.length > 0) {
+          post.authorInfo = {
+            nickname: userRes.data[0].nickname,
+            avatar: userRes.data[0].avatar
+          }
+        }
+      } catch (e) {
+        // 查不到作者不影响帖子返回
+      }
+    }
+
+    return {
+      code: 0,
+      message: '获取成功',
+      data: post
+    }
+  } catch (err) {
+    return { code: -1, message: '获取帖子详情失败', error: err.message }
+  }
+}
+
+/**
+ * 获取热门帖子 TOP 10
+ * 排序依据：likeCount + commentCount 降序
+ * 条件：status=1（已发布）
+ */
+async function handleHot() {
+  try {
+    const res = await db.collection('posts')
+      .where({ status: 1 })
+      .limit(100) // 先取100条，在内存中排序取TOP10（云数据库不支持计算字段排序）
+      .get()
+
+    // 计算热度 = likeCount + commentCount，降序取前10
+    const posts = res.data
+      .map(p => ({
+        ...p,
+        hotScore: (p.likeCount || 0) + (p.commentCount || 0)
+      }))
+      .sort((a, b) => b.hotScore - a.hotScore)
+      .slice(0, 10)
+
+    return {
+      code: 0,
+      message: '获取成功',
+      data: posts
+    }
+  } catch (err) {
+    return { code: -1, message: '获取热门帖子失败', error: err.message }
+  }
+}
+
+/**
+ * 获取当前用户的帖子列表
+ * 参数：page, pageSize
+ */
+async function handleMyPosts(event, openid) {
+  try {
+    const { page = 1, pageSize = PAGE_SIZE } = event
+    const skip = (Math.max(1, parseInt(page)) - 1) * parseInt(pageSize)
+
+    const where = { authorId: openid }
+
+    const [countRes, listRes] = await Promise.all([
+      db.collection('posts').where(where).count(),
+      db.collection('posts')
+        .where(where)
+        .orderBy('create_time', 'desc')
+        .skip(skip)
+        .limit(parseInt(pageSize))
+        .get()
+    ])
+
+    return {
+      code: 0,
+      message: '获取成功',
+      data: {
+        list: listRes.data,
+        total: countRes.total,
+        page: parseInt(page),
+        pageSize: parseInt(pageSize),
+        hasMore: skip + listRes.data.length < countRes.total
+      }
+    }
+  } catch (err) {
+    return { code: -1, message: '获取我的帖子失败', error: err.message }
+  }
+}
+
+/**
+ * 点赞/取消点赞（toggle）
+ * 参数：postId
+ * 逻辑：
+ *   1. 查询 likes 集合中是否已有该用户对该帖子的记录
+ *   2. 有 → 删除记录并 -1 likeCount（取消点赞）
+ *   3. 无 → 添加记录并 +1 likeCount（点赞）
+ */
+async function handleLike(event, openid) {
+  try {
+    const { postId } = event
+    if (!postId) {
+      return { code: -1, message: '缺少帖子ID' }
+    }
+
+    // 查询是否已点赞
+    const likeRes = await db.collection('likes')
+      .where({
+        postId,
+        _openid: openid
+      })
+      .limit(1)
+      .get()
+
+    if (likeRes.data.length > 0) {
+      // 已点赞 → 取消
+      await db.collection('likes').doc(likeRes.data[0]._id).remove()
+      await db.collection('posts').doc(postId).update({
+        data: { likeCount: _.inc(-1) }
+      })
+      return { code: 0, message: '取消点赞成功', data: { liked: false } }
+    } else {
+      // 未点赞 → 点赞
+      await db.collection('likes').add({
+        data: {
+          postId,
+          _openid: openid,
+          create_time: db.serverDate()
+        }
+      })
+      await db.collection('posts').doc(postId).update({
+        data: { likeCount: _.inc(1) }
+      })
+      return { code: 0, message: '点赞成功', data: { liked: true } }
+    }
+  } catch (err) {
+    return { code: -1, message: '点赞操作失败', error: err.message }
+  }
 }

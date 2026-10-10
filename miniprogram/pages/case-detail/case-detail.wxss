@@ -1,31 +1,34 @@
-/* pages/case-detail/case-detail.wxss —— 案例详情 + 底部互动栏 */
+/* pages/case-detail/case-detail.wxss */
+page { background-color: #f5f7fa; font-family: sans-serif; }
+.container { padding: 0 30rpx 40rpx; }
 
-/* 底部互动栏：固定在页面底部 */
-.action-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  display: flex;
-  background: #FFFFFF;
-  border-top: 1rpx solid #F2F4F3;
-  padding: 16rpx 0 calc(16rpx + env(safe-area-inset-bottom));
-  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.04);
+/* 顶部导航 */
+.nav-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 88rpx; margin-bottom: 20rpx;
 }
-.action-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.back-btn { font-size: 30rpx; color: #059669; font-weight: bold; }
+.nav-title { font-size: 34rpx; font-weight: bold; color: #333; }
+.placeholder { width: 80rpx; } /* 占位，让标题居中 */
+
+/* 详情卡片 */
+.detail-card {
+  background: #ffffff; border-radius: 24rpx; padding: 40rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
 }
-.action-icon {
-  font-size: 40rpx;
-  line-height: 1.2;
+.detail-title { font-size: 36rpx; font-weight: bold; color: #222; line-height: 1.4; margin-bottom: 20rpx; }
+
+/* 标签 */
+.detail-tags { display: flex; gap: 20rpx; margin-bottom: 30rpx; }
+.tag {
+  background: #e6f7f3; color: #059669;
+  padding: 6rpx 20rpx; border-radius: 12rpx; font-size: 24rpx;
 }
-.action-text {
-  margin-top: 6rpx;
-  font-size: 22rpx;
-  color: #3E4C59;
-}
+
+/* 分割线 */
+.divider { height: 2rpx; background: #f0f0f0; margin-bottom: 30rpx; }
+
+/* 章节 */
+.section { margin-bottom: 30rpx; }
+.section-title { font-size: 28rpx; font-weight: bold; color: #059669; margin-bottom: 12rpx; }
+.section-content { font-size: 30rpx; color: #555; line-height: 1.7; }

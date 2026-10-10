@@ -1,31 +1,340 @@
-/* pages/post-detail/post-detail.wxss —— 帖子详情 + 底部互动栏 */
+/* pages/post-detail/post-detail.wxss —— 帖子详情样式 */
 
-/* 底部互动栏：固定在页面底部 */
-.action-bar {
+/* ==================== 页面布局 ==================== */
+.page-wrap {
+  padding-bottom: 140rpx; /* 给底部输入栏留空间 */
+}
+
+/* ==================== 加载状态 ==================== */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+}
+
+.loading-spinner {
+  width: 48rpx;
+  height: 48rpx;
+  border: 4rpx solid #E5E5E5;
+  border-top-color: #2E7D5B;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16rpx;
+}
+
+.loading-spinner.small {
+  width: 32rpx;
+  height: 32rpx;
+  border-width: 3rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 26rpx;
+  color: #999999;
+}
+
+/* ==================== 帖子内容区 ==================== */
+.post-body {
+  background: #FFFFFF;
+  padding: 32rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 用户信息 */
+.detail-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+
+.detail-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: #EFEFEF;
+  flex-shrink: 0;
+}
+
+.detail-user-info {
+  flex: 1;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-nickname {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.detail-time {
+  font-size: 24rpx;
+  color: #999999;
+  margin-top: 4rpx;
+}
+
+.detail-category-tag {
+  font-size: 22rpx;
+  color: #2E7D5B;
+  background: rgba(46, 125, 91, 0.1);
+  padding: 6rpx 20rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+}
+
+/* 标题 */
+.detail-title {
+  font-size: 38rpx;
+  font-weight: bold;
+  color: #222222;
+  line-height: 1.4;
+  margin-bottom: 24rpx;
+}
+
+/* 正文 */
+.detail-content {
+  font-size: 30rpx;
+  color: #444444;
+  line-height: 1.8;
+  margin-bottom: 24rpx;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+/* 图片 */
+.detail-images {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-bottom: 28rpx;
+}
+
+.detail-image {
+  width: 100%;
+  border-radius: 12rpx;
+  background: #F5F5F5;
+}
+
+/* ==================== 统计栏 ==================== */
+.detail-stats {
+  display: flex;
+  align-items: center;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #F0F0F0;
+  gap: 40rpx;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx 0;
+}
+
+.stat-icon {
+  font-size: 32rpx;
+}
+
+.stat-text {
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.stat-item.liked .stat-text {
+  color: #E5484D;
+}
+
+.stat-item.favorited .stat-text {
+  color: #F0880A;
+}
+
+/* ==================== 评论区 ==================== */
+.comment-section {
+  background: #FFFFFF;
+  padding: 32rpx;
+}
+
+.comment-header {
+  margin-bottom: 24rpx;
+}
+
+.comment-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.comment-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 0;
+}
+
+/* 评论列表 */
+.comment-list {
+  margin-top: 8rpx;
+}
+
+.comment-item {
+  display: flex;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: #EFEFEF;
+  flex-shrink: 0;
+}
+
+.comment-body {
+  flex: 1;
+  margin-left: 16rpx;
+}
+
+.comment-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.comment-nickname {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.comment-time {
+  font-size: 22rpx;
+  color: #BBBBBB;
+}
+
+.reply-hint {
+  font-size: 24rpx;
+  color: #999999;
+  margin-bottom: 8rpx;
+}
+
+.reply-name {
+  color: #2E7D5B;
+}
+
+.comment-content {
+  font-size: 28rpx;
+  color: #444444;
+  line-height: 1.6;
+  margin-bottom: 12rpx;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.reply-btn {
+  font-size: 24rpx;
+  color: #999999;
+  padding: 4rpx 0;
+}
+
+/* 空评论 */
+.comment-empty {
+  text-align: center;
+  padding: 60rpx 0;
+}
+
+.comment-empty-text {
+  font-size: 26rpx;
+  color: #CCCCCC;
+}
+
+/* 底部占位 */
+.bottom-placeholder {
+  height: 140rpx;
+}
+
+/* ==================== 底部输入栏 ==================== */
+.input-bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 100;
-  display: flex;
   background: #FFFFFF;
-  border-top: 1rpx solid #F2F4F3;
-  padding: 16rpx 0 calc(16rpx + env(safe-area-inset-bottom));
-  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.04);
+  border-top: 1rpx solid #EFEFEF;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 100;
+  transition: box-shadow 0.2s ease;
 }
-.action-item {
-  flex: 1;
+
+.input-bar.focused {
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+/* 回复提示条 */
+.reply-bar {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 12rpx 24rpx;
+  background: #F7F3EA;
+  font-size: 24rpx;
 }
-.action-icon {
-  font-size: 40rpx;
-  line-height: 1.2;
+
+.reply-bar-text {
+  color: #666666;
 }
-.action-text {
-  margin-top: 6rpx;
-  font-size: 22rpx;
-  color: #3E4C59;
+
+.reply-bar-cancel {
+  color: #2E7D5B;
+  font-weight: 600;
+}
+
+/* 输入行 */
+.input-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  gap: 16rpx;
+}
+
+.comment-input {
+  flex: 1;
+  height: 72rpx;
+  background: #F5F5F5;
+  border-radius: 36rpx;
+  padding: 0 28rpx;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.send-btn {
+  flex-shrink: 0;
+  height: 72rpx;
+  line-height: 72rpx;
+  padding: 0 32rpx;
+  border-radius: 36rpx;
+  background: #CCCCCC;
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 600;
+  text-align: center;
+  transition: background 0.2s ease;
+}
+
+.send-btn.active {
+  background: #2E7D5B;
 }
