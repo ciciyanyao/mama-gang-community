@@ -1,0 +1,20 @@
+<!-- components/empty-state/index.wxml —— 空状态：温馨小图案 + 引导文案 + 可选 CTA -->
+<view class="empty">
+  <!-- 低饱和度温馨小图案（内联 SVG，无外部资源依赖） -->
+  <view class="empty-illu">
+    <block wx:if="{{illustration === 'leaf'}}">
+      <view class="illu-leaf"></view>
+    </block>
+    <block wx:elif="{{illustration === 'case'}}">
+      <view class="illu-case"></view>
+    </block>
+    <block wx:elif="{{illustration === 'comment'}}">
+      <view class="illu-comment"></view>
+    </block>
+    <block wx:else>
+      <view class="illu-leaf"></view>
+    </block>
+  </view>
+  <view class="empty-text">{{text}}</view>
+  <view wx:if="{{cta}}" class="empty-cta" bindtap="onCtaTap">{{cta}}</view>
+</view>

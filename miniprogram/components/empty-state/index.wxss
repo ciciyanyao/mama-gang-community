@@ -1,0 +1,112 @@
+/* components/empty-state/index.wxss —— 空状态：温馨小图案 + 引导文案 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 48rpx;
+}
+
+/* 低饱和度温馨小图案：纯 CSS 绘制，色彩柔和不刺眼 */
+.empty-illu {
+  width: 200rpx;
+  height: 200rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32rpx;
+  position: relative;
+}
+
+/* 叶子（论坛/树洞默认图案） */
+.illu-leaf {
+  width: 140rpx;
+  height: 140rpx;
+  background: linear-gradient(135deg, #C8E0D2 0%, #A8CBB9 100%);
+  border-radius: 70rpx 70rpx 70rpx 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 4rpx 16rpx rgba(168, 203, 185, 0.3);
+  position: relative;
+}
+.illu-leaf::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  width: 2rpx;
+  height: 80%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translateX(-50%);
+}
+
+/* 案例图案：低饱和暖橙书页 */
+.illu-case {
+  width: 120rpx;
+  height: 140rpx;
+  background: linear-gradient(135deg, #F0D9B5 0%, #E0C299 100%);
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 16rpx rgba(224, 194, 153, 0.4);
+  position: relative;
+}
+.illu-case::before,
+.illu-case::after {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  height: 4rpx;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 2rpx;
+}
+.illu-case::before { top: 40rpx; }
+.illu-case::after { top: 60rpx; width: 48rpx; left: 24rpx; right: auto; }
+
+/* 评论图案：低饱和暖灰气泡 */
+.illu-comment {
+  width: 140rpx;
+  height: 110rpx;
+  background: linear-gradient(135deg, #E4E9E6 0%, #CDD6D1 100%);
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(205, 214, 209, 0.4);
+  position: relative;
+}
+.illu-comment::before {
+  content: '';
+  position: absolute;
+  left: 32rpx;
+  bottom: -16rpx;
+  width: 24rpx;
+  height: 24rpx;
+  background: inherit;
+  border-radius: 4rpx;
+  transform: rotate(45deg);
+}
+.illu-comment::after {
+  content: '';
+  position: absolute;
+  left: 36rpx;
+  top: 44rpx;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 32rpx 0 0 rgba(255, 255, 255, 0.7), 64rpx 0 0 rgba(255, 255, 255, 0.7);
+}
+
+/* 引导文案：温柔、信息密度适中 */
+.empty-text {
+  font-size: 28rpx;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* 可选 CTA 按钮：主色描边，弱视觉重量，不打扰 */
+.empty-cta {
+  margin-top: 24rpx;
+  padding: 16rpx 40rpx;
+  font-size: 26rpx;
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
+  border-radius: var(--radius-btn);
+}

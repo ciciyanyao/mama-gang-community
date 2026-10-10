@@ -1,1 +1,74 @@
-/* pages/mine/mine.wxss */
+/* pages/mine/mine.wxss —— 我的页（登录入口 + 功能占位） */
+.mine-page {
+  padding: 24rpx;
+}
+
+/* 顶部用户卡片 */
+.user-card {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: #EEF3F0;
+}
+.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.avatar-text {
+  font-size: 56rpx;
+}
+.user-meta {
+  margin-left: 28rpx;
+  flex: 1;
+}
+.nickname {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1F2933;
+}
+.login-link {
+  color: #2E7D5B;
+}
+.gender {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #7A7A7A;
+}
+
+/* 功能入口占位 */
+.menu-list {
+  margin-top: 24rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+.menu-item {
+  padding: 30rpx 32rpx;
+  font-size: 28rpx;
+  color: #3E4C59;
+  border-bottom: 1rpx solid #F2F4F3;
+}
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+/* 退出登录按钮 */
+.logout-btn {
+  margin-top: 32rpx;
+  text-align: center;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #E54848;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+}

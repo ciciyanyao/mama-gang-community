@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小程序技术详解图解：Git协作 · 框架对比 · 上架流程</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; background:#F6F4EF; color:#2B2B2B; line-height:1.6; }
+  .wrap { max-width:1080px; margin:0 auto; padding:24px 20px 60px; }
+  .hero { background:linear-gradient(135deg,#2E7D6B,#3E8F7C 60%,#E8B04B 170%); color:#fff; border-radius:12px; padding:22px 28px; margin-bottom:16px; }
+  .hero h1 { font-size:23px; }
+  .hero p { font-size:13px; opacity:.92; margin-top:6px; }
+  section { background:#fff; border-radius:12px; padding:22px 24px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+  section h2 { font-size:18px; color:#24594F; border-left:5px solid #E07A3F; padding-left:11px; margin-bottom:14px; }
+  .box { border:1.5px solid #CFE3DD; border-radius:10px; padding:12px 14px; background:#F7FBF9; }
+  .box h4 { font-size:13.5px; color:#24594F; margin-bottom:6px; }
+  .box p, .box li { font-size:12.5px; color:#444; }
+  .row { display:flex; flex-wrap:wrap; gap:12px; margin:10px 0; }
+  .row > .box { flex:1 1 240px; min-width:240px; }
+  .center-tag { text-align:center; font-size:16px; color:#E07A3F; font-weight:700; padding:2px 0; }
+  .arrow2 { display:flex; align-items:center; justify-content:center; gap:10px; font-size:12.5px; color:#777; }
+  .arrow2 .a { font-size:18px; color:#2E7D6B; font-weight:700; }
+  .warn { background:#FFF6E9; border-left:4px solid #E8B04B; padding:9px 13px; font-size:12.5px; border-radius:0 8px 8px 0; margin:10px 0; }
+  .warn b { color:#A86A14; }
+  table { width:100%; border-collapse:collapse; font-size:12.8px; margin:8px 0; }
+  th, td { border:1px solid #E3E0D9; padding:6px 9px; text-align:left; }
+  th { background:#F0F5F2; color:#24594F; }
+  .b-green { color:#2E7D6B; font-weight:700; }
+  .b-orange { color:#C2621F; font-weight:700; }
+  .b-red { color:#C0392B; font-weight:700; }
+  .pipe { background:#F2F8F6; border:1px solid #CFE3DD; border-radius:8px; padding:8px 12px; font-size:12.5px; }
+  .pipe b { color:#24594F; }
+  footer { text-align:center; font-size:12px; color:#999; margin-top:8px; }
+  @media print { body{background:#fff;} section{box-shadow:none; border:1px solid #ddd;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>小程序技术详解图解：Git 协作 · 框架对比 · 上架流程</h1>
+    <p>配套《轻量化小程序开发总方案》的"名词解释版" —— 给周勤希同学的学习材料，2026-10-04（V2：GitHub 已落地、注册已完成、单云环境）</p>
+  </div>
+
+  <!-- A. Git 生态 -->
+  <section>
+    <h2>A. 代码协作一图流：Git / Gitee / GitHub / 微信工具内置版本管理，到底谁是谁？</h2>
+    <div class="warn"><b>一句话记忆：</b>Git＝装在你电脑上的"存档软件"（本地仓库）；远程仓库＝放在网上的"公共存档室"（<b>我们已定：GitHub 私有仓库</b> https://github.com/ciciyanyao/mama-gang-community.git；Gitee 是国内的同类存档室）；微信开发者工具里的「版本管理」面板＝一个图形界面，帮你点按钮执行 Git 命令，不用敲命令行。</div>
+
+    <div class="row">
+      <div class="box">
+        <h4>电脑 A · 周勤希</h4>
+        <p>本地 Git 仓库（存档）<br>＋微信开发者工具「版本管理」面板（图形化按钮：初始化 / 提交 / 拉取 / 推送 / 分支）＋VSCode（命令行 push）</p>
+      </div>
+      <div class="box">
+        <h4>电脑 B · 黄炜怡</h4>
+        <p>本地 Git 仓库（存档）<br>＋微信开发者工具「版本管理」面板</p>
+      </div>
+      <div class="box">
+        <h4>电脑 C · 李泽亚</h4>
+        <p>本地 Git 仓库（存档）<br>＋微信开发者工具「版本管理」面板</p>
+      </div>
+    </div>
+    <div class="center-tag">▼ pull（拉取，把别人的更新拿下来）　▲ push（推送，把自己的更新传上去）</div>
+    <div class="row">
+      <div class="box" style="flex:2 1 480px; min-width:320px;">
+        <h4>GitHub 私有仓库（已建）＝ 团队公共存档室</h4>
+        <p>https://github.com/ciciyanyao/mama-gang-community.git —— 3 台电脑都连上它，每天 pull / push 保持同步。周勤希邀请队友为 collaborator 后即可推送。<br>备选：<b>Gitee</b>（国内，速度快）或 <b>微信代码管理</b>（git.weixin.qq.com，自动绑定你的小程序 AppID）；换仓只需改 remote 地址，代码不用动。</p>
+      </div>
+    </div>
+
+    <h4 style="margin:14px 0 6px;">分支 = 平行世界（改坏了不影响主线）</h4>
+    <div class="pipe">main（稳定可用版，受保护，只有负责人合并）← <b>dev</b>（开发主线，每天 pull）← <b>feature/论坛发帖</b>、<b>feature/树洞</b>…（每人每功能开一个分支，干完合并回 dev 再删除）<br><b>比赛期简化</b>：每人只碰自己的页面，文件几乎不重叠 → 直接 main 上 pull/commit/push 也够用（详见开发事项.md 3.3）</div>
+    <div class="warn"><b>三个坑提前防：</b>① <b>project.config.json 提交进仓库</b>（三人共用同一个 AppID wx5aa48fa7b914e7ee，保持一致）；个人本地设置放 <b>project.private.config.json</b> 并加入 .gitignore；② 云开发<b>比赛期单环境 cloud1</b> 即可（再建环境每月多花约 19.9 元且要维护双份），调试数据定期清理；③ 提交信息写规范：feat: 发帖功能 / fix: 评论计数 / docs: 更新说明。</div>
+  </section>
+
+  <!-- B. 框架对比 -->
+  <section>
+    <h2>B. 三种开发方式对比：原生 vs uni-app vs Taro（谁在"翻译"你的代码）</h2>
+    <div class="row">
+      <div class="box">
+        <h4>① 原生小程序（推荐你们用）</h4>
+        <p>你写 <b>WXML / WXSS / JS</b>（微信的"母语"）→ 微信<b>直接运行</b>，没有翻译环节。<br>产物：只能在<b>微信小程序</b>里跑。</p>
+      </div>
+      <div class="box">
+        <h4>② uni-app</h4>
+        <p>你写 <b>Vue 语法</b> → uni 编译器<b>翻译</b> → 可生成微信 / 支付宝 / 抖音小程序 + H5 网页 + App。<br>代价：要先学会 Vue；多一层编译＝多一层出错点。</p>
+      </div>
+      <div class="box">
+        <h4>③ Taro</h4>
+        <p>你写 <b>React 语法</b> → Taro 编译器<b>翻译</b> → 同样可生成多端。<br>代价：要先学会 React + Taro 的运行时差异；团队无 React 基础时学习成本最高。</p>
+      </div>
+    </div>
+    <table>
+      <tr><th>对比项</th><th>原生</th><th>uni-app</th><th>Taro</th></tr>
+      <tr><td>底层架构</td><td>WXML 渲染层 + JS 逻辑层直接运行，无模拟层</td><td>Vue 源码编译成小程序代码，运行时再模拟一层 Vue 机制</td><td>React 源码编译成小程序代码，运行时模拟 React 机制</td></tr>
+      <tr><td>学习成本</td><td>学微信自己的语法（HTML/CSS/JS 变体）</td><td>要懂 Vue</td><td>要懂 React</td></tr>
+      <tr><td>构建链</td><td>无（微信开发者工具直接写）</td><td>要装 HBuilderX / CLI + npm</td><td>要装 CLI + npm，配置更重</td></tr>
+      <tr><td>能跑几个端</td><td>只微信小程序</td><td>微信/支付宝/抖音/H5/App/鸿蒙…</td><td>多端</td></tr>
+      <tr><td>出问题查哪</td><td>微信官方文档，资料最全</td><td>uni-app 社区 + 微信文档</td><td>Taro 社区 + 微信文档</td></tr>
+    </table>
+    <div class="warn"><b>名词解释：</b>"微信一端"＝目标平台只有微信小程序（小程序本来就只能在微信里打开）；<b>H5</b>＝HTML5，即网页版（手机浏览器或微信聊天里点链接打开的网页）；<b>多端</b>＝微信小程序＋支付宝小程序＋抖音小程序＋H5 网页＋安卓/iOS App＋鸿蒙等。"以后迁移 uni-app 不迟"＝比赛 5 天只保微信一个端，不为"将来可能要做别的端"提前选更重的框架；真到那天，用 Vue 重写页面即可，云开发还能继续用。</div>
+  </section>
+
+  <!-- C. 上架流程 -->
+  <section>
+    <h2>C. 从开发到上架：四条路，比赛走到第 2 条就够</h2>
+    <div class="pipe">① 开发版（只在你自己电脑/开发者工具里）→ ② <b>体验版（上传代码后，把老师、队员的微信号加为"体验成员"，他们扫码就能真机用）＝比赛演示停在这里</b> → ③ 提交审核（主体资质＋类目＋内容安全）→ ④ 正式发布（所有人可搜到）</div>
+    <table>
+      <tr><th>环节</th><th>要求</th><th>你们要做的</th></tr>
+      <tr><td>注册账号</td><td>个人主体免费注册（18 岁以上实名），或企业/个体工商户/政府主体</td><td>✅ 已完成：个人主体，AppID wx5aa48fa7b914e7ee，云开发 cloud1 已开通（10/4）</td></tr>
+      <tr><td>体验版</td><td>上传代码即生成，把成员微信号加为体验成员，扫码可用；<b>不需过审核</b></td><td>10/11 前生成体验版给总负责人扫码验收</td></tr>
+      <tr><td>提交审核</td><td><span class="b-red">社区/论坛类目是"非个人类目"</span>：个人主体做不了；需企业/个体户/政府主体，并提交《非经营性互联网信息服务备案核准》（ICP 备案）等资质；涉及用户发言还须接入内容安全接口</td><td>比赛阶段不做（体验版演示即可）；正式上架是"以后的事"</td></tr>
+      <tr><td>正式发布</td><td>审核通过后公开，可被搜索；后续 UGC 违规会被下架/封禁</td><td>不追求；答辩时如实表述为"演示原型＋技术验证"</td></tr>
+    </table>
+    <div class="warn"><b>UGC 内容安全的含义：</b>小程序里只要允许用户发帖/评论（UGC＝User Generated Content 用户生成内容），平台就强制要求：① 接入内容安全接口（security.msgSecCheck）自动过滤违规文字和图片；② 有举报和屏蔽机制。即使不上架、只给老师演示，内容也要干净——所以方案里把"msgSecCheck＋举报"列为 P1 必须做。</div>
+  </section>
+
+  <footer>本页为学习图解（示意），事实口径见正文引用的微信官方文档与检索来源</footer>
+</div>
+</body>
+</html>

@@ -7,7 +7,8 @@
     "pages/mine/mine",
     "pages/post-detail/post-detail",
     "pages/cases/cases",
-    "pages/case-detail/case-detail"
+    "pages/case-detail/case-detail",
+    "pages/test"
   ],
   "window": {
     "navigationBarTitleText": "妈妈岗社区",
@@ -16,16 +17,32 @@
     "backgroundColor": "#F7F3EA"
   },
   "tabBar": {
+    "custom": true,
     "color": "#7A7A7A",
     "selectedColor": "#2E7D5B",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "black",
     "list": [
-      { "pagePath": "pages/index/index", "text": "论坛" },
-      { "pagePath": "pages/message/message", "text": "消息" },
-      { "pagePath": "pages/publish/publish", "text": "发帖" },
-      { "pagePath": "pages/tree-hole/tree-hole", "text": "树洞" },
-      { "pagePath": "pages/mine/mine", "text": "我的" }
+      {
+        "pagePath": "pages/index/index",
+        "text": "论坛"
+      },
+      {
+        "pagePath": "pages/message/message",
+        "text": "消息"
+      },
+      {
+        "pagePath": "pages/publish/publish",
+        "text": "发帖"
+      },
+      {
+        "pagePath": "pages/tree-hole/tree-hole",
+        "text": "树洞"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
     ]
   },
   "sitemapLocation": "sitemap.json"

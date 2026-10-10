@@ -63,6 +63,8 @@
 │   │   ├── post-card/                ← 帖子卡片
 │   │   ├── empty-state/              ← 空状态
 │   │   └── loading/                  ← 加载中
+│   ├── custom-tab-bar/               ★ 新增（10/8）：自定义底部导航组件（app.json 中 tabBar.custom=true 启用）
+│   │   └── index.js / index.json / index.wxml / index.wxss   ← 5 个 tab + 中间"+"绿色凸起发布按钮 + 消息角标 badge
 │   ├── utils/
 │   │   ├── format.js                 ← 时间/日期格式化
 │   │   ├── audit.js                  ← 内容安全审核封装（msgSecCheck + 关键词过滤）
@@ -85,7 +87,7 @@
     ├── case/                         ← action: list / detail（数据来自组内司法案例成果）
     ├── favorite/                     ← action: add / remove / list
     └── admin/                        ← action: deletePost / deleteComment / handleReport（管理员专用）</pre>
-    <div class="note"><b>改了什么：</b>① project.config.json 从 miniprogram/ 移到根目录（这是 DeepSeek 指出的真错误，我已修正）；② 新增 images/ 与 config/；③ 树洞不再单独建集合，并入 posts 用 is_anonymous + 板块标识；④ 云函数从 4 个变成 6 个但职责更清晰，删除了容易和内容安全混淆的 audit；⑤ <b>tabBar 定稿为 5 个（论坛/消息/发帖/树洞/我的，中间"+"发布）</b>，新增 message/ 消息页——发布是社区第一动作、消息保回复刚需（用户产品视角，参考猹话会）；⑥ login 已实现部署。</div>
+    <div class="note"><b>改了什么：</b>① project.config.json 从 miniprogram/ 移到根目录（这是 DeepSeek 指出的真错误，我已修正）；② 新增 images/ 与 config/；③ 树洞不再单独建集合，并入 posts 用 is_anonymous + 板块标识；④ 云函数从 4 个变成 6 个但职责更清晰，删除了容易和内容安全混淆的 audit；⑤ <b>tabBar 定稿为 5 个（论坛/消息/发帖/树洞/我的，中间"+"发布）</b>，新增 message/ 消息页——发布是社区第一动作、消息保回复刚需（用户产品视角，参考猹话会）；⑥ login 已实现部署。⑦（10/8 更新）新增 <b>custom-tab-bar/</b> 自定义底部导航组件（5 个 tab + 中间"+"凸起发布按钮 + 消息角标 badge，app.json 中 tabBar.custom=true 已启用）；tab 图标实际已用 images/ 下的 svg 本地文件（blaze-line / message-2-line / leaf-line / user-3-line 各含 active 版 + add-large-fill 发布按钮），随组件打包。</div>
   </section>
 
   <!-- 二、云函数设计 -->
