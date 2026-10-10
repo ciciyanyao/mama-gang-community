@@ -1,94 +1,77 @@
-<view class="container">
-  <!-- 页面标题 -->
-  <view class="page-header">
-    <text class="page-title">妈妈岗招聘</text>
-    <text class="page-subtitle">为您推荐适合宝妈的弹性工作岗位</text>
-  </view>
+<!-- pages/jobs/jobs.wxml —— 招聘信息（F6） -->
+<view class="page-wrap">
 
-  <!-- 城市筛选 -->
-  <scroll-view class="filter-scroll" scroll-x="true">
-    <view class="filter-list">
+  <!-- ==================== 城市筛选 Tabs ==================== -->
+  <view class="city-tabs">
+    <scroll-view scroll-x class="city-scroll">
       <view
-        class="filter-item {{currentCity === item ? 'active' : ''}}"
+        class="city-tab {{activeCity === index ? 'active' : ''}}"
         wx:for="{{cities}}"
         wx:key="*this"
-        bindtap="onCityChange"
-        data-city="{{item}}"
+        bindtap="onCityTap"
+        data-index="{{index}}"
       >
-        <text class="filter-text">{{item}}</text>
+        <text class="city-text">{{item}}</text>
       </view>
-    </view>
-  </scroll-view>
-
-  <!-- 类型筛选 -->
-  <scroll-view class="filter-scroll" scroll-x="true">
-    <view class="filter-list">
-      <view
-        class="filter-item type-item {{currentType === item ? 'active' : ''}}"
-        wx:for="{{jobTypes}}"
-        wx:key="*this"
-        bindtap="onTypeChange"
-        data-type="{{item}}"
-      >
-        <text class="filter-text">{{item}}</text>
-      </view>
-    </view>
-  </scroll-view>
-
-  <!-- 空状态 -->
-  <view class="empty-state" wx:if="{{jobs.length === 0 && !loading}}">
-    <text class="empty-icon">💼</text>
-    <text class="empty-text">暂无符合条件的岗位</text>
-    <text class="empty-hint">试试切换其他城市或类型筛选</text>
+    </scroll-view>
   </view>
 
-  <!-- 岗位列表 -->
-  <view class="job-list" wx:else>
+  <!-- ==================== 空状态 ==================== -->
+  <view class="empty-state" wx:if="{{isEmpty}}">
+    <view class="empty-icon-wrap">
+      <text class="empty-emoji">💼</text>
+    </view>
+    <text class="empty-text">暂无招聘信息</text>
+    <text class="empty-hint">该城市暂无岗位，请切换城市查看</text>
+  </view>
+
+  <!-- ==================== 职位卡片列表 ==================== -->
+  <view class="job-list" wx:if="{{!isEmpty}}">
     <view
       class="job-card"
-      wx:for="{{jobs}}"
+      wx:for="{{displayJobs}}"
       wx:key="_id"
       bindtap="onJobTap"
-      data-job-id="{{item._id}}"
+      data-id="{{item._id}}"
     >
-      <view class="job-header">
+      <!-- 顶部：标题 + 薪资 -->
+      <view class="job-top">
         <text class="job-title">{{item.title}}</text>
         <text class="job-salary">{{item.salary}}</text>
       </view>
 
-      <view class="job-info">
-        <view class="info-item">
-          <text class="info-icon">🏢</text>
-          <text class="info-text">{{item.company || '企业信息'}}</text>
+      <!-- 公司信息 -->
+      <view class="job-company">
+        <text class="company-name">{{item.company}}</text>
+      </view>
+
+      <!-- 详情行 -->
+      <view class="job-details">
+        <view class="detail-item">
+          <text class="detail-icon">📍</text>
+          <text class="detail-text">{{item.city}} {{item.district}}</text>
         </view>
-        <view class="info-item">
-          <text class="info-icon">📍</text>
-          <text class="info-text">{{item.location || item.city}}</text>
+        <view class="detail-item">
+          <text class="detail-icon">🕐</text>
+          <text class="detail-text">{{item.workHours}}</text>
         </view>
-        <view class="info-item">
-          <text class="info-icon">⏰</text>
-          <text class="info-text">{{item.work_hours || '灵活安排'}}</text>
+        <view class="detail-item">
+          <text class="detail-icon">📋</text>
+          <text class="detail-text">{{item.jobType}}</text>
         </view>
       </view>
 
-      <view class="job-footer">
-        <view class="job-tags">
-          <text class="tag type-tag">{{item.type || '弹性'}}</text>
-          <text class="tag city-tag" wx:if="{{item.city}}">{{item.city}}</text>
+      <!-- 标签 -->
+      <view class="job-tags">
+        <view class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">
+          <text class="tag-text">{{tag}}</text>
         </view>
-        <text class="job-time">{{item._timeText}}</text>
       </view>
     </view>
   </view>
 
-  <!-- 加载状态 -->
-  <view class="loading-wrap" wx:if="{{loading}}">
-    <view class="loading-spinner"></view>
-    <text class="loading-text">加载中...</text>
-  </view>
-
   <!-- 没有更多 -->
-  <view class="no-more" wx:if="{{!hasMore && jobs.length > 0}}">
+  <view class="no-more" wx:if="{{noMore && displayJobs.length > 0}}">
     <text class="no-more-text">— 没有更多岗位了 —</text>
   </view>
 </view>
