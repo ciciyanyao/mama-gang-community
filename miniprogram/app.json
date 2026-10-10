@@ -11,7 +11,9 @@
     "pages/my-posts/my-posts",
     "pages/my-favorites/my-favorites",
     "pages/admin/admin",
-    "pages/jobs/jobs"
+    "pages/jobs/jobs",
+    "pages/about/about",
+    "pages/settings/settings"
   ],
   "window": {
     "navigationBarTitleText": "妈妈岗社区",
