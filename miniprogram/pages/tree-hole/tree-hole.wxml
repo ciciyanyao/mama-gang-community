@@ -1,4 +1,59 @@
 <view class="container">
-  <view class="page-title">树洞</view>
-  <view class="placeholder">页面建设中：匿名倾诉（认领类 D）</view>
+  <!-- 顶部区域：图片完整展示 -->
+  <view class="header">
+    <!-- mode="widthFix" 可以让图片宽度铺满，高度自动撑开 -->
+    <image class="header-bg-img" src="/pages/tree-hole/images/header-bg.png" mode="widthFix"></image>
+    
+    <view class="header-content">
+      <view class="title">树洞</view>
+      <view class="subtitle">完全匿名 · 不会被认出</view>
+      <scroll-view class="tags-scroll" scroll-x>
+        <view class="tags-container">
+          <view wx:for="{{tags}}" wx:key="index" class="tag {{currentTag === item ? 'active' : ''}}" bindtap="switchTag" data-tag="{{item}}">
+            {{item}}
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 帖子列表 -->
+  <view class="post-list">
+    <block wx:for="{{postList}}" wx:key="_id">
+      <view class="post-card">
+        <!-- 卡片背景图：同样用 widthFix 让图片完整撑开卡片 -->
+        <image class="card-bg-img" src="{{item.bgImage}}" mode="widthFix"></image>
+        
+        <view class="deco deco-top-left">{{item.deco1}}</view>
+        <view class="deco deco-bottom-right">{{item.deco2}}</view>
+
+        <!-- 文字内容：绝对居中 -->
+        <view class="card-content">
+          <view class="post-header">
+            <view class="avatar">🫥</view>
+            <view class="user-info">
+              <view class="user-name">{{item.nickname}}</view>
+              <view class="post-time">{{item.time}}</view>
+            </view>
+            <view class="mood-tag">{{item.mood}}</view>
+          </view>
+          
+          <view class="post-content">{{item.content}}</view>
+          
+          <view class="post-footer">
+            <view class="hug-count">已有 {{item.hugCount}} 位妈妈抱过你</view>
+            <view class="hug-btn {{item.hugBtnText === '已抱抱' ? 'hugged' : ''}}" bindtap="handleHug" data-id="{{item._id}}">
+              {{item.hugBtnText}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 底部输入框（关键：加上了 maxlength="60"，防止字数太多把卡片撑变形） -->
+  <view class="footer">
+    <input class="footer-input" placeholder="说点什么，这里没人认识你…" bindinput="onInput" value="{{moodInput}}" maxlength="60" />
+    <button class="footer-btn" bindtap="postMood">投进树洞</button>
+  </view>
 </view>
