@@ -1,4 +1,38 @@
 <view class="container">
-  <view class="page-title">案例详情</view>
-  <view class="placeholder">页面建设中：案由/法院/结果/要点（认领类 E）</view>
+  <!-- 顶部导航 -->
+  <view class="nav-bar">
+    <view class="back-btn" bindtap="goBack">← 返回</view>
+    <view class="nav-title">案例详情</view>
+    <view class="placeholder"></view>
+  </view>
+
+  <!-- 详情内容 -->
+  <view class="detail-card">
+    <view class="detail-title">{{caseInfo.title}}</view>
+    
+    <view class="detail-tags">
+      <text class="tag">📍 {{caseInfo.city}}</text>
+      <text class="tag">⚖️ {{caseInfo.type}}</text>
+    </view>
+    
+    <view class="divider"></view>
+    
+    <view class="section">
+      <view class="section-title">案由概述</view>
+      <view class="section-content">{{caseInfo.summary}}</view>
+    </view>
+    
+    <view class="section">
+      <view class="section-title">法院判决结果</view>
+      <view class="section-content">{{caseInfo.outcome}}</view>
+    </view>
+    
+    <view class="section">
+      <view class="section-title">案件来源</view>
+      <view class="section-content">{{caseInfo.source}}</view>
+    </view>
+  </view>
+
+  <!-- 登录弹窗：互动需登录时就地弹出 -->
+  <login-modal id="loginModal" bind:success="onLoginSuccess" />
 </view>

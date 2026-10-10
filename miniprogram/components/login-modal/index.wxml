@@ -1,0 +1,35 @@
+<!-- components/login-modal/index.wxml —— 登录弹窗（底部滑出） -->
+<view class="login-mask" wx:if="{{visible}}" bindtap="hide">
+  <view class="login-sheet" catchtap="noop">
+    <view class="sheet-handle"></view>
+    <view class="sheet-title">登录后即可参与</view>
+    <view class="sheet-sub">设置头像和昵称，就能发帖、评论、点赞、收藏</view>
+
+    <!-- 头像：微信头像选择器 -->
+    <view class="avatar-picker-wrap">
+      <button class="avatar-picker" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+        <image wx:if="{{tempAvatar}}" class="avatar-preview" src="{{tempAvatar}}" mode="aspectFill" />
+        <text wx:else class="avatar-picker-text">选择头像</text>
+      </button>
+    </view>
+
+    <!-- 昵称：微信昵称快捷填充 -->
+    <input class="nickname-input" type="nickname" placeholder="输入昵称（必填）" value="{{tempNickname}}" bindinput="onNicknameInput" />
+
+    <!-- 性别：默认女 -->
+    <view class="gender-picker">
+      <text class="gender-label">性别</text>
+      <radio-group bindchange="onGenderChange">
+        <label class="gender-option">
+          <radio value="female" checked="{{tempGender === 'female'}}" color="#2E7D5B" />女
+        </label>
+        <label class="gender-option">
+          <radio value="male" checked="{{tempGender === 'male'}}" color="#2E7D5B" />男
+        </label>
+      </radio-group>
+    </view>
+
+    <button class="save-btn" bindtap="saveProfile" loading="{{saving}}" disabled="{{saving}}">完成登录</button>
+    <view class="sheet-tip">头像昵称将展示在你的帖子、评论上</view>
+  </view>
+</view>

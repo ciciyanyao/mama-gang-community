@@ -28,11 +28,26 @@
     "backgroundColor": "#FFFFFF",
     "borderStyle": "black",
     "list": [
-      { "pagePath": "pages/index/index", "text": "论坛" },
-      { "pagePath": "pages/message/message", "text": "消息" },
-      { "pagePath": "pages/publish/publish", "text": "发帖" },
-      { "pagePath": "pages/tree-hole/tree-hole", "text": "树洞" },
-      { "pagePath": "pages/mine/mine", "text": "我的" }
+      {
+        "pagePath": "pages/index/index",
+        "text": "论坛"
+      },
+      {
+        "pagePath": "pages/message/message",
+        "text": "消息"
+      },
+      {
+        "pagePath": "pages/publish/publish",
+        "text": "发帖"
+      },
+      {
+        "pagePath": "pages/tree-hole/tree-hole",
+        "text": "树洞"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
     ]
   },
   "sitemapLocation": "sitemap.json"

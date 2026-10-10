@@ -1,0 +1,37 @@
+<!-- components/loading/index.wxml —— DailyBean 风格：暖米背景 + 绿色 blob + 斜条纹进度条 + 双行文案 -->
+<view class="loading-page">
+
+  <!-- 绿色圆形 blob：loading 时呼吸动画；success/error 切换为状态 icon -->
+  <view class="blob-wrap">
+    <block wx:if="{{status === 'loading'}}">
+      <view class="blob blob-loading"></view>
+    </block>
+    <block wx:elif="{{status === 'success'}}">
+      <view class="blob blob-success"><view class="check-mark"></view></view>
+    </block>
+    <block wx:elif="{{status === 'error'}}">
+      <view class="blob blob-error">
+        <view class="cross-line cross-l1"></view>
+        <view class="cross-line cross-l2"></view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 主标题 -->
+  <view class="title">{{title}}</view>
+
+  <!-- 斜条纹进度条（仅 loading 态显示） -->
+  <view class="stripe-bar" wx:if="{{status === 'loading'}}">
+    <view class="stripe-fill" style="width: {{progressPct}}%">
+      <view class="stripe-pattern"></view>
+    </view>
+  </view>
+
+  <!-- 副标题 / 百分比 / 重试 -->
+  <view class="subtitle-row">
+    <text class="subtitle">{{subtitle}}</text>
+    <text class="pct" wx:if="{{status === 'loading'}}">{{progressPct}}%</text>
+  </view>
+  <view class="retry-btn" wx:if="{{status === 'error'}}" bindtap="onRetry">重试</view>
+
+</view>

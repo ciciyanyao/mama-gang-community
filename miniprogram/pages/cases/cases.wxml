@@ -1,4 +1,30 @@
 <view class="container">
-  <view class="page-title">案例库</view>
-  <view class="placeholder">页面建设中：案例列表/搜索（认领类 E）</view>
+  <!-- 顶部搜索 -->
+  <view class="search-box">
+    <iconify-icon icon="mdi:magnify" width="20" color="#999"></iconify-icon>
+    <input class="search-input" placeholder="搜索案由、城市或关键词..." bindinput="onSearchInput" value="{{keyword}}" />
+  </view>
+
+  <!-- 筛选标签 -->
+  <scroll-view class="tags-scroll" scroll-x>
+    <view class="tags-container">
+      <view wx:for="{{types}}" wx:key="index" class="tag {{currentType === item ? 'active' : ''}}" bindtap="switchType" data-type="{{item}}">
+        {{item}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 案例列表 -->
+  <view class="case-list">
+    <block wx:for="{{caseList}}" wx:key="_id">
+      <view class="case-card" bindtap="goToDetail" data-id="{{item._id}}">
+        <view class="case-title">{{item.title}}</view>
+        <view class="case-info">
+          <text class="case-city">{{item.city}}</text>
+          <text class="case-type">{{item.type}}</text>
+        </view>
+        <view class="case-summary">{{item.summary}}</view>
+      </view>
+    </block>
+  </view>
 </view>

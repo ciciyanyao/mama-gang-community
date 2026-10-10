@@ -1,4 +1,8 @@
+<!-- pages/publish/publish.wxml —— 发帖页（tab 2，中间"+"） -->
 <view class="container">
   <view class="page-title">发帖</view>
   <view class="placeholder">页面建设中：中间+发布：选板块/图文/匿名（认领类 C）</view>
+
+  <!-- 登录弹窗：未登录进发帖页就就地弹出 -->
+  <login-modal id="loginModal" bind:success="onLoginSuccess" />
 </view>

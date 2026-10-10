@@ -1,7 +1,7 @@
 <!-- custom-tab-bar/index.wxml —— 自定义底部导航 -->
 <view class="tab-bar">
   <view
-    class="tab-bar-item {{item.isAdd ? 'tab-bar-add' : ''}}"
+    class="tab-bar-item {{item.isAdd ? 'tab-bar-add' : ''}} {{selected === index ? 'active-tab' : ''}}"
     wx:for="{{list}}"
     wx:key="pagePath"
     bindtap="switchTab"

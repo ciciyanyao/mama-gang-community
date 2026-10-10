@@ -1,8 +1,31 @@
-/* app.wxss —— 全局样式 */
+/* app.wxss —— 全局样式 + 设计 Token（A4 全局规范） */
+/* =========================================================
+   主题色规范（CSS 变量，全站 var(--xxx) 引用，改一处全局生效）
+   主色 #2E7D5B（妈妈岗绿，温润不刺眼）：CTA 按钮 / 选中态 / 链接
+   主色浅 #2E7D5B→#3A9D75：渐变 / hover
+   辅助暖米 #F7F3EA：页面背景，营造温和氛围
+   文字 #1F2933 主 / #3E4C59 次 / #7A7A7A 辅 / #9AA5B1 弱
+   警示 #E54848：退出 / 删除 / 红角标
+   ========================================================= */
 page {
-  background-color: #F7F3EA;
+  --color-primary: #2E7D5B;
+  --color-primary-hover: #3A9D75;
+  --color-bg: #F7F3EA;
+  --color-card: #FFFFFF;
+  --color-text-strong: #1F2933;
+  --color-text: #3E4C59;
+  --color-text-muted: #7A7A7A;
+  --color-text-weak: #9AA5B1;
+  --color-divider: #F2F4F3;
+  --color-danger: #E54848;
+  --radius-card: 24rpx;
+  --radius-btn: 16rpx;
+  --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+
+  background-color: var(--color-bg);
   font-size: 28rpx;
-  color: #333333;
+  color: var(--color-text);
 }
 
 .container {
@@ -13,13 +36,14 @@ page {
   font-size: 40rpx;
   font-weight: bold;
   margin: 24rpx 0;
+  color: var(--color-text-strong);
 }
 
 .placeholder {
   margin-top: 48rpx;
   padding: 48rpx 24rpx;
-  background: #FFFFFF;
-  border-radius: 16rpx;
+  background: var(--color-card);
+  border-radius: var(--radius-card);
   text-align: center;
-  color: #999999;
+  color: var(--color-text-muted);
 }
