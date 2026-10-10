@@ -171,27 +171,6 @@
   box-shadow: 0 4rpx 12rpx rgba(46, 125, 91, 0.25);
 }
 
-/* 推荐话题 chip 云（板块区域下方，无分隔线） */
-.topic-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16rpx;
-  margin-top: 28rpx;
-}
-.topic-cloud-label {
-  font-size: 26rpx;
-  color: #9AA5B1;
-  margin-right: 4rpx;
-}
-.topic-chip {
-  padding: 8rpx 20rpx;
-  font-size: 26rpx;
-  color: #2E7D5B;
-  background: #F2F6F4;
-  border-radius: 28rpx;
-}
-
 /* ========== 匿名开关 行 ========== */
 .form-row {
   display: flex;

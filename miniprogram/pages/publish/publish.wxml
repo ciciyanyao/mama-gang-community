@@ -53,13 +53,13 @@
       />
     </view>
 
-    <!-- 正文输入（editor 富文本组件：#标签 自动蓝色高亮） -->
+    <!-- 正文输入（editor 富文本组件） -->
     <view class="form-section">
       <editor
         id="contentEditor"
         type="text"
         class="content-input"
-        placeholder="分享你的经历、观点或求助…输入 # 即可生成标签"
+        placeholder="分享你的经历、观点或求助…"
         placeholder-class="ph"
         bindinput="onEditorInput"
         bindready="onEditorReady"
@@ -78,20 +78,6 @@
           bindtap="onToggleCategory"
         >
           {{item.label}}
-        </view>
-      </view>
-
-      <!-- 推荐话题 chip 云：点击即在正文末尾插入 #标签 -->
-      <view class="topic-cloud" wx:if="{{topicChips.length > 0}}">
-        <text class="topic-cloud-label">话题</text>
-        <view
-          class="topic-chip"
-          wx:for="{{topicChips}}"
-          wx:key="*this"
-          data-tag="{{item}}"
-          bindtap="onTapTopicChip"
-        >
-          #{{item}}
         </view>
       </view>
     </view>

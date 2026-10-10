@@ -1,17 +1,7 @@
 // pages/publish/publish.js —— 发帖页（类 C：发帖与内容安全）
-// 正文使用 <editor> 富文本组件，#标签 自动蓝色高亮
-// 策略：onEditorInput 中用 format/removeFormat 增量控制光标处输入格式，不调用 setContents
-//   - 光标在 #标签 内 → format({color: blue})，后续输入蓝色
-//   - 光标在标签外   → removeFormat()，后续输入普通色
-// 这样既不会出现"空格后文字继承蓝色"，也不会因 setContents 导致光标跳动
-// setContents 仅用于草稿恢复（onEditorReady / onContinueDraft），此时光标位置不重要
-// 守卫 _settingContents 防止 setContents 触发的 bindinput 被重复处理
 const auth = require('../../utils/auth.js')
 const draftUtil = require('../../utils/draft.js')
-const { CATEGORIES, TAG_RULES, MAX_MEDIA_COUNT } = require('../../config/index.js')
-
-// #标签 蓝色（小红书风格蓝色调）
-const TAG_COLOR = '#3B7DC4'
+const { CATEGORIES, MAX_MEDIA_COUNT } = require('../../config/index.js')
 
 Page({
   data: {
@@ -34,9 +24,6 @@ Page({
     // 板块列表
     categoryList: CATEGORIES.map(c => ({ value: c.value, label: c.label, selected: false })),
 
-    // 推荐话题 chip
-    topicChips: [],
-
     // UI 状态
     publishing: false,
     showDraftDialog: false
@@ -52,8 +39,6 @@ Page({
     if (draftUtil.hasDraft()) {
       this.setData({ showDraftDialog: true })
     }
-    this.updateTopicChips()
-    this.fetchPopularTags()
   },
 
   // editor 组件准备好 → 创建 ctx，如有草稿则 setContents
@@ -63,12 +48,11 @@ Page({
       const ctx = res.context
       this.editorCtx = ctx
 
-      // 如有草稿，加载富文本（带蓝色标签）
+      // 如有草稿，加载纯文本内容
       const draft = draftUtil.getDraft()
       if (draft && draft.content) {
         this._settingContents = true
-        const delta = this.buildColoredDelta(draft.content)
-        ctx.setContents({ delta })
+        ctx.setContents({ delta: { ops: [{ insert: draft.content }, { insert: '\n' }] } })
         this.setData({ content: draft.content })
         // 下一帧解除守卫
         setTimeout(() => { this._settingContents = false }, 0)
@@ -99,13 +83,11 @@ Page({
           return
         }
         this._settingContents = true
-        const delta = this.buildColoredDelta(draft.content || '')
-        this.editorCtx.setContents({ delta })
+        this.editorCtx.setContents({ delta: { ops: [{ insert: draft.content || '' }, { insert: '\n' }] } })
         this.setData({ content: draft.content || '' })
         setTimeout(() => { this._settingContents = false }, 0)
       }
       applyContent()
-      this.updateTopicChips()
       wx.showToast({ title: '已恢复草稿', icon: 'none' })
     }
     this.setData({ showDraftDialog: false })
@@ -128,7 +110,6 @@ Page({
       this.setData({ content: '' })
       setTimeout(() => { this._settingContents = false }, 0)
     }
-    this.updateTopicChips()
     wx.showToast({ title: '已创建新帖', icon: 'none' })
   },
 
@@ -148,157 +129,18 @@ Page({
   // ========== input 事件 ==========
   onTitleInput(e) {
     this.setData({ title: e.detail.value })
-    this.updateTopicChips()
   },
 
-  // editor 的 bindinput：处理富文本变化
-  // 策略：用 format/removeFormat 增量控制光标处的输入格式，不调用 setContents
-  //   - 光标在 #标签 内 → format({color: blue})，后续输入蓝色
-  //   - 光标在标签外   → removeFormat()，后续输入普通色
-  // 这样既不会出现"空格后文字继承蓝色"，也不会因 setContents 导致光标跳动
+  // editor 的 bindinput：同步正文纯文本
   onEditorInput(e) {
     // 守卫：草稿恢复/discard 时的 setContents 不处理
     if (this._settingContents) return
 
     const plain = e.detail.text || ''
-    const prevContent = this.data.content || ''
-
-    // 同步 content 纯文本
     this.setData({
       content: plain,
       editorHeight: e.detail.height || 240
     })
-
-    // 计算光标位置 + 判断是否在标签内
-    const cursorPos = this._getCursorPosition(prevContent, plain)
-    const inTag = this._isPositionInTag(plain, cursorPos)
-
-    // 增量设置格式（不重建内容，光标不跳）
-    if (inTag) {
-      this.editorCtx.format({ name: 'color', value: TAG_COLOR })
-    } else {
-      this.editorCtx.removeFormat()
-    }
-
-    this.updateTopicChips()
-  },
-
-  // 基于 prevContent 与 plain 的差异，推算光标位置
-  _getCursorPosition(prev, next) {
-    let i = 0
-    while (i < prev.length && i < next.length && prev[i] === next[i]) i++
-    if (next.length > prev.length) {
-      // 插入：光标在新插入字符之后
-      return i + (next.length - prev.length)
-    }
-    // 删除或相同：光标在差异位置
-    return i
-  },
-
-  // 判断指定光标位置是否处于 #标签 内部
-  // 规则：从光标位置往前找最近的 #，若 # 到光标之间无空格/#/换行，则在标签内
-  _isPositionInTag(text, pos) {
-    const before = text.slice(0, pos)
-    const hashIdx = before.lastIndexOf('#')
-    if (hashIdx === -1) return false
-    const segment = before.slice(hashIdx + 1)
-    return !/[\s#]/.test(segment)
-  },
-
-  // 从纯文本中提取 #标签 集合（用于推荐去重，不参与上色判断）
-  _tagSet(text) {
-    const s = new Set()
-    const regex = /#([^\s#]+)/g
-    let m
-    while ((m = regex.exec(text)) !== null) {
-      if (m[1]) s.add(m[1])
-    }
-    return s
-  },
-
-  // ========== 核心：构建带 #标签 蓝色的 delta ==========
-  // 输入纯文本，返回 Quill delta：普通段无色，#标签 段加 color
-  buildColoredDelta(text) {
-    const ops = []
-    const regex = /#([^\s#]+)/g
-    let lastIdx = 0
-    let m
-    while ((m = regex.exec(text)) !== null) {
-      // # 之前的普通文本
-      if (m.index > lastIdx) {
-        ops.push({ insert: text.slice(lastIdx, m.index) })
-      }
-      // 整个 #标签 作为一段（包含 #号）
-      const tagText = m[0]
-      ops.push({
-        insert: tagText,
-        attributes: { color: TAG_COLOR }
-      })
-      lastIdx = m.index + tagText.length
-    }
-    // 尾部普通文本
-    if (lastIdx < text.length) {
-      ops.push({ insert: text.slice(lastIdx) })
-    }
-    // 空内容也要有一个换行（editor 组件要求）
-    if (ops.length === 0) {
-      ops.push({ insert: '\n' })
-    }
-    return { ops }
-  },
-
-  // ========== 推荐话题 chip ==========
-  updateTopicChips(popularTags) {
-    const text = `${this.data.title} ${this.data.content}`
-    const contentTags = this._tagSet(this.data.content)
-    const chips = []
-
-    for (const rule of TAG_RULES) {
-      if (contentTags.has(rule.tag)) continue
-      if (rule.keywords.some(kw => text.includes(kw))) {
-        chips.push(rule.tag)
-      }
-    }
-
-    if (popularTags && popularTags.length > 0) {
-      const localSet = new Set(chips)
-      for (const t of popularTags) {
-        if (contentTags.has(t) || localSet.has(t)) continue
-        chips.push(t)
-      }
-    }
-
-    this.setData({ topicChips: chips.slice(0, 8) })
-  },
-
-  async fetchPopularTags() {
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'post',
-        data: { action: 'getPopularTags', limit: 20 }
-      })
-      const tags = (res.result && res.result.data) || []
-      this.updateTopicChips(tags)
-    } catch (e) {
-      this.updateTopicChips()
-    }
-  },
-
-  // 点击话题 chip → 在光标位置插入蓝色 #标签 + 无色空格
-  onTapTopicChip(e) {
-    const tag = e.currentTarget.dataset.tag
-    if (!tag || !this.editorCtx) return
-    if (this._tagSet(this.data.content).has(tag)) {
-      wx.showToast({ title: `已添加 #${tag}`, icon: 'none' })
-      return
-    }
-    // 插入蓝色的 #标签（attributes 只作用于插入文本，不影响光标后续格式）
-    this.editorCtx.insertText({
-      text: `#${tag}`,
-      attributes: { color: TAG_COLOR }
-    })
-    // 再插入一个无色空格，分隔标签与后续内容
-    this.editorCtx.insertText({ text: ' ' })
   },
 
   // ========== 板块选择 ==========
@@ -401,7 +243,7 @@ Page({
         data: {
           action: 'create',
           title: title.trim(),
-          content: content.trim(),  // 纯文本（#标签文本内嵌）
+          content: content.trim(),
           images: uploadedImages,
           category: selectedCategories[0],
           categories: selectedCategories,
@@ -435,7 +277,7 @@ Page({
     const { title, content, selectedCategories, isAnonymous, images } = this.data
     draftUtil.saveDraft({
       title,
-      content,        // editor 的纯文本（已包含 #标签）
+      content,        // editor 的纯文本
       selectedCategories,
       is_anonymous: isAnonymous,
       images: images.map(m => m.path)
