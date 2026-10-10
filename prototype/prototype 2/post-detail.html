@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html class="w-full h-full overflow-hidden" lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>妈妈社区 · 帖子详情</title>
+<script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
+<script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+<style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="w-full h-full m-0 overflow-hidden flex items-center justify-center bg-teal-50">
+<div class="w-full h-full max-w-[393px] max-h-[852px] bg-teal-50 flex flex-col overflow-hidden relative">
+<!-- 顶部导航 -->
+<header class="shrink-0 flex items-center gap-3 border-b border-slate-100 bg-white px-4 py-3">
+<a aria-label="返回论坛" class="flex h-8 w-8 items-center justify-center rounded-full text-slate-600 transition hover:bg-teal-50" href="home.html">
+<iconify-icon icon="mdi:chevron-left" width="24"></iconify-icon>
+</a>
+<span class="flex-1 text-center text-sm font-semibold text-slate-900">帖子详情</span>
+<button aria-label="分享" class="flex h-8 w-8 items-center justify-center rounded-full text-slate-600 transition hover:bg-teal-50" onclick="showToast('链接已复制，快去分享给姐妹吧')">
+<iconify-icon icon="mdi:share-variant-outline" width="20"></iconify-icon>
+</button>
+</header>
+<!-- 主滚动区 -->
+<main class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden bg-white pb-4">
+<!-- 作者 -->
+<div class="flex items-center gap-3 px-4 pt-4">
+<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-600 to-teal-400 text-xl">👩</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-2">
+<span class="text-sm font-semibold text-slate-900">宝妈小丽</span>
+<span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-600">LV3 · 活跃妈妈</span>
+</div>
+<div class="mt-0.5 text-[11px] text-slate-400">10分钟前 · 来自 求职 板块</div>
+</div>
+<button class="shrink-0 rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white transition" onclick="toggleFollow(this)">关注</button>
+</div>
+<!-- 正文 -->
+<article class="px-4 pt-3">
+<h1 class="text-[17px] font-bold leading-snug text-slate-900">求一份在家做的手工活，晚上带娃之余能挣点是点</h1>
+<div class="mt-3 space-y-3 text-sm leading-relaxed text-slate-700">
+<p>家里两个孩子，老大上一年级，老二刚满一岁。白天基本都在带娃和做饭，只有晚上九点之后有点自己的时间。</p>
+<p>想找那种可以拿回家做的活，串珠、剪线头、做手工花都行，按件计酬最好，我自己手脚还算麻利。之前刷到过要交押金才能拿货的，那种我不敢碰。</p>
+<p class="font-medium text-slate-900">求姐妹们推荐靠谱渠道，也求避坑提醒，谢谢大家 🙏</p>
+</div>
+<div class="mt-3 grid grid-cols-2 gap-2">
+<div class="aspect-square overflow-hidden rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100">
+<img alt="Handmade craft materials laid out on a table" class="h-full w-full object-cover" src="https://modao.cc/agent-py/media/generated_images/2026-10-04/715953eb827f4cc68aa3bf7cd58a1480.jpg"/>
+</div>
+<div class="aspect-square overflow-hidden rounded-xl bg-gradient-to-br from-amber-100 to-emerald-100">
+<img alt="Finished handmade woven baskets in a row" class="h-full w-full object-cover" src="https://modao.cc/agent-py/media/generated_images/2026-10-04/33f08f4f84554f3e9aea644938c799b9.jpg"/>
+</div>
+</div>
+<div class="mt-3 flex flex-wrap gap-2">
+<span class="rounded-full bg-teal-50 px-3 py-1 text-[11px] text-slate-500">#宝妈兼职</span>
+<span class="rounded-full bg-teal-50 px-3 py-1 text-[11px] text-slate-500">#居家手工活</span>
+<span class="rounded-full bg-teal-50 px-3 py-1 text-[11px] text-slate-500">#求职避坑</span>
+</div>
+<div class="mt-4 flex items-center justify-between border-y border-slate-50 py-3 text-xs">
+<button class="flex items-center gap-1.5 text-slate-500 transition" onclick="toggleReact(this, 'text-emerald-600')">
+<iconify-icon icon="mdi:thumb-up-outline" width="18"></iconify-icon><span>5</span>
+</button>
+<button class="flex items-center gap-1.5 text-slate-500 transition hover:text-emerald-600" onclick="scrollToComment()">
+<iconify-icon icon="mdi:comment-outline" width="18"></iconify-icon><span>3</span>
+</button>
+<button class="flex items-center gap-1.5 text-slate-500 transition" onclick="toggleReact(this, 'text-teal-500')">
+<iconify-icon icon="mdi:star-outline" width="18"></iconify-icon><span>收藏</span>
+</button>
+<span class="flex items-center gap-1.5 text-slate-400">
+<iconify-icon icon="mdi:eye-outline" width="18"></iconify-icon>428 阅读
+          </span>
+</div>
+</article>
+<!-- 评论区 -->
+<section class="px-4 pt-4" id="commentSection">
+<h2 class="mb-3 text-sm font-bold text-slate-900">全部评论 <span class="text-slate-400">(3)</span></h2>
+<ul class="space-y-4">
+<li class="flex gap-3">
+<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-300 text-base">🍋</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-2">
+<span class="text-[13px] font-semibold text-slate-800">柠檬妈妈</span>
+<span class="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-medium text-emerald-600">楼主关注的人</span>
+</div>
+<p class="mt-1 text-[13px] leading-relaxed text-slate-600">我之前做过串珠，是在小区宝妈群里接的，不交押金，做多少结多少。你要是有需要我拉你进群～</p>
+<div class="mt-1.5 flex items-center gap-4 text-[11px] text-slate-400">
+<span>8分钟前</span>
+<button class="flex items-center gap-1 transition" onclick="toggleReact(this, 'text-emerald-600')">
+<iconify-icon icon="mdi:thumb-up-outline" width="13"></iconify-icon><span>4</span>
+</button>
+<button class="transition hover:text-emerald-600">回复</button>
+</div>
+</div>
+</li>
+<li class="flex gap-3">
+<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-400 to-slate-300 text-base">🫥</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-2">
+<span class="text-[13px] font-semibold text-slate-800">匿名用户</span>
+</div>
+<p class="mt-1 text-[13px] leading-relaxed text-slate-600">提醒一下：要先交押金、要买材料包的一律不要做，我去年被骗了 600。正规的都不会让你先掏钱。</p>
+<div class="mt-1.5 flex items-center gap-4 text-[11px] text-slate-400">
+<span>5分钟前</span>
+<button class="flex items-center gap-1 transition" onclick="toggleReact(this, 'text-emerald-600')">
+<iconify-icon icon="mdi:thumb-up-outline" width="13"></iconify-icon><span>11</span>
+</button>
+<button class="transition hover:text-emerald-600">回复</button>
+</div>
+</div>
+</li>
+<li class="flex gap-3">
+<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-emerald-400 text-base">🌷</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-2">
+<span class="text-[13px] font-semibold text-slate-800">圆圆妈</span>
+</div>
+<p class="mt-1 text-[13px] leading-relaxed text-slate-600">也可以看看社区团购的分拣兼职，一般晚上 7 点到 9 点，就在小区附近，不用押金。</p>
+<div class="mt-1.5 flex items-center gap-4 text-[11px] text-slate-400">
+<span>2分钟前</span>
+<button class="flex items-center gap-1 transition" onclick="toggleReact(this, 'text-emerald-600')">
+<iconify-icon icon="mdi:thumb-up-outline" width="13"></iconify-icon><span>2</span>
+</button>
+<button class="transition hover:text-emerald-600">回复</button>
+</div>
+</div>
+</li>
+</ul>
+<a class="mt-6 flex items-center justify-center gap-1 py-3 text-xs font-medium text-emerald-600" href="home.html">
+          返回论坛看更多帖子
+          <iconify-icon icon="mdi:chevron-right" width="16"></iconify-icon>
+</a>
+</section>
+</main>
+<!-- 底部评论输入 -->
+<div class="shrink-0 flex items-center gap-2 border-t border-slate-100 bg-white px-3 py-2.5">
+<input class="min-w-0 flex-1 rounded-full bg-teal-50 px-4 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-200" id="commentInput" placeholder="说点什么，给姐妹一点鼓励..." type="text"/>
+<button class="shrink-0 flex items-center gap-1 rounded-full bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white" onclick="sendComment()">
+<iconify-icon icon="mdi:send" width="15"></iconify-icon>发送
+      </button>
+</div>
+<div class="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 rounded-xl bg-slate-900/85 px-4 py-2.5 text-xs text-white" id="toast"></div>
+</div>
+<script>
+    function toggleFollow(btn) {
+      var followed = btn.textContent.trim() === '已关注';
+      if (followed) {
+        btn.textContent = '关注';
+        btn.className = 'shrink-0 rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white transition';
+      } else {
+        btn.textContent = '已关注';
+        btn.className = 'shrink-0 rounded-full bg-teal-50 px-4 py-1.5 text-xs font-semibold text-slate-500 transition';
+      }
+    }
+
+    function toggleReact(btn, activeColor) {
+      var on = btn.classList.contains(activeColor);
+      btn.classList.toggle(activeColor);
+      var countEl = btn.querySelector('span');
+      if (countEl && /^\d+$/.test(countEl.textContent.trim())) {
+        var n = parseInt(countEl.textContent, 10);
+        countEl.textContent = on ? (n - 1) : (n + 1);
+      }
+      var icon = btn.querySelector('iconify-icon');
+      if (icon) {
+        var name = icon.getAttribute('icon');
+        if (!on) {
+          icon.setAttribute('icon', name.replace('-outline', ''));
+        } else {
+          if (name === 'mdi:thumb-up') { icon.setAttribute('icon', 'mdi:thumb-up-outline'); }
+          if (name === 'mdi:star') { icon.setAttribute('icon', 'mdi:star-outline'); }
+        }
+      }
+    }
+
+    function scrollToComment() {
+      var el = document.getElementById('commentSection');
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    }
+
+    function showToast(msg) {
+      var t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('hidden');
+      setTimeout(function () { t.classList.add('hidden'); }, 1600);
+    }
+
+    function sendComment() {
+      var input = document.getElementById('commentInput');
+      var val = input.value.trim();
+      if (!val) { showToast('先写点内容再发送哦'); return; }
+      showToast('评论已发布，感谢你的分享');
+      input.value = '';
+    }
+  </script>
+</body>
+</html>
