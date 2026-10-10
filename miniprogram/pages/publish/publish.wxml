@@ -95,6 +95,19 @@
       />
     </view>
 
+    <!-- 同时投进树洞开关 -->
+    <view class="form-row">
+      <view class="row-left">
+        <text class="row-label">同时投进树洞</text>
+        <text class="row-desc">发布后正文将以纯文本同步至树洞</text>
+      </view>
+      <switch
+        checked="{{alsoToTreehole}}"
+        color="#2E7D5B"
+        bindchange="onTreeholeToggle"
+      />
+    </view>
+
     <!-- 底部占位，避免内容被底部发布栏遮挡 -->
     <view style="height: 120rpx;"></view>
   </scroll-view>

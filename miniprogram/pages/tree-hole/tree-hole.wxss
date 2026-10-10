@@ -39,17 +39,8 @@ page {
 }
 .subtitle { font-size: 24rpx; color: #7A6A5A; margin-top: 6rpx; letter-spacing: 2rpx; }
 
-.tags-scroll { white-space: nowrap; margin-top: 30rpx; width: 100%; text-align: center; }
-.tags-container { display: inline-flex; gap: 20rpx; }
-.tag {
-  background-color: rgba(255, 255, 255, 0.8); color: #6B5B4D;
-  padding: 12rpx 32rpx; border-radius: 30rpx; font-size: 26rpx;
-  border: 2rpx solid #D3C7B8;
-}
-.tag.active { background-color: #059669; color: #FFFFFF; font-weight: bold; border: 2rpx solid #047857; }
-
 /* ========== 帖子列表及卡片 ========== */
-.post-list { padding: 20rpx 30rpx; padding-bottom: 150rpx; }
+.post-list { padding: 20rpx 30rpx; padding-bottom: calc(280rpx + env(safe-area-inset-bottom)); }
 
 /* 卡片容器：靠图片撑开高度，不再设置 min-height */
 .post-card {
@@ -118,20 +109,40 @@ page {
 .hug-btn:active { box-shadow: 1rpx 1rpx 0 #A7F3D0; transform: translate(2rpx, 2rpx); }
 .hug-btn.hugged { background-color: #059669; color: #FFFFFF; border-color: #047857; }
 
-/* 底部输入框 */
+/* 底部输入框：固定于自定义 tabBar 上方，高度随内容自适应（最大页面 1/4） */
 .footer {
-  position: fixed; bottom: 0; left: 0; right: 0; background: #FFFFFF; padding: 20rpx 30rpx;
-  border-top: 4rpx solid #A7F3D0; display: flex; align-items: center;
-  padding-bottom: calc(20rpx + env(safe-area-inset-bottom)); z-index: 10;
+  position: fixed;
+  bottom: calc(100rpx + env(safe-area-inset-bottom)); /* 100rpx = custom-tab-bar 高度 */
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  padding: 20rpx 30rpx;
+  border-top: 4rpx solid #A7F3D0;
+  display: flex;
+  align-items: flex-end; /* textarea 变高时按钮贴底对齐 */
+  z-index: 10;
 }
 .footer-input {
-  flex: 1; background-color: #F8F7F4; border-radius: 36rpx; border: 4rpx solid #D1FAE5;
-  padding: 20rpx 30rpx; font-size: 28rpx; margin-right: 20rpx; color: #064E3B;
+  flex: 1;
+  min-height: 76rpx;
+  background-color: #E9F7F0; /* 浅青色（参考图风格） */
+  border-radius: 24rpx;
+  border: 4rpx solid #D1FAE5;
+  padding: 18rpx 30rpx;
+  font-size: 28rpx;
+  margin-right: 20rpx;
+  color: #064E3B;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+.footer-placeholder {
+  color: #9AA5B1;
 }
 .footer-btn {
   background-color: #059669; color: #FFFFFF; font-size: 28rpx; padding: 0 40rpx;
-  height: 72rpx; line-height: 72rpx; border-radius: 36rpx; margin: 0;
+  height: 76rpx; line-height: 76rpx; border-radius: 36rpx; margin: 0;
   border: 4rpx solid #047857; box-shadow: 4rpx 4rpx 0 #047857; font-weight: bold;
+  flex-shrink: 0;
 }
 .footer-btn:active { box-shadow: 1rpx 1rpx 0 #047857; transform: translate(3rpx, 3rpx); }
 .footer-btn::after { border: none; }

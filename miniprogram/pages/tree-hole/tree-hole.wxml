@@ -7,13 +7,6 @@
     <view class="header-content">
       <view class="title">树洞</view>
       <view class="subtitle">完全匿名 · 不会被认出</view>
-      <scroll-view class="tags-scroll" scroll-x>
-        <view class="tags-container">
-          <view wx:for="{{tags}}" wx:key="index" class="tag {{currentTag === item ? 'active' : ''}}" bindtap="switchTag" data-tag="{{item}}">
-            {{item}}
-          </view>
-        </view>
-      </scroll-view>
     </view>
   </view>
 
@@ -35,7 +28,7 @@
               <view class="user-name">{{item.nickname}}</view>
               <view class="post-time">{{item.time}}</view>
             </view>
-            <view class="mood-tag">{{item.mood}}</view>
+            <view class="mood-tag" wx:if="{{item.mood}}">{{item.mood}}</view>
           </view>
           
           <view class="post-content">{{item.content}}</view>
@@ -51,9 +44,18 @@
     </block>
   </view>
 
-  <!-- 底部输入框（关键：加上了 maxlength="60"，防止字数太多把卡片撑变形） -->
+  <!-- 底部输入框（固定于自定义 tabBar 上方，高度随内容自适应，最大不超过页面 1/4） -->
   <view class="footer">
-    <input class="footer-input" placeholder="说点什么，这里没人认识你…" bindinput="onInput" value="{{moodInput}}" maxlength="60" />
+    <textarea
+      class="footer-input"
+      placeholder="说点什么，这里没人认识你…"
+      placeholder-class="footer-placeholder"
+      value="{{moodInput}}"
+      bindinput="onInput"
+      auto-height
+      max-height="{{inputMaxHeight}}px"
+      cursor-spacing="16"
+    />
     <button class="footer-btn" bindtap="postMood">投进树洞</button>
   </view>
 </view>

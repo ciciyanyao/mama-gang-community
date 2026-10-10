@@ -16,6 +16,7 @@ Page({
     content: '',           // 正文纯文本（从 editor 实时同步）
     selectedCategories: [],
     isAnonymous: false,
+    alsoToTreehole: false, // 同时投进树洞（仅正文纯文本）
     images: [],
 
     // editor 高度（动态自适应）
@@ -163,6 +164,11 @@ Page({
     this.setData({ isAnonymous: e.detail.value })
   },
 
+  // ========== 同时投进树洞开关 ==========
+  onTreeholeToggle(e) {
+    this.setData({ alsoToTreehole: e.detail.value })
+  },
+
   // ========== 媒体上传 ==========
   onChooseMedia() {
     const remain = MAX_MEDIA_COUNT - this.data.images.length
@@ -215,10 +221,29 @@ Page({
       return
     }
 
-    const { title, content, selectedCategories, images } = this.data
+    const { title, content, selectedCategories, images, alsoToTreehole } = this.data
     if (!title.trim()) { wx.showToast({ title: '请输入标题', icon: 'none' }); return }
     if (!content.trim()) { wx.showToast({ title: '请输入正文', icon: 'none' }); return }
     if (selectedCategories.length === 0) { wx.showToast({ title: '请至少选择一个板块', icon: 'none' }); return }
+
+    // 二次确认：同时投进树洞（仅纯文本、公开、不可修改）
+    let syncTreehole = alsoToTreehole
+    if (syncTreehole) {
+      const confirmed = await new Promise(resolve => {
+        wx.showModal({
+          title: '同时投进树洞',
+          content: '仅正文纯文本会同步至树洞，图片和附件不会带入。树洞内容对所有用户公开，发布后不可修改。',
+          confirmText: '同时投树洞',
+          cancelText: '只发主帖',
+          success: r => resolve(r.confirm)
+        })
+      })
+      if (!confirmed) {
+        // 选择只发主帖：关闭开关，避免每次发布都重复弹窗
+        this.setData({ alsoToTreehole: false })
+        syncTreehole = false
+      }
+    }
 
     this.setData({ publishing: true })
     wx.showLoading({ title: '发布中...', mask: true })
@@ -253,6 +278,25 @@ Page({
 
       const result = res.result
       if (result.code === 0) {
+        // 主帖发布成功 → 同步树洞（仅正文纯文本，无身份关联）
+        if (syncTreehole) {
+          try {
+            await wx.cloud.callFunction({
+              name: 'treehole',
+              data: { action: 'post', content: content.trim() }
+            })
+          } catch (e) {
+            console.error('同步树洞失败：', e)
+            wx.hideLoading()
+            wx.showModal({
+              title: '主帖已发布',
+              content: '主帖发布成功，但树洞同步失败，可稍后在树洞页重新投递。',
+              showCancel: false
+            })
+            this.setData({ publishing: false })
+            return
+          }
+        }
         draftUtil.clearDraft()
         wx.hideLoading()
         wx.showToast({ title: '发布成功', icon: 'success' })
