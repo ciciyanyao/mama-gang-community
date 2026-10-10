@@ -53,49 +53,17 @@
       />
     </view>
 
-    <!-- 正文输入 -->
+    <!-- 正文输入（editor 富文本组件：#标签 自动蓝色高亮） -->
     <view class="form-section">
-      <textarea
+      <editor
+        id="contentEditor"
+        type="text"
         class="content-input"
-        placeholder="分享你的经历、观点或求助…"
+        placeholder="分享你的经历、观点或求助…输入 # 即可生成标签"
         placeholder-class="ph"
-        maxlength="2000"
-        value="{{content}}"
-        bindinput="onContentInput"
-        auto-height
-      />
-    </view>
-
-    <!-- 标签区（已选 + 推荐 + 自定义输入） -->
-    <view class="tags-section">
-      <!-- 已选标签 -->
-      <view class="tags-row" wx:if="{{tags.length > 0}}">
-        <view
-          class="tag-item tag-selected"
-          wx:for="{{tags}}"
-          wx:key="*this"
-          data-tag="{{item}}"
-          bindtap="onRemoveTag"
-        >
-          #{{item}} <text class="tag-remove">×</text>
-        </view>
-      </view>
-      <!-- 推荐标签 -->
-      <view class="tags-row" wx:if="{{recommendTags.length > 0}}">
-        <text class="tags-label">推荐：</text>
-        <view
-          class="tag-item tag-recommend"
-          wx:for="{{recommendTags}}"
-          wx:key="*this"
-          data-tag="{{item}}"
-          bindtap="onTapRecommendTag"
-        >
-          #{{item}}
-        </view>
-      </view>
-      <view class="tags-hint" wx:if="{{tags.length === 0 && recommendTags.length === 0}}">
-        在正文中输入 # 即可自动生成标签，如 #生活的小碎片
-      </view>
+        bindinput="onEditorInput"
+        bindready="onEditorReady"
+      ></editor>
     </view>
 
     <!-- 板块选择（平铺多选） -->
@@ -110,6 +78,20 @@
           bindtap="onToggleCategory"
         >
           {{item.label}}
+        </view>
+      </view>
+
+      <!-- 推荐话题 chip 云：点击即在正文末尾插入 #标签 -->
+      <view class="topic-cloud" wx:if="{{topicChips.length > 0}}">
+        <text class="topic-cloud-label">话题</text>
+        <view
+          class="topic-chip"
+          wx:for="{{topicChips}}"
+          wx:key="*this"
+          data-tag="{{item}}"
+          bindtap="onTapTopicChip"
+        >
+          #{{item}}
         </view>
       </view>
     </view>
@@ -144,5 +126,22 @@
 
   <!-- 登录弹窗：未登录进发帖页就地弹出 -->
   <login-modal id="loginModal" bind:success="onLoginSuccess" />
+
+  <!-- 草稿确认弹窗：检测到未提交草稿时弹出 -->
+  <view class="draft-mask" wx:if="{{showDraftDialog}}" catchtap="onContinueDraft">
+    <view class="draft-card" catchtap="">
+      <view class="draft-card-icon">📝</view>
+      <view class="draft-card-title">发现未提交的草稿</view>
+      <view class="draft-card-desc">是否继续编辑上次未发布的内容？</view>
+      <view class="draft-card-actions">
+        <view class="draft-btn draft-btn-discard" catchtap="onDiscardDraft">
+          放弃草稿并发布新帖
+        </view>
+        <view class="draft-btn draft-btn-continue" catchtap="onContinueDraft">
+          继续编辑草稿
+        </view>
+      </view>
+    </view>
+  </view>
 
 </view>

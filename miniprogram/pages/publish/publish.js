@@ -1,9 +1,13 @@
 // pages/publish/publish.js —— 发帖页（类 C：发帖与内容安全）
-// 参考小红书发帖编辑页布局：顶部标题输入 + 正文输入 + 媒体网格 + 板块选择 + 匿名开关 + 底部发布按钮
-// 功能：标题/正文输入、智能标签推荐、图片/视频上传、匿名发布、草稿自动保存、内容安全审核
+// 正文使用 <editor> 富文本组件，#标签 自动蓝色高亮
+// 策略：仅在 #标签 集合变化时才用 setContents 重建 delta，避免光标跳动
+// 守卫 _settingContents 防止 setContents → bindinput → setContents 递归循环
 const auth = require('../../utils/auth.js')
 const draftUtil = require('../../utils/draft.js')
 const { CATEGORIES, TAG_RULES, MAX_MEDIA_COUNT } = require('../../config/index.js')
+
+// #标签 蓝色（小红书风格蓝色调）
+const TAG_COLOR = '#3B7DC4'
 
 Page({
   data: {
@@ -15,127 +19,266 @@ Page({
 
     // 表单数据
     title: '',
-    content: '',
-    selectedCategories: [], // 选中的板块 value 数组（支持多选）
-    isAnonymous: false,     // 匿名开关
-    images: [],             // 已选媒体临时路径数组（本地临时路径）
-    tags: [],               // 已选标签（正文 # 解析 + 推荐点击）
-    pickedTags: [],         // 用户从推荐区点击加入的标签
-    recommendTags: [],      // 智能推荐标签（根据标题/正文匹配）
+    content: '',           // 正文纯文本（从 editor 实时同步）
+    selectedCategories: [],
+    isAnonymous: false,
+    images: [],
 
-    // 列表数据：带 selected 字段，供 WXML 直接访问布尔值（WXML 不支持 indexOf 方法调用）
+    // editor 高度（动态自适应）
+    editorHeight: 240,
+
+    // 板块列表
     categoryList: CATEGORIES.map(c => ({ value: c.value, label: c.label, selected: false })),
 
+    // 推荐话题 chip
+    topicChips: [],
+
     // UI 状态
-    publishing: false       // 发布中（loading）
+    publishing: false,
+    showDraftDialog: false
   },
 
   // ========== 生命周期 ==========
   onLoad() {
-    // 获取状态栏高度，适配自定义导航栏
     try {
       const sys = wx.getSystemInfoSync()
       this.setData({ statusBarHeight: sys.statusBarHeight || 20 })
     } catch (e) {}
 
-    // 恢复草稿：有未发布的草稿则自动填充
+    if (draftUtil.hasDraft()) {
+      this.setData({ showDraftDialog: true })
+    }
+    this.updateTopicChips()
+    this.fetchPopularTags()
+  },
+
+  // editor 组件准备好 → 创建 ctx，如有草稿则 setContents
+  onEditorReady() {
+    this.editorCtx = wx.createSelectorQuery().select('#contentEditor').context((res) => {
+      if (!res || !res.context) return
+      const ctx = res.context
+      this.editorCtx = ctx
+
+      // 如有草稿，加载富文本（带蓝色标签）
+      const draft = draftUtil.getDraft()
+      if (draft && draft.content) {
+        this._settingContents = true
+        const delta = this.buildColoredDelta(draft.content)
+        ctx.setContents({ delta })
+        this.setData({ content: draft.content })
+        // 下一帧解除守卫
+        setTimeout(() => { this._settingContents = false }, 0)
+      }
+    }).exec()
+  },
+
+  // ========== 草稿确认弹窗 ==========
+  onContinueDraft() {
     const draft = draftUtil.getDraft()
     if (draft) {
-      // 兼容旧草稿：category 字符串 → 数组；新草稿：selectedCategories 数组
       const restoredCategories = draft.selectedCategories
         || (draft.category ? [draft.category] : [])
       this.setData({
         title: draft.title || '',
-        content: draft.content || '',
         selectedCategories: restoredCategories,
         categoryList: CATEGORIES.map(c => ({
           value: c.value, label: c.label,
           selected: restoredCategories.includes(c.value)
         })),
         isAnonymous: draft.is_anonymous || false,
-        images: (draft.images || []).map(p => this.toMediaItem(p)),
-        pickedTags: draft.pickedTags || []
+        images: (draft.images || []).map(p => this.toMediaItem(p))
       })
-      // 从正文重新解析标签并同步
-      this.syncTags()
+      // editor 草稿恢复（等 editorCtx 就绪后再 setContents）
+      const applyContent = () => {
+        if (!this.editorCtx) {
+          setTimeout(applyContent, 50)
+          return
+        }
+        this._settingContents = true
+        const delta = this.buildColoredDelta(draft.content || '')
+        this.editorCtx.setContents({ delta })
+        this.setData({ content: draft.content || '' })
+        setTimeout(() => { this._settingContents = false }, 0)
+      }
+      applyContent()
+      this.updateTopicChips()
       wx.showToast({ title: '已恢复草稿', icon: 'none' })
     }
-    // 初始智能标签推荐
-    this.updateRecommendTags()
+    this.setData({ showDraftDialog: false })
   },
 
-  // 路径转媒体项（带 isVideo 标记，供 WXML 判断是否显示视频角标）
-  toMediaItem(path) {
-    return { path, isVideo: /\.(mp4|mov|avi|mkv|webm)$/i.test(path) }
-  },
-
-  // 取消：保存草稿 + 返回论坛列表（publish 是 tab 页，需用 switchTab）
-  onCancel() {
-    this.autoSaveDraft()
-    wx.switchTab({ url: '/pages/index/index' })
+  onDiscardDraft() {
+    draftUtil.clearDraft()
+    this.setData({
+      title: '',
+      selectedCategories: [],
+      categoryList: CATEGORIES.map(c => ({ value: c.value, label: c.label, selected: false })),
+      isAnonymous: false,
+      images: [],
+      showDraftDialog: false
+    })
+    // editor 清空
+    if (this.editorCtx) {
+      this._settingContents = true
+      this.editorCtx.clear()
+      this.setData({ content: '' })
+      setTimeout(() => { this._settingContents = false }, 0)
+    }
+    this.updateTopicChips()
+    wx.showToast({ title: '已创建新帖', icon: 'none' })
   },
 
   onShow() {
-    // 自定义 tabBar：同步当前选中 tab
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
-    // 参与门槛：未登录 → 就地弹出登录界面
     this.setData({ isLogin: auth.isLogin() })
     if (!auth.isLogin()) {
       this.selectComponent('#loginModal').show()
     }
   },
 
-  // 编辑中途退出（onHide/onUnload）→ 自动保存草稿
   onHide() { this.autoSaveDraft() },
   onUnload() { this.autoSaveDraft() },
 
-  // ========== 输入事件 ==========
+  // ========== input 事件 ==========
   onTitleInput(e) {
     this.setData({ title: e.detail.value })
-    this.updateRecommendTags()
-  },
-  onContentInput(e) {
-    this.setData({ content: e.detail.value })
-    this.syncTags()           // 从正文重新解析 # 标签
-    this.updateRecommendTags()
+    this.updateTopicChips()
   },
 
-  // ========== 正文 # 标签解析 ==========
-  // 规则：# 开头，遇到空格 / # / 字符串结尾 结束
-  // 例："今天好开心#生活的小碎片 嘻嘻" → "生活的小碎片"
-  extractTagsFromContent(content) {
-    const regex = /#([^\s#]+)/g
-    const tags = []
-    let match
-    while ((match = regex.exec(content)) !== null) {
-      if (match[1]) tags.push(match[1])
+  // editor 的 bindinput：处理富文本变化
+  onEditorInput(e) {
+    // 解除 setContents 递归
+    if (this._settingContents) return
+
+    const plain = e.detail.text || ''
+    const prevContent = this.data.content || ''
+
+    // 1. 同步 content（纯文本，用于草稿/发布/推荐匹配）
+    this.setData({
+      content: plain,
+      editorHeight: e.detail.height || 240
+    })
+
+    // 2. 检测标签集合是否变化
+    const prevTags = this._tagSet(prevContent)
+    const nowTags = this._tagSet(plain)
+    const changed =
+      prevTags.size !== nowTags.size ||
+      [...prevTags].some(t => !nowTags.has(t)) ||
+      [...nowTags].some(t => !prevTags.has(t))
+
+    // 3. 仅在标签集变化时重建 delta（给 #标签 上色）
+    if (changed) {
+      this._settingContents = true
+      const delta = this.buildColoredDelta(plain)
+      this.editorCtx.setContents({ delta })
+      setTimeout(() => { this._settingContents = false }, 0)
     }
-    return [...new Set(tags)]
+
+    this.updateTopicChips()
   },
 
-  // 同步 tags：正文 # 解析标签 + 推荐区点击标签（去重合并）
-  syncTags() {
-    const contentTags = this.extractTagsFromContent(this.data.content)
-    const pickedTags = this.data.pickedTags || []
-    const allTags = [...new Set([...contentTags, ...pickedTags])]
-    this.setData({ tags: allTags })
+  // 从纯文本中提取 #标签 集合
+  _tagSet(text) {
+    const s = new Set()
+    const regex = /#([^\s#]+)/g
+    let m
+    while ((m = regex.exec(text)) !== null) {
+      if (m[1]) s.add(m[1])
+    }
+    return s
   },
 
-  // ========== 板块选择（多选，点击切换选中/取消） ==========
+  // ========== 核心：构建带 #标签 蓝色的 delta ==========
+  // 输入纯文本，返回 Quill delta：普通段无色，#标签 段加 color
+  buildColoredDelta(text) {
+    const ops = []
+    const regex = /#([^\s#]+)/g
+    let lastIdx = 0
+    let m
+    while ((m = regex.exec(text)) !== null) {
+      // # 之前的普通文本
+      if (m.index > lastIdx) {
+        ops.push({ insert: text.slice(lastIdx, m.index) })
+      }
+      // 整个 #标签 作为一段（包含 #号）
+      const tagText = m[0]
+      ops.push({
+        insert: tagText,
+        attributes: { color: TAG_COLOR }
+      })
+      lastIdx = m.index + tagText.length
+    }
+    // 尾部普通文本
+    if (lastIdx < text.length) {
+      ops.push({ insert: text.slice(lastIdx) })
+    }
+    // 空内容也要有一个换行（editor 组件要求）
+    if (ops.length === 0) {
+      ops.push({ insert: '\n' })
+    }
+    return { ops }
+  },
+
+  // ========== 推荐话题 chip ==========
+  updateTopicChips(popularTags) {
+    const text = `${this.data.title} ${this.data.content}`
+    const contentTags = this._tagSet(this.data.content)
+    const chips = []
+
+    for (const rule of TAG_RULES) {
+      if (contentTags.has(rule.tag)) continue
+      if (rule.keywords.some(kw => text.includes(kw))) {
+        chips.push(rule.tag)
+      }
+    }
+
+    if (popularTags && popularTags.length > 0) {
+      const localSet = new Set(chips)
+      for (const t of popularTags) {
+        if (contentTags.has(t) || localSet.has(t)) continue
+        chips.push(t)
+      }
+    }
+
+    this.setData({ topicChips: chips.slice(0, 8) })
+  },
+
+  async fetchPopularTags() {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'post',
+        data: { action: 'getPopularTags', limit: 20 }
+      })
+      const tags = (res.result && res.result.data) || []
+      this.updateTopicChips(tags)
+    } catch (e) {
+      this.updateTopicChips()
+    }
+  },
+
+  // 点击话题 chip → 在光标位置插入 #标签
+  onTapTopicChip(e) {
+    const tag = e.currentTarget.dataset.tag
+    if (!tag || !this.editorCtx) return
+    if (this._tagSet(this.data.content).has(tag)) {
+      wx.showToast({ title: `已添加 #${tag}`, icon: 'none' })
+      return
+    }
+    // 在当前光标位置插入（editor 会自动触发 bindinput → 同步 content）
+    this.editorCtx.insertText({ text: `#${tag} ` })
+  },
+
+  // ========== 板块选择 ==========
   onToggleCategory(e) {
     const value = e.currentTarget.dataset.value
     if (!value) return
-    // 1. 更新 selectedCategories（不可变更新）
     const selected = [...this.data.selectedCategories]
     const idx = selected.indexOf(value)
-    if (idx >= 0) {
-      selected.splice(idx, 1)
-    } else {
-      selected.push(value)
-    }
-    // 2. 同步 categoryList 的 selected 字段（WXML 直接读 item.selected）
+    if (idx >= 0) selected.splice(idx, 1)
+    else selected.push(value)
     const categoryList = this.data.categoryList.map(c => ({
       ...c,
       selected: c.value === value ? !c.selected : c.selected
@@ -148,68 +291,13 @@ Page({
     this.setData({ isAnonymous: e.detail.value })
   },
 
-  // ========== 智能标签推荐 ==========
-  // 根据标题+正文匹配 TAG_RULES，命中关键词即推荐对应标签；已选的标签不再推荐
-  updateRecommendTags() {
-    const text = `${this.data.title} ${this.data.content}`
-    const selected = new Set(this.data.tags)
-    const recommends = []
-    for (const rule of TAG_RULES) {
-      if (selected.has(rule.tag)) continue
-      if (rule.keywords.some(kw => text.includes(kw))) {
-        recommends.push(rule.tag)
-      }
-    }
-    this.setData({ recommendTags: recommends })
-  },
-
-  // 点击推荐标签 → 加入 pickedTags，合并到 tags
-  onTapRecommendTag(e) {
-    const tag = e.currentTarget.dataset.tag
-    if (!tag) return
-    if (this.data.pickedTags.includes(tag)) return
-    const pickedTags = [...this.data.pickedTags, tag]
-    this.setData({ pickedTags })
-    this.syncTags()
-    this.updateRecommendTags()
-  },
-
-  // 点击已选标签 → 移除
-  // - 推荐标签：从 pickedTags 移除
-  // - 正文 # 标签：同时从正文中删除对应的 #标签文本
-  onRemoveTag(e) {
-    const tag = e.currentTarget.dataset.tag
-    if (!tag) return
-
-    // 1. 如果是推荐标签，从 pickedTags 移除
-    const pickedIdx = this.data.pickedTags.indexOf(tag)
-    if (pickedIdx >= 0) {
-      const pickedTags = [...this.data.pickedTags]
-      pickedTags.splice(pickedIdx, 1)
-      this.setData({ pickedTags })
-    }
-
-    // 2. 如果该标签来自正文 # 标签，从正文中移除 #标签文本
-    const contentTags = this.extractTagsFromContent(this.data.content)
-    if (contentTags.includes(tag)) {
-      // 匹配 #标签（后面跟空格、#、或结尾），替换为空
-      const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const content = this.data.content.replace(new RegExp(`#${escaped}(?=\\s|#|$)`, 'g'), '')
-      this.setData({ content })
-    }
-
-    this.syncTags()
-    this.updateRecommendTags()
-  },
-
-  // ========== 媒体上传（图片/视频） ==========
+  // ========== 媒体上传 ==========
   onChooseMedia() {
     const remain = MAX_MEDIA_COUNT - this.data.images.length
     if (remain <= 0) {
       wx.showToast({ title: `最多上传${MAX_MEDIA_COUNT}个素材`, icon: 'none' })
       return
     }
-    // 选择图片或视频（支持混合）
     wx.chooseMedia({
       count: remain,
       mediaType: ['image', 'video'],
@@ -222,7 +310,10 @@ Page({
     })
   },
 
-  // 删除已选媒体
+  toMediaItem(path) {
+    return { path, isVideo: /\.(mp4|mov|avi|mkv|webm)$/i.test(path) }
+  },
+
   onRemoveMedia(e) {
     const idx = e.currentTarget.dataset.index
     const images = [...this.data.images]
@@ -230,7 +321,6 @@ Page({
     this.setData({ images })
   },
 
-  // 预览媒体
   onPreviewMedia(e) {
     const idx = e.currentTarget.dataset.index
     const item = this.data.images[idx]
@@ -248,14 +338,11 @@ Page({
   // ========== 发布流程 ==========
   async onPublish() {
     if (this.data.publishing) return
-
-    // 1. 登录校验
     if (!auth.isLogin()) {
       this.selectComponent('#loginModal').show()
       return
     }
 
-    // 2. 表单校验
     const { title, content, selectedCategories, images } = this.data
     if (!title.trim()) { wx.showToast({ title: '请输入标题', icon: 'none' }); return }
     if (!content.trim()) { wx.showToast({ title: '请输入正文', icon: 'none' }); return }
@@ -265,17 +352,12 @@ Page({
     wx.showLoading({ title: '发布中...', mask: true })
 
     try {
-      // 3. 上传媒体到云存储（仅上传有内容的）
       let uploadedImages = []
       if (images.length > 0) {
         wx.showLoading({ title: '上传素材中...', mask: true })
         for (let i = 0; i < images.length; i++) {
           const path = images[i].path
-          // 已经是云文件 ID（cloud:// 开头）则无需重复上传
-          if (path.startsWith('cloud://')) {
-            uploadedImages.push(path)
-            continue
-          }
+          if (path.startsWith('cloud://')) { uploadedImages.push(path); continue }
           const ext = (path.split('.').pop() || 'jpg').toLowerCase()
           const cloudPath = `posts/${auth.getUserInfo()._id || 'anon'}/${Date.now()}-${i}-${Math.floor(Math.random() * 10000)}.${ext}`
           const uploadRes = await wx.cloud.uploadFile({ cloudPath, filePath: path })
@@ -283,24 +365,22 @@ Page({
         }
       }
 
-      // 4. 调用 post 云函数 create（内含文本+图片内容安全审核）
       wx.showLoading({ title: '内容审核中...', mask: true })
       const res = await wx.cloud.callFunction({
         name: 'post',
         data: {
           action: 'create',
           title: title.trim(),
-          content: content.trim(),
+          content: content.trim(),  // 纯文本（#标签文本内嵌）
           images: uploadedImages,
-          category: selectedCategories[0],          // 主分类（第一个）
-          categories: selectedCategories,           // 全部分类（多选）
+          category: selectedCategories[0],
+          categories: selectedCategories,
           is_anonymous: this.data.isAnonymous
         }
       })
 
       const result = res.result
       if (result.code === 0) {
-        // 发布成功：清除草稿 + 跳回论坛列表
         draftUtil.clearDraft()
         wx.hideLoading()
         wx.showToast({ title: '发布成功', icon: 'success' })
@@ -308,17 +388,8 @@ Page({
           wx.switchTab({ url: '/pages/index/index' })
         }, 800)
       } else {
-        // 发布失败（审核不通过等）
         wx.hideLoading()
-        wx.showModal({
-          title: '发布失败',
-          content: result.msg || '发布失败，请重试',
-          showCancel: false
-        })
-        // 如果是图片审核失败且有 failedIndex，高亮提示
-        if (result.failedIndex !== undefined) {
-          // 可扩展：标记失败图片（此处仅提示）
-        }
+        wx.showModal({ title: '发布失败', content: result.msg || '发布失败，请重试', showCancel: false })
       }
     } catch (err) {
       console.error('发布异常：', err)
@@ -331,19 +402,15 @@ Page({
 
   // ========== 草稿自动保存 ==========
   autoSaveDraft() {
-    const { title, content, selectedCategories, isAnonymous, images, pickedTags } = this.data
+    const { title, content, selectedCategories, isAnonymous, images } = this.data
     draftUtil.saveDraft({
       title,
-      content,
+      content,        // editor 的纯文本（已包含 #标签）
       selectedCategories,
       is_anonymous: isAnonymous,
-      images: images.map(m => m.path),  // 存路径字符串，恢复时再转媒体项
-      pickedTags
+      images: images.map(m => m.path)
     })
   },
 
-  // 登录成功回调
-  onLoginSuccess() {
-    this.setData({ isLogin: true })
-  }
+  onLoginSuccess() { this.setData({ isLogin: true }) }
 })

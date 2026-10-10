@@ -24,6 +24,8 @@ exports.main = async (event, context) => {
       return await getPostDetail(event)
     case 'delete':
       return await deletePost(event, OPENID)
+    case 'getPopularTags':
+      return await getPopularTags(event)
     default:
       return { code: -1, msg: '未知操作' }
   }
@@ -235,4 +237,39 @@ async function deletePost(event, openid) {
 
   await posts.doc(id).update({ data: { status: 2, updated_at: db.serverDate() } })
   return { code: 0, msg: '已删除' }
+}
+
+// ========== 获取热门标签（从所有已发布帖子的正文 # 标签聚合） ==========
+async function getPopularTags(event) {
+  const limit = Math.min(event.limit || 20, 50)
+  try {
+    // 取已发布帖子，按创建时间倒序
+    const res = await posts
+      .where({ status: 1 })
+      .orderBy('created_at', 'desc')
+      .limit(200)
+      .get()
+
+    // 聚合正文 # 标签出现频次
+    const counter = {}
+    const regex = /#([^\s#]+)/g
+    for (const post of res.data) {
+      if (!post.content) continue
+      let m
+      while ((m = regex.exec(post.content)) !== null) {
+        if (m[1]) counter[m[1]] = (counter[m[1]] || 0) + 1
+      }
+    }
+
+    // 按频次排序 → 取前 limit 个
+    const sorted = Object.entries(counter)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(e => e[0])
+
+    return { code: 0, data: sorted }
+  } catch (err) {
+    console.error('getPopularTags 异常：', err)
+    return { code: -1, msg: '获取热门标签失败', data: [] }
+  }
 }

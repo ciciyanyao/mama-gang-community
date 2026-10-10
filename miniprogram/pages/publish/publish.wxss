@@ -130,53 +130,10 @@
   font-size: 30rpx;
   color: #3E4C59;
   line-height: 1.6;
+  padding: 0;
 }
 .ph {
   color: #B0B0B0;
-}
-
-/* ========== 智能标签 ========== */
-.tags-section {
-  padding: 24rpx 32rpx;
-  border-bottom: 1rpx solid #F2F4F3;
-}
-.tags-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16rpx;
-  margin-bottom: 16rpx;
-}
-.tags-row:last-child { margin-bottom: 0; }
-.tags-label {
-  font-size: 26rpx;
-  color: #9AA5B1;
-}
-.tag-item {
-  display: inline-flex;
-  align-items: center;
-  padding: 8rpx 20rpx;
-  border-radius: 28rpx;
-  font-size: 26rpx;
-}
-.tag-selected {
-  background: rgba(46, 125, 91, 0.12);
-  color: #2E7D5B;
-}
-.tag-remove {
-  margin-left: 6rpx;
-  font-size: 28rpx;
-  color: #2E7D5B;
-  line-height: 1;
-}
-.tag-recommend {
-  background: #F2F6F4;
-  color: #2E7D5B;
-}
-.tags-hint {
-  font-size: 24rpx;
-  color: #B0B0B0;
-  margin-top: 8rpx;
 }
 
 /* ========== 板块选择（平铺多选标签） ========== */
@@ -212,6 +169,27 @@
   background: #2E7D5B;
   border: 2rpx solid #2E7D5B;
   box-shadow: 0 4rpx 12rpx rgba(46, 125, 91, 0.25);
+}
+
+/* 推荐话题 chip 云（板块区域下方，无分隔线） */
+.topic-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 28rpx;
+}
+.topic-cloud-label {
+  font-size: 26rpx;
+  color: #9AA5B1;
+  margin-right: 4rpx;
+}
+.topic-chip {
+  padding: 8rpx 20rpx;
+  font-size: 26rpx;
+  color: #2E7D5B;
+  background: #F2F6F4;
+  border-radius: 28rpx;
 }
 
 /* ========== 匿名开关 行 ========== */
@@ -262,4 +240,72 @@
 }
 .publish-btn::after {
   border: none;
+}
+
+/* ========== 草稿确认弹窗 ========== */
+.draft-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.draft-card {
+  width: 580rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 48rpx 40rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: draftFadeIn 200ms ease;
+}
+@keyframes draftFadeIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+.draft-card-icon {
+  font-size: 64rpx;
+  line-height: 1;
+  margin-bottom: 20rpx;
+}
+.draft-card-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #1F2933;
+  margin-bottom: 12rpx;
+}
+.draft-card-desc {
+  font-size: 28rpx;
+  color: #7A8B99;
+  margin-bottom: 40rpx;
+}
+.draft-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  width: 100%;
+}
+.draft-btn {
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+.draft-btn-continue {
+  background: #2E7D5B;
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(46, 125, 91, 0.25);
+}
+.draft-btn-discard {
+  background: #F5F7F6;
+  color: #52606D;
+  border: 2rpx solid #E4E7EB;
 }
