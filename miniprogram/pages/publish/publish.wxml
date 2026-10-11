@@ -1,13 +1,11 @@
 <!-- pages/publish/publish.wxml —— 发帖页（小红书风格编辑页） -->
 <view class="publish-page">
 
-  <!-- 顶部操作栏：取消 / 标题 / 保存草稿（自定义导航栏，需适配状态栏高度；保存草稿右移避开微信胶囊按钮） -->
+  <!-- 顶部操作栏：取消 / 发布帖子（标题居中，自定义导航栏需适配状态栏高度） -->
   <view class="nav-bar" style="padding-top: {{statusBarHeight}}px;">
     <view class="nav-cancel" bindtap="onCancel">取消</view>
-    <view class="nav-title">发布</view>
-    <view class="nav-save" style="margin-right: {{saveDraftMarginRight}}px;" bindtap="onSaveDraft">
-      保存草稿
-    </view>
+    <view class="nav-title">发布帖子</view>
+    <view class="nav-spacer"></view>
   </view>
 
   <!-- 编辑区（可滚动） -->

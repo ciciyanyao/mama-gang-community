@@ -10,7 +10,6 @@
 .nav-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 32rpx;
   height: calc(88rpx + env(safe-area-inset-top));
   box-sizing: content-box;
@@ -19,37 +18,21 @@
   position: relative;
 }
 .nav-cancel {
+  width: 33.33%;
   font-size: 30rpx;
   color: #7A7A7A;
-  padding: 8rpx 16rpx;
+  padding: 8rpx 0;
+  text-align: left;
 }
 .nav-title {
+  width: 33.33%;
   font-size: 32rpx;
   font-weight: 600;
   color: #1F2933;
+  text-align: center;
 }
-.nav-publish {
-  font-size: 30rpx;
-  color: #FFFFFF;
-  background: #2E7D5B;
-  padding: 10rpx 28rpx;
-  border-radius: 32rpx;
-  font-weight: 500;
-}
-.nav-publish.disabled {
-  opacity: 0.6;
-}
-
-/* 右上角"保存草稿"：次要操作，白底绿边（区别于底部主"发布"按钮） */
-.nav-save {
-  font-size: 28rpx;
-  color: #2E7D5B;
-  background: #FFFFFF;
-  border: 2rpx solid #2E7D5B;
-  padding: 8rpx 24rpx;
-  border-radius: 32rpx;
-  font-weight: 500;
-  flex-shrink: 0;
+.nav-spacer {
+  width: 33.33%;
 }
 
 /* ========== 滚动编辑区 ========== */
