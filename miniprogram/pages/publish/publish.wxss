@@ -198,8 +198,9 @@
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
-  padding: 16rpx 32rpx calc(16rpx + env(safe-area-inset-bottom));
+  /* 上移到自定义 tabBar（100rpx + 安全区）上方，避免被遮挡点不到 */
+  bottom: calc(100rpx + env(safe-area-inset-bottom));
+  padding: 16rpx 32rpx;
   background: #FFFFFF;
   border-top: 1rpx solid #F2F4F3;
 }

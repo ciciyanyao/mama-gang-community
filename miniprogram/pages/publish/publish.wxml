@@ -108,8 +108,8 @@
       />
     </view>
 
-    <!-- 底部占位，避免内容被底部发布栏遮挡 -->
-    <view style="height: 120rpx;"></view>
+    <!-- 底部占位，避免内容被底部发布栏 + tabBar 遮挡 -->
+    <view style="height: 220rpx;"></view>
   </scroll-view>
 
   <!-- 底部固定发布按钮 -->

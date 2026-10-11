@@ -58,4 +58,7 @@
     />
     <button class="footer-btn" bindtap="postMood">投进树洞</button>
   </view>
+
+  <!-- 登录弹窗：投递树洞需登录 -->
+  <login-modal id="loginModal" />
 </view>

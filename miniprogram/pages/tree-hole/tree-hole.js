@@ -1,5 +1,6 @@
 // pages/tree-hole/tree-hole.js
 // 数据来源：cloudfunctions/treehole（post / list / hug），云端持久化
+const auth = require('../../utils/auth.js')
 Page({
   data: {
     moodInput: '',
@@ -91,6 +92,9 @@ Page({
 
   // ========== 投递树洞 ==========
   async postMood() {
+    // 未登录：弹登录弹窗，不继续
+    if (!auth.requireLogin(this)) return
+
     const text = this.data.moodInput.trim()
     if (text.length < 5) {
       wx.showToast({ title: '再多写几个字吧', icon: 'none' })
