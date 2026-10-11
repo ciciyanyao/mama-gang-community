@@ -146,3 +146,36 @@ page {
 }
 .footer-btn:active { box-shadow: 1rpx 1rpx 0 #047857; transform: translate(3rpx, 3rpx); }
 .footer-btn::after { border: none; }
+
+/* ========== 加载中 / 空状态 ========== */
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 96rpx 0;
+}
+.loading-spinner {
+  width: 36rpx;
+  height: 36rpx;
+  border: 4rpx solid #E5E5E5;
+  border-top-color: #2E7D5B;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 12rpx;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.loading-text {
+  font-size: 24rpx;
+  color: #999999;
+}
+.empty-state {
+  display: flex;
+  justify-content: center;
+  padding: 96rpx 0;
+}
+.empty-text {
+  font-size: 26rpx;
+  color: #9AA5B1;
+}

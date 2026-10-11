@@ -242,6 +242,14 @@
   padding: 32rpx 0;
 }
 
+/* 首次进入/切分类时列表为空：居中加载状态 */
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 96rpx 0;
+}
+
 .loading-spinner {
   width: 36rpx;
   height: 36rpx;

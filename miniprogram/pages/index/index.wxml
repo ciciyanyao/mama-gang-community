@@ -41,6 +41,12 @@
       <text class="section-title">最新帖子</text>
     </view>
 
+    <!-- 首次加载中（列表为空时居中显示） -->
+    <view class="loading-wrap" wx:if="{{loading && postList.length === 0}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
+    </view>
+
     <!-- 帖子卡片 -->
     <view
       class="post-card"
