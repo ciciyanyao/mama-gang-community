@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "我的",
-  "usingComponents": {}
+  "usingComponents": {
+    "login-modal": "/components/login-modal/index"
+  }
 }

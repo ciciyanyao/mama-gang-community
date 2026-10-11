@@ -1,6 +1,7 @@
 // pages/post-detail/post-detail.js —— 帖子详情页
 const db = wx.cloud.database()
 const _ = db.command
+const auth = require('../../utils/auth.js')
 const POSTS = db.collection('posts')
 const COMMENTS = db.collection('comments')
 const FAVORITES = db.collection('favorites')
@@ -103,11 +104,18 @@ Page({
     }
   },
 
-  // ==================== 检查收藏状态 ====================
+  // ==================== 检查收藏状态（按用户隔离） ====================
   async checkFavoriteStatus(postId) {
+    const app = getApp()
+    const openid = app.globalData.openid
+    // 未登录：不可能有收藏
+    if (!openid) {
+      this.setData({ isFavorited: false })
+      return
+    }
     try {
       const res = await FAVORITES
-        .where({ post_id: postId })
+        .where({ post_id: postId, _openid: openid })
         .count()
 
       this.setData({ isFavorited: res.total > 0 })
@@ -116,16 +124,21 @@ Page({
     }
   },
 
+  // ==================== 登录成功回调：刷新点赞/收藏状态 ====================
+  onLoginSuccess() {
+    if (!this.data.postId) return
+    this.loadPostDetail(this.data.postId)
+    this.checkFavoriteStatus(this.data.postId)
+  },
+
   // ==================== 点赞/取消点赞 ====================
   async onLikeTap() {
+    // 未登录：弹登录弹窗，不继续
+    if (!auth.requireLogin(this)) return
+
     const { postId, isLiked, likeCount } = this.data
     const app = getApp()
     const openid = app.globalData.openid
-
-    if (!openid) {
-      wx.showToast({ title: '请先登录', icon: 'none' })
-      return
-    }
 
     // 乐观更新 UI
     this.setData({
@@ -163,18 +176,23 @@ Page({
 
   // ==================== 收藏/取消收藏 ====================
   async onFavoriteTap() {
+    // 未登录：弹登录弹窗，不继续
+    if (!auth.requireLogin(this)) return
+
     const { postId, isFavorited } = this.data
+    const app = getApp()
+    const openid = app.globalData.openid
 
     // 乐观更新
     this.setData({ isFavorited: !isFavorited })
 
     try {
       if (isFavorited) {
-        // 取消收藏
-        await FAVORITES.where({ post_id: postId }).remove()
+        // 取消收藏（按用户删除自己的收藏）
+        await FAVORITES.where({ post_id: postId, _openid: openid }).remove()
         wx.showToast({ title: '已取消收藏', icon: 'none' })
       } else {
-        // 收藏
+        // 收藏（云数据库自动写入 _openid 归属当前用户）
         await FAVORITES.add({
           data: {
             post_id: postId,
@@ -223,6 +241,9 @@ Page({
 
   // ==================== 提交评论 ====================
   async onSubmitComment() {
+    // 未登录：弹登录弹窗，不继续
+    if (!auth.requireLogin(this)) return
+
     const { commentText, postId, replyTo } = this.data
     const text = commentText.trim()
 

@@ -17,14 +17,21 @@ function getUserInfo() {
 function setUserInfo(user) {
   wx.setStorageSync(LOGIN_KEY, user)
   const app = getApp()
-  if (app) app.globalData.userInfo = user
+  if (app) {
+    app.globalData.userInfo = user
+    // 同步 openid，保证依赖 globalData.openid 的页面（如帖子详情点赞）登录后可用
+    app.globalData.openid = (user && (user.openid || user._openid)) || app.globalData.openid
+  }
 }
 
 // 清空登录态（退出登录用）
 function clearUserInfo() {
   wx.removeStorageSync(LOGIN_KEY)
   const app = getApp()
-  if (app) app.globalData.userInfo = null
+  if (app) {
+    app.globalData.userInfo = null
+    app.globalData.openid = null
+  }
 }
 
 // 静默登录：进入小程序即调用，建/取 users 记录，全程无弹窗
@@ -34,6 +41,9 @@ function silentLogin() {
     .then(res => {
       if (res.result && res.result.code === 0) {
         const user = res.result.data
+        const app = getApp()
+        // 游客也有 openid（用于浏览态判断），登录态仍由 storage 的 nickname 决定
+        if (app) app.globalData.openid = (user && (user.openid || user._openid)) || null
         if (user.nickname) setUserInfo(user)
         return user
       }

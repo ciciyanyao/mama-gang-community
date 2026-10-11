@@ -1,6 +1,6 @@
 // pages/mine/mine.js —— 我的页（F3 个人中心）
 const app = getApp()
-const db = wx.cloud.database()
+const auth = require('../../utils/auth.js')
 const { confirm, showError, showSuccess } = require('../../utils/util.js')
 
 Page({
@@ -34,43 +34,52 @@ Page({
 
   // ==================== 加载用户信息 ====================
   async _loadUserInfo() {
-    // 优先从 globalData 读取
-    if (app.globalData.userInfo) {
-      this.setData({
-        userInfo: app.globalData.userInfo,
-        hasUserInfo: true
-      })
+    // 统一用 auth 判定登录：storage 有昵称才算已登录（与发帖等页面同一标准）
+    if (!auth.isLogin()) {
+      // 未登录：显示登录入口
+      app.globalData.userInfo = null
+      this.setData({ userInfo: null, hasUserInfo: false, isAdmin: false })
+      return
     }
 
-    // 尝试从云数据库读取最新信息
+    // 已登录：先展示本地信息
+    const local = auth.getUserInfo()
+    const userInfo = {
+      nickName: local.nickname || local.nickName || '妈妈岗用户',
+      avatarUrl: local.avatar || local.avatarUrl || '',
+      role: local.role || 0
+    }
+    app.globalData.userInfo = userInfo
+    this.setData({ userInfo, hasUserInfo: true, isAdmin: userInfo.role === 2 })
+
+    // 再从云端取最新（昵称/头像/角色可能被修改）
     try {
-      const res = await wx.cloud.callFunction({ name: 'login' })
-      const openid = res.result.openid
-
-      const userRes = await db.collection('users')
-        .where({ _openid: openid })
-        .limit(1)
-        .get()
-
-      if (userRes.data.length > 0) {
-        const user = userRes.data[0]
-        const userInfo = {
-          nickName: user.nickname || '妈妈岗用户',
-          avatarUrl: user.avatar || '',
+      const res = await wx.cloud.callFunction({ name: 'login', data: { action: 'getUserInfo' } })
+      if (res.result && res.result.code === 0) {
+        const user = res.result.data
+        const fresh = {
+          nickName: user.nickname || userInfo.nickName,
+          avatarUrl: user.avatar || userInfo.avatarUrl,
           role: user.role || 0
         }
-        app.globalData.userInfo = userInfo
-        app.globalData.openid = openid
-
-        this.setData({
-          userInfo,
-          hasUserInfo: true,
-          isAdmin: user.role === 2
-        })
+        app.globalData.userInfo = fresh
+        this.setData({ userInfo: fresh, isAdmin: user.role === 2 })
       }
     } catch (err) {
       console.error('[mine] 加载用户信息失败：', err)
     }
+  },
+
+  // ==================== 未登录点击 → 登录弹窗 ====================
+  onLoginTap() {
+    const modal = this.selectComponent('#loginModal')
+    if (modal) modal.show()
+  },
+
+  // 登录成功回调：刷新个人信息
+  onLoginSuccess() {
+    this._loadUserInfo()
+    wx.showToast({ title: '登录成功', icon: 'success' })
   },
 
   // ==================== 菜单点击 ====================
@@ -105,9 +114,8 @@ Page({
     const confirmed = await confirm('提示', '确定要退出登录吗？')
     if (!confirmed) return
 
-    // 清除全局用户信息
-    app.globalData.userInfo = null
-    app.globalData.openid = null
+    // 统一清除登录态（storage + globalData）
+    auth.clearUserInfo()
 
     this.setData({
       userInfo: null,

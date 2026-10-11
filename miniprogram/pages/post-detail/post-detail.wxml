@@ -129,3 +129,6 @@
     <view class="send-btn {{commentText ? 'active' : ''}}" bindtap="onSubmitComment">发送</view>
   </view>
 </view>
+
+<!-- ==================== 登录弹窗 ==================== -->
+<login-modal id="loginModal" bind:success="onLoginSuccess" />
