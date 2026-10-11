@@ -1,0 +1,12 @@
+<!-- test.wxml -->
+<view class="container">
+  <view class="page-title">空状态</view>
+  <empty-state text="还没有帖子，来发第一条吧" cta="去发帖" bind:cta="onCta" />
+  <empty-state text="案例库还空着" illustration="case" />
+  <empty-state text="还没有评论" illustration="comment" />
+
+  <view class="page-title">加载中</view>
+  <loading type="spinner" text="加载中" />
+  <loading type="dots" text="加载中" />
+  <loading type="skeleton" rows="3" />
+</view>

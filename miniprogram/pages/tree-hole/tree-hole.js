@@ -1,4 +1,5 @@
 // pages/tree-hole/tree-hole.js
+// 数据来源：cloudfunctions/treehole（post / list / hug），云端持久化
 Page({
   data: {
     tags: ['全部', '崩溃', '焦虑', '委屈', '疲惫', '治愈'],

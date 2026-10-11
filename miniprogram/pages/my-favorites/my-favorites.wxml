@@ -1,0 +1,58 @@
+<!-- pages/my-favorites/my-favorites.wxml —— 我的收藏（F4） -->
+<view class="page-wrap">
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{isEmpty && !loading}}">
+    <view class="empty-icon-wrap">
+      <text class="empty-emoji">⭐</text>
+    </view>
+    <text class="empty-text">还没有收藏任何帖子</text>
+    <text class="empty-hint">浏览帖子时点击收藏按钮即可收藏</text>
+  </view>
+
+  <!-- 收藏列表 -->
+  <view class="fav-list" wx:if="{{!isEmpty}}">
+    <view
+      class="fav-card"
+      wx:for="{{favoriteList}}"
+      wx:key="favoriteId"
+    >
+      <!-- 点击帖子区域跳转详情 -->
+      <view class="fav-body" bindtap="onPostTap" data-post-id="{{item.postId}}">
+        <view class="fav-header">
+          <text class="fav-title">{{item.postTitle}}</text>
+          <view class="fav-category" wx:if="{{item.postCategory}}">
+            <text class="category-text">{{item.postCategory}}</text>
+          </view>
+        </view>
+        <text class="fav-preview">{{item.postContent}}</text>
+        <view class="fav-footer">
+          <text class="fav-stat">👍 {{item.likeCount}}</text>
+          <text class="fav-stat">💬 {{item.commentCount}}</text>
+          <text class="fav-time">收藏于 {{item.favoriteTimeText}}</text>
+        </view>
+      </view>
+
+      <!-- 取消收藏按钮 -->
+      <view
+        class="fav-remove"
+        catchtap="onRemoveFavorite"
+        data-favorite-id="{{item.favoriteId}}"
+        data-post-id="{{item.postId}}"
+      >
+        <text class="remove-text">取消收藏</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 没有更多 -->
+  <view class="no-more" wx:if="{{noMore && favoriteList.length > 0 && !loading}}">
+    <text class="no-more-text">— 没有更多了 —</text>
+  </view>
+</view>

@@ -1,4 +1,65 @@
-<view class="container">
-  <view class="page-title">消息</view>
-  <view class="placeholder">页面建设中：我收到的评论与回复（认领类 F）</view>
+<!-- pages/message/message.wxml —— 消息列表（F1 + F2） -->
+<view class="page-wrap">
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{isEmpty && !loading}}">
+    <view class="empty-icon-wrap">
+      <image class="empty-icon" src="/images/message-2-line.svg" mode="aspectFit" />
+    </view>
+    <text class="empty-text">暂无消息</text>
+    <text class="empty-hint">当有人评论你的帖子时，消息会显示在这里</text>
+  </view>
+
+  <!-- 消息列表（按帖子聚合） -->
+  <view class="message-list" wx:if="{{!isEmpty}}">
+    <view
+      class="message-card"
+      wx:for="{{messageList}}"
+      wx:key="postId"
+      bindtap="onMessageTap"
+      data-post-id="{{item.postId}}"
+    >
+      <!-- 左侧图标区 -->
+      <view class="msg-icon-area">
+        <view class="msg-icon-circle">
+          <image class="msg-icon" src="/images/comment-line.svg" mode="aspectFit" />
+        </view>
+        <view class="msg-badge" wx:if="{{item.unreadCount > 0}}">
+          <text class="msg-badge-text">{{item.unreadCount > 99 ? '99+' : item.unreadCount}}</text>
+        </view>
+      </view>
+
+      <!-- 中间内容区 -->
+      <view class="msg-body">
+        <view class="msg-header">
+          <text class="msg-post-title">{{item.postTitle}}</text>
+          <text class="msg-time">{{item.lastTimeText}}</text>
+        </view>
+        <view class="msg-previews">
+          <view class="msg-preview-item" wx:for="{{item.previewComments}}" wx:for-item="comment" wx:key="_id">
+            <text class="msg-preview-text">{{comment.content}}</text>
+          </view>
+          <text class="msg-more" wx:if="{{item.commentCount > 2}}">
+            等{{item.commentCount}}条评论
+          </text>
+        </view>
+      </view>
+
+      <!-- 右侧箭头 -->
+      <view class="msg-arrow">
+        <text class="arrow-text">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 没有更多 -->
+  <view class="no-more" wx:if="{{noMore && messageList.length > 0 && !loading}}">
+    <text class="no-more-text">— 没有更多消息了 —</text>
+  </view>
 </view>

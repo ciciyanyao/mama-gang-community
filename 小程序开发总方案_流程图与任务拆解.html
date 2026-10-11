@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>轻量化小程序开发总方案 · 流程图与任务拆解</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei","PingFang SC",sans-serif; background:#F6F4EF; color:#2B2B2B; line-height:1.65; }
+  .wrap { max-width:1100px; margin:0 auto; padding:24px 20px 60px; }
+
+  /* 头部 */
+  .hero { background:linear-gradient(135deg,#2E7D6B 0%,#3E8F7C 60%,#E8B04B 160%); color:#fff; border-radius:14px; padding:28px 32px; margin-bottom:18px; }
+  .hero h1 { font-size:26px; letter-spacing:1px; }
+  .hero .sub { margin-top:8px; font-size:14px; opacity:.92; }
+  .hero .meta { margin-top:14px; display:flex; flex-wrap:wrap; gap:8px 22px; font-size:13px; opacity:.95; }
+  .hero .meta b { font-weight:600; }
+
+  /* 导航 */
+  .nav { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+  .nav a { text-decoration:none; font-size:13px; color:#2E7D6B; background:#fff; border:1px solid #CFE3DD; padding:6px 12px; border-radius:20px; }
+  .nav a:hover { background:#E6F2EE; }
+
+  /* 章节 */
+  section { background:#fff; border-radius:12px; padding:24px 26px; margin-bottom:18px; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+  section h2 { font-size:19px; color:#24594F; border-left:5px solid #E07A3F; padding-left:12px; margin-bottom:16px; }
+  section h3 { font-size:15px; color:#333; margin:16px 0 8px; }
+  .tag { display:inline-block; font-size:12px; border-radius:4px; padding:1px 8px; margin-right:6px; }
+
+  table { width:100%; border-collapse:collapse; font-size:13.5px; margin:10px 0 4px; }
+  th, td { border:1px solid #E3E0D9; padding:7px 9px; text-align:left; vertical-align:top; }
+  th { background:#F0F5F2; color:#24594F; font-weight:600; }
+  .t-center { text-align:center; }
+
+  .note { background:#FFF8EC; border-left:4px solid #E8B04B; padding:10px 14px; font-size:13px; border-radius:0 8px 8px 0; margin:12px 0; }
+  .note b { color:#A86A14; }
+
+  /* 流程卡片 */
+  .flow { display:flex; flex-wrap:wrap; align-items:stretch; gap:10px; margin:14px 0 6px; }
+  .fstep { flex:1 1 150px; min-width:150px; background:#F2F8F6; border:1px solid #CFE3DD; border-radius:10px; padding:12px; position:relative; }
+  .fstep .n { position:absolute; top:-10px; left:10px; background:#2E7D6B; color:#fff; width:22px; height:22px; border-radius:50%; text-align:center; line-height:22px; font-size:12px; font-weight:700; }
+  .fstep h4 { font-size:14px; color:#24594F; margin:4px 0 6px; }
+  .fstep p { font-size:12px; color:#555; }
+  .farrow { align-self:center; color:#E07A3F; font-size:20px; font-weight:700; flex:0 0 auto; }
+  .ckpt { background:#FDF0E6; border:1.5px dashed #E07A3F; border-radius:10px; padding:10px 12px; flex:1 1 180px; min-width:180px; }
+  .ckpt h4 { color:#C2621F; font-size:13.5px; margin-bottom:4px; }
+  .ckpt p { font-size:12px; color:#555; }
+
+  /* WBS 树 */
+  .wbs { margin-top:12px; }
+  .wp { border:1px solid #E3E0D9; border-radius:10px; margin-bottom:12px; overflow:hidden; }
+  .wp-h { background:#EFF5F2; padding:9px 14px; font-weight:700; color:#24594F; font-size:14px; }
+  .wp-h .owner { font-weight:400; color:#777; font-size:12.5px; margin-left:10px; }
+  .wp ul { list-style:none; padding:8px 14px 10px 30px; }
+  .wp li { position:relative; padding:5px 0 5px 16px; font-size:13px; border-left:2px solid #CFE3DD; }
+  .wp li::before { content:""; position:absolute; left:-2px; top:16px; width:14px; height:2px; background:#CFE3DD; }
+  .wp li b { color:#333; }
+  .role { display:inline-block; font-size:11.5px; background:#F0F5F2; color:#2E7D6B; border:1px solid #CFE3DD; border-radius:4px; padding:0 6px; margin-left:8px; }
+
+  /* 甘特 */
+  .gantt { overflow-x:auto; margin-top:12px; }
+  .gantt table { min-width:860px; font-size:12.5px; }
+  .gantt th { position:sticky; top:0; }
+  .gantt td { height:26px; padding:0; text-align:center; }
+  .gantt .lbl { padding:0 8px; font-size:12.5px; white-space:nowrap; text-align:left; }
+  .bar { display:block; height:16px; border-radius:3px; margin:4px auto; }
+  .mil { color:#C2621F; font-size:13px; }
+  .b-teal  { background:#7FB8AA; }
+  .b-amber { background:#F0B27A; }
+  .b-slate { background:#9AA4B0; }
+  .b-green { background:#79B89A; }
+  .b-gray  { background:#D5D8DC; border:1px dashed #9AA4B0; }
+
+  /* 架构 */
+  .arch { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+  .layer { border-radius:10px; padding:12px 14px; }
+  .layer .lname { font-weight:700; font-size:14px; margin-bottom:6px; }
+  .arch .client { background:#E6F2EE; border:1.5px solid #2E7D6B; }
+  .arch .wx     { background:#FFF6E9; border:1.5px solid #E8B04B; }
+  .arch .cloud  { background:#EEF1F5; border:1.5px solid #5B6472; }
+  .arch .admin  { background:#F2EEF7; border:1.5px dashed #8A6FA8; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font-size:12px; background:#fff; border:1px solid #CFE3DD; border-radius:14px; padding:2px 10px; }
+  .arrow-down { text-align:center; color:#2E7D6B; font-size:16px; font-weight:700; line-height:1; }
+
+  /* 优先级 */
+  .p0 td:first-child { color:#C0392B; font-weight:700; }
+  .p1 td:first-child { color:#C2621F; font-weight:700; }
+  .p2 td:first-child { color:#777; font-weight:700; }
+
+  footer { text-align:center; font-size:12px; color:#999; margin-top:10px; }
+  @media print { .nav{display:none;} body{background:#fff;} section{box-shadow:none; border:1px solid #ddd;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>轻量化小程序开发总方案 · 流程图与任务拆解</h1>
+    <div class="sub">守护「职业连续性」生育支持型就业模式的制度张力与优化路径 —— 基于珠三角妈妈岗的实证调查 · 配套小程序（副产品）</div>
+    <div class="meta">
+      <span><b>开发小组：</b>周勤希（负责人）· 黄炜怡 · 李泽亚</span>
+      <span><b>版本：</b>V3（2026-10-04 状态更新：环境与登录链路已铺通，排期对齐开发事项.md，待总负责人核对）</span>
+      <span><b>日期：</b>2026-10-04</span>
+      <span><b>定位：</b>服务申报书与答辩展示，不作为主流开发目标</span>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a href="#s1">① 五项决策摘要</a>
+    <a href="#s2">② 开发总流程</a>
+    <a href="#s3">③ WBS 任务拆解</a>
+    <a href="#s4">④ 甘特排期</a>
+    <a href="#s5">⑤ 技术架构</a>
+    <a href="#s6">⑥ 功能优先级</a>
+    <a href="#s7">⑦ Git 协作规范</a>
+    <a href="#s8">⑧ 里程碑与风险</a>
+  </div>
+
+  <!-- S1 决策摘要 -->
+  <section id="s1">
+    <h2>① 五项决策摘要（给总负责人 30 秒看懂全貌）</h2>
+    <table>
+      <tr><th style="width:120px">决策项</th><th>结论</th><th style="width:220px">理由</th></tr>
+      <tr><td><b>产品定位</b></td><td>「论坛交流为主体 + 普法案例库 + 树洞 + 妈妈岗招聘信息」四合一轻量小程序，核心价值 = 信息 + 情绪 + 机会；<b>TabBar 正中为"+发布"按钮，发帖入口最显眼</b></td><td>对标禅城灵姐四栏目；参考猹话会/小红书等社区形态——发布是社区第一动作，按钮放拇指最易触达处</td></tr>
+      <tr><td><b>技术框架</b></td><td>微信原生小程序 + 微信云开发（云函数 / 云数据库 / 云存储），不建服务器</td><td>轻量化、零运维、免费额度够比赛使用，5 天开发窗口内风险最低</td></tr>
+      <tr><td><b>代码管理</b></td><td>Git + <b>GitHub 私有仓库</b>（已建：https://github.com/ciciyanyao/mama-gang-community.git）；微信开发者工具内置「版本管理」可作 Git GUI 使用</td><td>3 人并行开发必须有远端与分支规范；已按负责人决定落地 GitHub</td></tr>
+      <tr><td><b>交付节奏</b></td><td>10/5 需求核对 → 10/6 骨架可跑（✅ 已提前达成）→ 10/11 演示版冻结 → 10/15 随队交材料</td><td>对齐队内排期（开发事项.md）：10/6–10/10 为迭代开发窗口</td></tr>
+      <tr><td><b>投入控制</b></td><td>小程序占用精力 ≤ 全队 15%；招聘模块降为 P2 可选</td><td>文档明确小程序是副产品，报告/问卷/案例才是主线</td></tr>
+    </table>
+    <div class="note"><b>重要提醒：</b>小程序作为比赛演示与申报书配套工具，正式上架需企业主体及「社交-社区/论坛」类目资质；比赛阶段用<u>开发版 / 体验版</u>演示即可，不追求上架。UGC 内容必须接入微信内容安全接口 + 举报机制。</div>
+  </section>
+
+  <!-- S2 流程 -->
+  <section id="s2">
+    <h2>② 开发总流程（含两个总负责人核对点）</h2>
+    <div class="flow">
+      <div class="fstep"><span class="n">1</span><h4>需求分析</h4><p>10/3–10/5<br>痛点→功能清单→用户故事；产出《需求文档 + 流程图》<br><b>主责：周勤希</b></p></div>
+      <div class="farrow">→</div>
+      <div class="ckpt"><h4>◆ 核对点 1（10/5）</h4><p>与总负责人核对：定位、功能范围、技术方案、合规边界。通过后冻结需求，进入设计</p></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><span class="n">2</span><h4>原型与数据设计</h4><p>10/5–10/6<br>页面结构、交互原型、数据模型（集合与字段）<br><b>主责：黄炜怡（原型）· 周勤希（数据）</b></p></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><span class="n">3</span><h4>环境与骨架 ✅</h4><p>10/5–10/6（已基本完成）<br>AppID wx5aa48fa7b914e7ee、云开发 cloud1、GitHub 仓库、骨架可编译、login 云函数已部署验证<br><b>主责：周勤希 + 黄炜怡</b></p></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><span class="n">4</span><h4>迭代开发</h4><p>10/6–10/10<br>MVP（登录+论坛+案例库）→ 树洞+我的 → 内容安全 → 招聘(可选)<br><b>三人并行</b></p></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><span class="n">5</span><h4>测试与交付</h4><p>10/10–10/11<br>功能测试、体验版、演示脚本与截图素材（供申报书/PPT）<br><b>主责：李泽亚</b></p></div>
+      <div class="farrow">→</div>
+      <div class="ckpt"><h4>◆ 核对点 2（10/11）</h4><p>总负责人体验验收：演示版冻结；10/12 起仅做打磨与素材整理，不再加新功能</p></div>
+    </div>
+  </section>
+
+  <!-- S3 WBS -->
+  <section id="s3">
+    <h2>③ WBS 任务拆解（5 个工作包 · 27 项子任务）</h2>
+    <div class="wbs">
+      <div class="wp">
+        <div class="wp-h">WP0 · 项目管理与协作（贯穿全程）<span class="owner">主责：周勤希</span></div>
+        <ul>
+          <li>0.1 每日 10 分钟同步（群内三行：完成/计划/卡点）<span class="role">全员</span></li>
+          <li>0.2 Git 仓库搭建、分支规范与首次提交<span class="role">周勤希</span></li>
+          <li>0.3 与总负责人两次核对（10/5 需求、10/12 验收）<span class="role">周勤希</span></li>
+          <li>0.4 风险跟踪（时间冲突 / 成员能力 / 合规边界）<span class="role">周勤希</span></li>
+        </ul>
+      </div>
+      <div class="wp">
+        <div class="wp-h">WP1 · 需求分析（10/3–10/5）<span class="owner">主责：周勤希</span></div>
+        <ul>
+          <li>1.1 痛点与竞品调研汇总（妈妈岗政策 / 禅城灵姐 / 中山 / 清远 / 顺德 / 宝宝树 / 妈妈网）<span class="role">周勤希</span></li>
+          <li>1.2 需求文档：定位 / 用户画像 / 功能清单 / 优先级（MoSCoW）<span class="role">周勤希</span></li>
+          <li>1.3 流程图 + 技术方案一页纸 → 总负责人核对<span class="role">周勤希 + 全员</span></li>
+          <li>1.4 需求冻结（10/5 后只允许小调整）<span class="role">周勤希</span></li>
+        </ul>
+      </div>
+      <div class="wp">
+        <div class="wp-h">WP2 · 原型与数据设计（10/5–10/6）<span class="owner">主责：黄炜怡 · 周勤希</span></div>
+        <ul>
+          <li>2.1 页面结构图：TabBar 5 个（论坛 / 消息 / ➕发帖 / 树洞 / 我的），中间"+发布"最显眼（参考猹话会）；案例库从首页功能宫格入口进入；发帖/帖子详情/案例列表/案例详情等为二级页<span class="role">黄炜怡</span></li>
+          <li>2.2 低保真原型（手绘 / 即时设计 / 墨刀均可）<span class="role">黄炜怡</span></li>
+          <li>2.3 数据模型：users / posts / comments / cases / jobs 五个集合（树洞并入 posts，用 is_anonymous + 板块标识）+ 字段 + 权限规则<span class="role">周勤希</span></li>
+          <li>2.4 视觉基调：温暖、简洁、低饱和绿+橙（宝妈群体友好）<span class="role">黄炜怡 + 周勤希</span></li>
+        </ul>
+      </div>
+      <div class="wp">
+        <div class="wp-h">WP3 · 环境与骨架（10/5–10/6，✅ 已基本完成）<span class="owner">主责：周勤希 + 黄炜怡</span></div>
+        <ul>
+          <li>3.1 ✅ 注册小程序账号（个人主体）→ AppID wx5aa48fa7b914e7ee<span class="role">周勤希</span></li>
+          <li>3.2 ✅ 开通云开发（cloud1-d1gxqkgy5a1f2e31a）；建 5 集合（users/posts/comments/cases/jobs）待办中<span class="role">周勤希</span></li>
+          <li>3.3 ✅ GitHub 私有仓库已建（ciciyanyao/mama-gang-community）；拉队友为协作者待办<span class="role">周勤希</span></li>
+          <li>3.4 TabBar、全局样式、公共组件（帖子卡片 / 空状态 / 头像）<span class="role">黄炜怡</span></li>
+        </ul>
+      </div>
+      <div class="wp">
+        <div class="wp-h">WP4 · 功能开发（10/6–10/10）<span class="owner">三人并行，按模块认领</span></div>
+        <ul>
+          <li>4.1 ✅ 云函数 login 最小实现已部署验证（返回 openid）；正式登录逻辑（查/建 users 记录）A 类开发时补全<span class="role">周勤希</span></li>
+          <li>4.1b（10/8 补充）登录两层实现：进入即静默建 users 记录；「我的」页/参与动作引导设置头像昵称（chooseAvatar + input type=nickname，不用已废弃的 getUserProfile）；游客浏览全开、参与需登录<span class="role">周勤希</span></li>
+          <li>4.2 论坛主体：帖子列表（信息流）/ 发帖（图文）/ 详情 / 评论 / 点赞<span class="role">周勤希 + 黄炜怡</span></li>
+          <li>4.3 案例库：司法案例列表 / 详情 / 关键词搜索（数据直接用组内司法案例编码成果）<span class="role">李泽亚（数据整理导入）＋周勤希（页面）</span></li>
+          <li>4.4 树洞（独立 tab）：情绪倾诉板块发帖带匿名开关（is_anonymous），帖与评论均隐藏昵称头像；复用帖子列表组件按板块过滤<span class="role">黄炜怡</span></li>
+          <li>4.5 我的 + 消息：我的帖子 / 收藏 / 浏览历史；消息 tab = 我收到的评论/回复列表（红点提示）<span class="role">黄炜怡</span></li>
+          <li>4.6 内容安全：发帖/评论调 msgSecCheck 云函数 + 举报按钮 + 管理端可删帖<span class="role">周勤希</span></li>
+          <li>4.7 招聘信息（P2 可选）：岗位卡片 / 按城市与类型筛选 / 收藏<span class="role">李泽亚</span></li>
+        </ul>
+      </div>
+      <div class="wp">
+        <div class="wp-h">WP5 · 测试与交付（10/10–10/11）<span class="owner">主责：李泽亚</span></div>
+        <ul>
+          <li>5.1 功能测试用例（登录 / 发帖 / 评论 / 匿名 / 搜索 / 权限），真机体验版回归<span class="role">李泽亚</span></li>
+          <li>5.2 演示脚本（2 分钟）与界面截图素材，供申报书与汇报 PPT<span class="role">李泽亚 + 周勤希</span></li>
+          <li>5.3 总负责人体验验收（10/11）<span class="role">全员</span></li>
+          <li>5.4 答辩备用：离线演示方案（若现场无网，用开发者工具模拟器演示）<span class="role">周勤希</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 甘特 -->
+  <section id="s4">
+    <h2>④ 甘特排期（10/3 – 10/15，对齐队内主排期）</h2>
+    <div class="gantt">
+      <table>
+        <tr><th style="width:210px">任务</th><th>10/3</th><th>10/4</th><th>10/5</th><th>10/6</th><th>10/7</th><th>10/8</th><th>10/9</th><th>10/10</th><th>10/11</th><th>10/12</th><th>10/13</th><th>10/14</th><th>10/15</th></tr>
+        <tr><td class="lbl">WP1 需求分析 + 竞品调研 ✅</td><td colspan="3"><span class="bar b-teal"></span></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">需求文档 + 流程图 ✅</td><td></td><td colspan="2"><span class="bar b-teal"></span></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">◆ 核对点 1：需求 + 方案冻结</td><td></td><td></td><td class="mil">◆</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">WP2 原型 + 数据模型</td><td></td><td></td><td colspan="2"><span class="bar b-amber"></span></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">WP3 账号 + 云开发 + Git 骨架 ✅</td><td></td><td></td><td colspan="2"><span class="bar b-slate"></span></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">WP4 论坛 MVP（登录/发帖/评论）</td><td></td><td></td><td></td><td colspan="3"><span class="bar b-green"></span></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">WP4 案例库 + 树洞 + 我的</td><td></td><td></td><td></td><td></td><td></td><td colspan="3"><span class="bar b-green"></span></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">WP4 内容安全 + 举报</td><td></td><td></td><td></td><td></td><td></td><td></td><td colspan="2"><span class="bar b-green"></span></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">WP4 招聘信息（P2 可选）</td><td></td><td></td><td></td><td></td><td></td><td></td><td colspan="2"><span class="bar b-gray"></span></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">WP5 测试 + 体验版 + 演示脚本</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td colspan="2"><span class="bar b-amber"></span></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">◆ 核对点 2：演示版冻结 + 总负责人验收</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="mil">◆</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="lbl">打磨 + 答辩素材（申报书/PPT）</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td colspan="4"><span class="bar b-slate"></span></td></tr>
+      </table>
+    </div>
+    <div class="note"><b>双线任务提醒：</b>周勤希在队内同时负责「数据清洗与分析」（问卷 A 卷收集 + 数据分析），10/1–7 有问卷发放与案例收集任务；集中开发窗口 10/6–10/10，务必在 10/7 前把骨架与数据模型备好（骨架已提前达成 ✅，10/5 前补建 5 集合）。</div>
+  </section>
+
+  <!-- S5 架构 -->
+  <section id="s5">
+    <h2>⑤ 技术架构（原生小程序 + 微信云开发）</h2>
+    <div class="arch">
+      <div class="layer client">
+        <div class="lname">客户端 · 微信小程序（原生 WXML / WXSS / JS）</div>
+        <div class="chips">
+          <span class="chip">TabBar 5：论坛 / 消息 / ➕发帖 / 树洞 / 我的（中间发布按钮最显眼）</span><span class="chip">首页：板块 tab（求职/职场/育儿/情绪/政策）+ 热门榜 + 功能宫格（案例库/政策/招聘入口）</span><span class="chip">发帖（图文）</span><span class="chip">帖子详情 / 评论 / 点赞</span><span class="chip">案例库（列表 / 搜索）</span><span class="chip">树洞（匿名）</span><span class="chip">消息（回复通知）</span><span class="chip">招聘（P2）</span><span class="chip">我的</span>
+        </div>
+      </div>
+      <div class="arrow-down">▼</div>
+      <div class="layer wx">
+        <div class="lname">微信开放能力（免自建认证体系）</div>
+        <div class="chips">
+          <span class="chip">wx.login 微信授权登录</span><span class="chip">security.msgSecCheck 内容安全（文字/图片审核）</span><span class="chip">wx.uploadFile 图片上传</span><span class="chip">订阅消息 / 分享</span><span class="chip">头像昵称填写能力：chooseAvatar + input type=nickname（替代已废弃的 getUserProfile）</span>
+        </div>
+      </div>
+      <div class="arrow-down">▼</div>
+      <div class="layer cloud">
+        <div class="lname">微信云开发（免服务器 · 免费额度）</div>
+        <div class="chips">
+          <span class="chip">云函数（按业务模块合并，action 区分）：login ✅ 已部署验证 / post / comment / case / favorite / admin</span>
+          <span class="chip">云数据库：users · posts · comments · cases · jobs（含权限规则：所有人可读、本人可写）</span>
+          <span class="chip">云存储：帖子图片 / 案例附件</span>
+        </div>
+      </div>
+      <div class="arrow-down">▼</div>
+      <div class="layer admin">
+        <div class="lname">管理侧（比赛期用云开发控制台手工运营，不单独做后台）</div>
+        <div class="chips">
+          <span class="chip">内容审核 / 删帖封禁</span><span class="chip">司法案例录入（对接组内案例编码成果）</span><span class="chip">招聘信息录入（P2）</span><span class="chip">数据统计（发帖量 / 用户数，供申报书引用）</span>
+        </div>
+      </div>
+    </div>
+    <div class="note"><b>登录与游客权限（10/8 补充）：</b>游客可看、参与才要求登录——社区类产品标准打法（工具类如记账/打卡/预约才强制登录；我们是内容类，渐进式降门槛）。<b>微信登录分两层：</b>① <b>静默层</b>——进入小程序即 <code>wx.login()</code> → login 云函数换 openid → 自动查/建 users 记录，用户无感、无弹窗（每个微信用户天然有 openid）；② <b>交互层</b>——用户能感知的"登录" = 设置头像昵称：2021 年后 <code>getUserProfile</code> 授权弹窗已废弃（只能拿匿名灰头像+"微信用户"），改用官方头像昵称填写能力（头像 <code>&lt;button open-type="chooseAvatar"&gt;</code> 弹头像选择器、昵称 <code>&lt;input type="nickname"&gt;</code> 唤起昵称快捷填充）。<b>权限边界：</b>列表/详情/案例库/树洞浏览全开；发帖/评论/点赞/收藏需登录。</div>
+    <div class="note"><b>为什么不用 uni-app / Taro：</b>比赛只需微信一端、5 天窗口、成员技术栈未知；原生零构建链、官方文档与云开发无缝集成，出问题查资料最快。若后续要扩 H5 / 多端，再迁移 uni-app（Vue 语法）也不迟。Taro（React）对你们三人学习成本最高，不作考虑。</div>
+  </section>
+
+  <!-- S6 优先级 -->
+  <section id="s6">
+    <h2>⑥ 功能优先级（MoSCoW）与竞品对照</h2>
+    <table class="p0">
+      <tr><th style="width:80px">优先级</th><th style="width:180px">功能</th><th>说明</th></tr>
+      <tr><td>P0 必须有</td><td>微信授权登录</td><td>一键登录，自动建用户记录；无密码体系，省开发量</td></tr>
+      <tr><td>P0 必须有</td><td>论坛交流（主体）</td><td>帖子信息流 + 板块（育儿 / 职场 / 政策 / 互助）+ 图文发帖 + 评论 + 点赞</td></tr>
+      <tr><td>P0 必须有</td><td>普法案例库</td><td>司法案例列表 / 详情 / 搜索；数据 = 组内 30–40 份精选案例成果（数据闭环，展示实证支撑）</td></tr>
+      <tr><td>P1 应该有</td><td>树洞（匿名倾诉）</td><td>匿名发帖 / 匿名回复；主帖隐藏昵称头像，内容只作情绪支持（对标禅城灵姐「求职树洞」）</td></tr>
+      <tr><td>P1 应该有</td><td>消息通知</td><td>我收到的评论/回复列表 + tab 红点；MVP 只需查询"我帖子下的评论"</td></tr>
+      <tr><td>P1 应该有</td><td>我的 + 收藏</td><td>我的帖子 / 收藏 / 浏览记录</td></tr>
+      <tr><td>P1 应该有</td><td>热门榜（可选）</td><td>按热度（点赞+评论）取 TOP 榜，营造社区氛围（参考猹话会"本校十大"）</td></tr>
+      <tr><td>P1 应该有</td><td>内容安全 + 举报</td><td>发帖评论过审（msgSecCheck）、举报按钮、管理端删帖 —— UGC 合规底线</td></tr>
+      <tr><td>P2 可以有</td><td>妈妈岗招聘信息</td><td>岗位卡片 / 城市筛选 / 收藏；数据为演示用静态样例（不承诺真实对接企业）</td></tr>
+      <tr><td>P2 可以有</td><td>订阅消息 / 分享</td><td>回复通知、案例转发（答辩演示加分项）</td></tr>
+    </table>
+    <div class="note"><b>登录方式细化（10/8 补充）：</b>上表 P0「微信授权登录」落地为<b>两层实现</b>——① 静默登录：进入即 wx.login 换 openid 自动建 users 记录（无弹窗）；② 头像昵称填写：在「我的」页/首次参与动作时引导（chooseAvatar + input type=nickname，旧 getUserProfile 弹窗已废弃）。<b>游客浏览全开（列表/详情/案例库/树洞），发帖/评论/点赞/收藏才要求登录。</b></div>
+    <h3>竞品功能对照（调研结论，供需求文档引用）</h3>
+    <table>
+      <tr><th>产品</th><th>形态</th><th>核心功能</th><th>对我们的启示</th></tr>
+      <tr><td>禅城灵姐·妈妈岗(港)（佛山禅城，2024 上线于禅城智慧党建小程序）</td><td>政务小程序模块</td><td>四栏目：妈妈岗招聘（整合 7 大行业协会岗位）、求职树洞、一米创业台（创业信息）、帮帮团（居民有偿服务）；配套 20 分钟培训就业圈</td><td><b>求职树洞是官方认可的独立栏目</b> —— 情绪支持是刚需，我们做论坛 + 树洞成立</td></tr>
+      <tr><td>中山「妈妈岗」女性灵活就业公益平台（2021 上线）</td><td>独立微信小程序</td><td>个人：求职入职 / 参与活动 / 接收信息；企业：发布招聘 / 招纳人才 / 信息管理；累计 166 家企业 4000+ 岗位</td><td>双向对接是标配；但我们比赛期做不了企业端，只做信息展示</td></tr>
+      <tr><td>清远妈妈岗小程序（2023）</td><td>独立微信小程序</td><td>首批 598 个岗位信息展示</td><td>本地竞品，清远用户可作种子用户</td></tr>
+      <tr><td>顺德「妈妈岗」小程序</td><td>独立微信小程序 + 公众号</td><td>培训 / 招聘 / 求职一站式信息 + 直播带岗</td><td>培训信息也可作为内容板块（P2）</td></tr>
+      <tr><td>宝宝树 / 妈妈网</td><td>App / 网页社区</td><td>圈子（同孕龄 / 同城 / 同医院）、孕育问答、知识库、工具</td><td>论坛设计参考：板块 + 圈子 + 问答，冷启动靠运营话题</td></tr>
+    </table>
+  </section>
+
+  <!-- S7 Git -->
+  <section id="s7">
+    <h2>⑦ Git 协作规范（回答「Git 还是微信开发者工具内置？」）</h2>
+    <div class="note"><b>直接回答：</b>微信开发者工具<u>内置的「版本管理」本身就是 Git 的图形化界面</u>（可初始化仓库、提交、拉取/推送/抓取、创建/检出分支，支持 GitHub / Gitee / 微信代码管理 git.weixin.qq.com）。但它是"操作 Git 的工具"，<u>不是远程仓库</u>——3 人协作必须再有一个远端仓库。<b>已定：GitHub 私有仓库</b> https://github.com/ciciyanyao/mama-gang-community.git（周勤希用 watt toolkit 加速器保证访问；备选 Gitee / 微信代码管理，换仓成本低）。结论：<b>用 Git，且用「微信开发者工具 GUI + 命令行补充」结合。</b></div>
+    <h3>分支模型（简化 Git Flow，3 人够用）</h3>
+    <table>
+      <tr><th style="width:160px">分支</th><th>用途</th><th>规则</th></tr>
+      <tr><td>main</td><td>可演示的稳定版本</td><td>受保护，禁止直接推送；只在里程碑（10/8 骨架、10/12 冻结）由负责人合并</td></tr>
+      <tr><td>dev</td><td>开发主线</td><td>日常合并目标；每人每天至少 pull 一次</td></tr>
+      <tr><td>feature/xxx</td><td>每人每功能一个分支</td><td>命名如 feature/forum-post、feature/tree-hole；完成后合并回 dev 并删除</td></tr>
+    </table>
+    <h3>每日工作流（5 步）</h3>
+    <table>
+      <tr><th>步骤</th><th>操作</th><th>说明</th></tr>
+      <tr><td>1</td><td>git pull origin dev</td><td>先同步，后开工；避免积压冲突</td></tr>
+      <tr><td>2</td><td>git checkout -b feature/xxx</td><td>从最新 dev 切功能分支</td></tr>
+      <tr><td>3</td><td>小步提交</td><td>每完成一个可运行的小单元即提交；commit 信息规范：feat: 发帖图文上传 / fix: 评论计数不同步 / docs: 更新数据模型</td></tr>
+      <tr><td>4</td><td>合并回 dev</td><td>先 pull dev → 解决冲突 → 合并 → 推送</td></tr>
+      <tr><td>5</td><td>里程碑合并 main</td><td>仅负责人操作，打 tag（v0.1 骨架 / v0.9 冻结）</td></tr>
+    </table>
+    <h3>3 个必踩的坑（提前防）</h3>
+    <ul style="padding-left:20px; font-size:13.5px;">
+      <li><b>project.config.json 与个人设置：</b>project.config.json 放<b>项目根目录</b>并提交（✅ 已做：AppID wx5aa48fa7b914e7ee、miniprogramRoot/cloudfunctionRoot 已配好，三人共用同一份）；个人差异（本地编译设置）放 project.private.config.json 并加入 .gitignore，避免互相覆盖。</li>
+      <li><b>云开发环境：</b>3 人共用同一个环境 cloud1-d1gxqkgy5a1f2e31a（免费额度共享、数据互通）。比赛期<b>单环境即可</b>——再建环境每月多花约 19.9 元且要维护双份，演示与开发同环境，注意定期清测试数据。</li>
+      <li><b>图片与临时文件：</b>node_modules / 临时图片 / .DS_Store 一律 gitignore；仓库体积保持 &lt; 50MB。</li>
+    </ul>
+  </section>
+
+  <!-- S8 里程碑风险 -->
+  <section id="s8">
+    <h2>⑧ 里程碑与风险清单</h2>
+    <h3>里程碑</h3>
+    <table>
+      <tr><th style="width:120px">时间</th><th>节点</th><th>验收标准</th></tr>
+      <tr><td>10/5</td><td>需求与方案核对（总负责人）</td><td>需求文档 + 流程图确认，需求冻结</td></tr>
+      <tr><td>10/6</td><td>骨架可跑 ✅</td><td>登录 + TabBar 5 页空壳可编译（含中间发布按钮），Git 规范生效 —— <b>已于 10/4 提前达成</b>（骨架已推送 GitHub，login 云函数已部署验证）</td></tr>
+      <tr><td>10/11</td><td>演示版冻结</td><td>P0 + P1 全部可用，真机体验版可演示，截图素材齐</td></tr>
+      <tr><td>10/15</td><td>随队提交</td><td>小程序部分写入申报书（功能截图 + 数据），后续只做答辩打磨</td></tr>
+    </table>
+    <h3>风险与对策</h3>
+    <table>
+      <tr><th style="width:170px">风险</th><th>影响</th><th>对策</th></tr>
+      <tr><td>时间最紧（最大风险）</td><td>10/6–10/10 迭代窗口只有 5 天，且与数据清洗并行</td><td>假期已完成需求/原型/骨架；P2 一律砍；每日同步防返工</td></tr>
+      <tr><td>成员技术水平未知</td><td>页面开发可能拖慢</td><td>10/6 前先摸底：各自跑通官方「云开发 quickstart 模板」+ 按《开发事项.md》第 8 节接入（拉成员/协作者、导入项目、clone）；能力不足者转测试/数据导入</td></tr>
+      <tr><td>论坛类目资质</td><td>无法正式上架</td><td>比赛用体验版；申报书如实写"演示原型 + 技术验证"，不承诺上架</td></tr>
+      <tr><td>UGC 内容合规</td><td>违规内容风险</td><td>msgSecCheck 全量审核 + 举报 + 管理端删帖；树洞匿名仅隐藏身份，仍需过审</td></tr>
+      <tr><td>案例数据依赖组内成果</td><td>案例编码 10/8 前未必齐</td><td>先用 10–15 条样例行数据打通功能，后补全；页面支持批量导入 JSON</td></tr>
+      <tr><td>演示现场无网</td><td>答辩演示失败</td><td>微信开发者工具模拟器离线演示为兜底方案</td></tr>
+    </table>
+  </section>
+
+  <footer>编制：周勤希（小程序开发负责人）｜待总负责人核对｜2026-10-04 更新｜本页为 V3：对齐开发事项.md（GitHub 协作 / 单云环境 / 排期 10/6–10/10），核对通过后按此分工执行</footer>
+</div>
+</body>
+</html>

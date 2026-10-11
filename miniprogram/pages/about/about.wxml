@@ -1,0 +1,55 @@
+<view class="container">
+  <!-- Logo区域 -->
+  <view class="logo-section">
+    <image class="logo" src="/images/user-3-line-active.svg" mode="aspectFit" />
+    <text class="app-name">妈妈岗社区</text>
+    <text class="version">v{{version}}</text>
+  </view>
+
+  <!-- 项目介绍 -->
+  <view class="section">
+    <text class="section-title">项目介绍</text>
+    <text class="description">{{description}}</text>
+    <text class="desc-detail">
+      本小程序是为"珠三角妈妈岗实证调查"课题开发的配套演示工具，
+      定位为"妈妈岗宝妈交流社区"：以论坛交流为主体，叠加普法案例库、
+      树洞（匿名情绪倾诉）与妈妈岗招聘信息。
+    </text>
+  </view>
+
+  <!-- 开发团队 -->
+  <view class="section">
+    <text class="section-title">开发团队</text>
+    <view class="team-list">
+      <view class="team-item" wx:for="{{team}}" wx:key="name">
+        <text class="member-name">{{item.name}}</text>
+        <text class="member-role">{{item.role}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 技术栈 -->
+  <view class="section">
+    <text class="section-title">技术栈</text>
+    <view class="tech-list">
+      <text class="tech-item">微信小程序</text>
+      <text class="tech-item">微信云开发</text>
+      <text class="tech-item">云函数</text>
+      <text class="tech-item">云数据库</text>
+    </view>
+  </view>
+
+  <!-- 链接 -->
+  <view class="section">
+    <text class="section-title">相关链接</text>
+    <view class="link-item" bindtap="onCopyRepo">
+      <text class="link-text">GitHub 仓库</text>
+      <image class="arrow-icon" src="/images/arrow-right.svg" />
+    </view>
+  </view>
+
+  <!-- 版权信息 -->
+  <view class="copyright">
+    <text class="copyright-text">© 2026 妈妈岗社区开发团队</text>
+  </view>
+</view>
