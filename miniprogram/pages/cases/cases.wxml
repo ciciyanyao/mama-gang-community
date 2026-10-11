@@ -8,13 +8,14 @@
   <!-- 筛选标签 -->
   <scroll-view class="tags-scroll" scroll-x>
     <view class="tags-container">
+      <!-- 注意这里的 data-type 绑定，触发 switchType 事件 -->
       <view wx:for="{{types}}" wx:key="index" class="tag {{currentType === item ? 'active' : ''}}" bindtap="switchType" data-type="{{item}}">
         {{item}}
       </view>
     </view>
   </scroll-view>
 
-  <!-- 案例列表 -->
+  <!-- 案例列表（使用过滤后的 caseList） -->
   <view class="case-list">
     <block wx:for="{{caseList}}" wx:key="_id">
       <view class="case-card" bindtap="goToDetail" data-id="{{item._id}}">
