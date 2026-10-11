@@ -27,7 +27,10 @@ Page({
 
     // UI 状态
     publishing: false,
-    showDraftDialog: false
+    showDraftDialog: false,
+
+    // 右上角"保存草稿"按钮右移量（避开微信胶囊按钮，单位 px）
+    saveDraftMarginRight: 100
   },
 
   // ========== 生命周期 ==========
@@ -35,6 +38,14 @@ Page({
     try {
       const sys = wx.getSystemInfoSync()
       this.setData({ statusBarHeight: sys.statusBarHeight || 20 })
+
+      // 获取右上角胶囊按钮位置，让"保存草稿"按钮避开胶囊，确保可点击
+      try {
+        const menu = wx.getMenuButtonBoundingClientRect()
+        // 右侧留出胶囊区域：窗口宽 - 胶囊左缘 + 间距
+        const marginRight = Math.max(8, (sys.windowWidth - menu.left) + 8)
+        this.setData({ saveDraftMarginRight: marginRight })
+      } catch (e) {}
     } catch (e) {}
 
     if (draftUtil.hasDraft()) {
@@ -326,6 +337,12 @@ Page({
       is_anonymous: isAnonymous,
       images: images.map(m => m.path)
     })
+  },
+
+  // ========== 手动保存草稿（右上角按钮） ==========
+  onSaveDraft() {
+    this.autoSaveDraft()
+    wx.showToast({ title: '草稿已保存', icon: 'success' })
   },
 
   onLoginSuccess() { this.setData({ isLogin: true }) }

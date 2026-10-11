@@ -40,6 +40,18 @@
   opacity: 0.6;
 }
 
+/* 右上角"保存草稿"：次要操作，白底绿边（区别于底部主"发布"按钮） */
+.nav-save {
+  font-size: 28rpx;
+  color: #2E7D5B;
+  background: #FFFFFF;
+  border: 2rpx solid #2E7D5B;
+  padding: 8rpx 24rpx;
+  border-radius: 32rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
 /* ========== 滚动编辑区 ========== */
 .edit-scroll {
   flex: 1;
