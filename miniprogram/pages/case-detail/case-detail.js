@@ -31,12 +31,5 @@ Page({
         url: '/pages/cases/cases'
       });
     }
-<<<<<<< HEAD
   }
-=======
-  },
-
-  // 登录成功回调（来自 login-modal 组件）
-  onLoginSuccess() {}
->>>>>>> 5a96c1f6e40fc70c415fdf6aeb95f82a85b8cdce
 });

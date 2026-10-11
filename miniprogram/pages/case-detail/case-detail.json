@@ -1,10 +1,4 @@
 {
-<<<<<<< HEAD
   "usingComponents": {},
-=======
-  "usingComponents": {
-    "login-modal": "/components/login-modal/index"
-  },
->>>>>>> 5a96c1f6e40fc70c415fdf6aeb95f82a85b8cdce
   "navigationBarTitleText": "案例详情"
 }

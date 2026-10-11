@@ -32,10 +32,4 @@
       <view class="section-content">{{caseInfo.source}}</view>
     </view>
   </view>
-<<<<<<< HEAD
-=======
-
-  <!-- 登录弹窗：互动需登录时就地弹出 -->
-  <login-modal id="loginModal" bind:success="onLoginSuccess" />
->>>>>>> 5a96c1f6e40fc70c415fdf6aeb95f82a85b8cdce
 </view>
