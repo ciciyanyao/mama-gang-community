@@ -12,7 +12,7 @@
       />
       <view class="user-detail">
         <text class="user-name">{{userInfo.nickName || '妈妈岗用户'}}</text>
-        <text class="user-subtitle">妈妈岗社区成员</text>
+        <text class="user-subtitle">妈妈港成员</text>
       </view>
     </view>
 
@@ -59,7 +59,7 @@
 
   <!-- ==================== 版本信息 ==================== -->
   <view class="version-info">
-    <text class="version-text">妈妈岗社区 v1.0.0</text>
+    <text class="version-text">妈妈港 v1.0.0</text>
   </view>
 
   <!-- ==================== 登录弹窗 ==================== -->

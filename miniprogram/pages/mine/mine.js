@@ -97,8 +97,8 @@ Page({
     // 关于页暂时用 toast 提示
     if (id === 'about') {
       wx.showModal({
-        title: '关于妈妈岗社区',
-        content: '妈妈岗社区 v1.0.0\n为宝妈群体打造的求职交流平台',
+        title: '关于妈妈港',
+        content: '妈妈港 v1.0.0\n为宝妈群体打造的求职交流平台',
         showCancel: false
       })
       return

@@ -313,7 +313,7 @@ Page({
   onShareAppMessage() {
     const { post } = this.data
     return {
-      title: post ? post.title : '来自妈妈岗社区的帖子',
+      title: post ? post.title : '来自妈妈港的帖子',
       path: `/pages/post-detail/post-detail?id=${this.data.postId}`
     }
   },

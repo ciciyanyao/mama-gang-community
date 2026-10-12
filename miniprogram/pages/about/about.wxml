@@ -2,7 +2,7 @@
   <!-- Logo区域 -->
   <view class="logo-section">
     <image class="logo" src="/images/user-3-line-active.svg" mode="aspectFit" />
-    <text class="app-name">妈妈岗社区</text>
+    <text class="app-name">妈妈港</text>
     <text class="version">v{{version}}</text>
   </view>
 
@@ -50,6 +50,6 @@
 
   <!-- 版权信息 -->
   <view class="copyright">
-    <text class="copyright-text">© 2026 妈妈岗社区开发团队</text>
+    <text class="copyright-text">© 2026 妈妈港开发团队</text>
   </view>
 </view>
