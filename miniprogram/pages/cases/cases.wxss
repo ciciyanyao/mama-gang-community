@@ -1,5 +1,4 @@
-/* pages/cases/cases.wxss */
-page { background-color: #f5f7fa; font-family: sans-serif; }
+page { background-color: #F0EBE1; font-family: sans-serif; }
 .container { padding: 20rpx 30rpx; }
 
 /* 搜索框 */
@@ -19,17 +18,27 @@ page { background-color: #f5f7fa; font-family: sans-serif; }
 }
 .tag.active { background: #059669; color: #ffffff; font-weight: bold; }
 
-/* 案例卡片 */
-.case-list { display: flex; flex-direction: column; gap: 20rpx; }
-.case-card {
-  background: #ffffff; padding: 30rpx;
-  border-radius: 20rpx; box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
+/* 手账卡片列表 */
+.case-list { display: flex; flex-direction: column; gap: 30rpx; }
+.paper-card {
+  position: relative;
+  width: 100%;
+  background-size: 100% 100%; 
+  background-repeat: no-repeat;
+  background-position: center;
+  box-sizing: border-box;
+  padding: 80rpx 60rpx; 
+  box-shadow: 0 6rpx 16rpx rgba(0,0,0,0.08);
 }
-.case-title { font-size: 32rpx; font-weight: bold; color: #333; margin-bottom: 16rpx; }
-.case-info { margin-bottom: 16rpx; }
+.paper-content { position: relative; z-index: 2; word-break: break-all; }
+
+.case-title { font-size: 32rpx; font-weight: bold; color: #4A3B32; margin-bottom: 16rpx; line-height: 1.4; text-align: center; }
+.case-info { margin-bottom: 16rpx; text-align: center; }
 .case-city, .case-type {
-  font-size: 22rpx; color: #059669;
-  background: #e6f7f3; padding: 4rpx 16rpx;
-  border-radius: 10rpx; margin-right: 16rpx;
+  font-size: 22rpx; color: #9C7C5B;
+  background: rgba(230, 220, 205, 0.8); padding: 4rpx 16rpx;
+  border-radius: 10rpx; margin: 0 8rpx; display: inline-block;
 }
-.case-summary { font-size: 28rpx; color: #666; line-height: 1.5; }
+.case-summary { font-size: 28rpx; color: #6B5E52; line-height: 1.6; text-align: justify; margin-top: 10rpx; }
+
+.empty-state { display: flex; justify-content: center; align-items: center; padding-top: 100rpx; color: #999; font-size: 28rpx; }
