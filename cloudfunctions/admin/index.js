@@ -26,8 +26,6 @@ exports.main = async (event, context) => {
       return await handleDeletePost(event)
     case 'deleteComment':
       return await handleDeleteComment(event)
-    case 'setTop':
-      return await handleSetTop(event)
     default:
       return { code: -1, message: '未知操作' }
   }
@@ -204,18 +202,5 @@ async function handleDeleteComment(event) {
     return { code: 0, message: '删除评论成功' }
   } catch (err) {
     return { code: -1, message: '删除评论失败', error: err.message }
-  }
-}
-
-// 设置置顶
-async function handleSetTop(event) {
-  const { postId, isTop } = event
-  try {
-    await db.collection('posts').doc(postId).update({
-      data: { is_top: isTop }
-    })
-    return { code: 0, message: isTop ? '帖子已置顶' : '帖子已取消置顶' }
-  } catch (err) {
-    return { code: -1, message: '设置置顶失败', error: err.message }
   }
 }

@@ -1,18 +1,15 @@
 <!-- components/post-card/post-card.wxml —— 帖子卡片 -->
 <view class="post-card" bindtap="onTapCard">
-  <!-- 置顶标识：仅 is_top 时显示 -->
-  <view wx:if="{{post.is_top}}" class="pin-badge">置顶</view>
-
   <!-- 作者信息行 -->
   <view class="post-header">
     <image
       class="post-avatar"
-      src="{{post.is_anonymous ? defaultAvatar : (post.authorAvatar || defaultAvatar)}}"
+      src="{{post.is_anonymous ? anonAvatar : (post.authorAvatar || defaultAvatar)}}"
       mode="aspectFill"
     />
     <view class="post-author-info">
       <view class="post-author-name">
-        {{post.is_anonymous ? '匿名宝妈' : (post.authorName || '宝妈用户')}}
+        {{post.is_anonymous ? anonNickname : (post.authorName || '宝妈用户')}}
         <!-- 匿名标识 -->
         <text wx:if="{{post.is_anonymous}}" class="anon-tag">匿名</text>
       </view>

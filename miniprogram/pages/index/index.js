@@ -126,10 +126,9 @@ Page({
         where.category = CATEGORIES[catIndex]
       }
 
-      // 查询帖子：置顶优先 + 创建时间倒序
+      // 查询帖子：创建时间倒序（置顶已移除，热门榜替代）
       const res = await POSTS
         .where(where)
-        .orderBy('is_top', 'desc')
         .orderBy('create_time', 'desc')
         .skip(skip)
         .limit(PAGE_SIZE)

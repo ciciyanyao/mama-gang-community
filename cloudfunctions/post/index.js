@@ -17,6 +17,15 @@ const PAGE_SIZE = 20
 // 板块枚举（与 miniprogram/config/index.js 保持一致）
 const CATEGORIES = ['求职交流', '职场经验', '育儿互助', '情绪倾诉', '政策资讯']
 
+// djb2 hash（与前端 utils/anonymous.js 同一算法，保证前后端选中同一头像/昵称）
+function hash(str) {
+  let h = 5381
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h + str.charCodeAt(i)) | 0
+  }
+  return Math.abs(h)
+}
+
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   const { action } = event
@@ -110,7 +119,6 @@ async function createPost(event, openid) {
     category: mainCategory,    // 主分类（第一个选中的板块）
     categories: allCategories, // 全部分类（支持多选）
     is_anonymous: !!is_anonymous,
-    is_top: false,
     likeCount: 0,
     commentCount: 0,
     status: 1,            // 0待审 / 1已发布 / 2已删除（审核通过直接已发布）
@@ -119,6 +127,14 @@ async function createPost(event, openid) {
     updated_at: db.serverDate()
   }
   const addRes = await posts.add({ data: postData })
+
+  // 匿名帖：按 openid + postId 派生 deterministic anonymousId，前端据此哈希取头像/昵称
+  // 同帖同人 → 同 ID；跨帖 → postId 不同 → ID 不同（满足"同帖固定、跨帖重洗"）
+  if (postData.is_anonymous) {
+    const anonId = hash(openid + '::' + addRes._id)
+    await posts.doc(addRes._id).update({ data: { anonymousId: anonId } })
+  }
+
   return { code: 0, data: { _id: addRes._id } }
 }
 
@@ -227,7 +243,6 @@ async function handleList(event) {
       db.collection('posts').where(where).count(),
       db.collection('posts')
         .where(where)
-        .orderBy('is_top', 'desc')
         .orderBy('create_time', 'desc')
         .skip(skip)
         .limit(parseInt(pageSize))
