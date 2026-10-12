@@ -4,7 +4,6 @@ const _ = db.command
 const auth = require('../../utils/auth.js')
 const POSTS = db.collection('posts')
 const COMMENTS = db.collection('comments')
-const FAVORITES = db.collection('favorites')
 
 Page({
   data: {
@@ -90,7 +89,7 @@ Page({
     this.setData({ commentLoading: true })
     try {
       const res = await COMMENTS
-        .where({ post_id: postId, status: _.neq(-1) })
+        .where({ postId, status: _.neq(-1) })
         .orderBy('create_time', 'asc')
         .limit(100)
         .get()
@@ -111,21 +110,21 @@ Page({
     }
   },
 
-  // ==================== 检查收藏状态（按用户隔离） ====================
+  // ==================== 检查收藏状态（统一走 favorite 云函数，postId 协议） ====================
   async checkFavoriteStatus(postId) {
-    const app = getApp()
-    const openid = app.globalData.openid
     // 未登录：不可能有收藏
-    if (!openid) {
+    if (!auth.isLogin()) {
       this.setData({ isFavorited: false })
       return
     }
     try {
-      const res = await FAVORITES
-        .where({ post_id: postId, _openid: openid })
-        .count()
-
-      this.setData({ isFavorited: res.total > 0 })
+      const res = await wx.cloud.callFunction({
+        name: 'favorite',
+        data: { action: 'check', postId }
+      })
+      this.setData({
+        isFavorited: !!(res.result && res.result.code === 0 && res.result.data && res.result.data.isFavorite)
+      })
     } catch (err) {
       console.error('[checkFavoriteStatus] 失败：', err)
     }
@@ -177,32 +176,28 @@ Page({
     }
   },
 
-  // ==================== 收藏/取消收藏 ====================
+  // ==================== 收藏/取消收藏（统一走 favorite 云函数，postId 协议） ====================
   async onFavoriteTap() {
     // 未登录：弹登录弹窗，不继续
     if (!auth.requireLogin(this)) return
 
     const { postId, isFavorited } = this.data
-    const app = getApp()
-    const openid = app.globalData.openid
 
     // 乐观更新
     this.setData({ isFavorited: !isFavorited })
 
     try {
-      if (isFavorited) {
-        // 取消收藏（按用户删除自己的收藏）
-        await FAVORITES.where({ post_id: postId, _openid: openid }).remove()
-        wx.showToast({ title: '已取消收藏', icon: 'none' })
+      const res = await wx.cloud.callFunction({
+        name: 'favorite',
+        data: { action: isFavorited ? 'remove' : 'add', postId }
+      })
+
+      if (res.result && res.result.code === 0) {
+        wx.showToast({ title: res.result.message || '操作成功', icon: 'none' })
       } else {
-        // 收藏（云数据库自动写入 _openid 归属当前用户）
-        await FAVORITES.add({
-          data: {
-            post_id: postId,
-            create_time: db.serverDate()
-          }
-        })
-        wx.showToast({ title: '已收藏', icon: 'success' })
+        // 服务端失败：回滚
+        this.setData({ isFavorited })
+        wx.showToast({ title: (res.result && res.result.message) || '操作失败', icon: 'none' })
       }
     } catch (err) {
       console.error('[onFavoriteTap] 失败：', err)
@@ -258,11 +253,11 @@ Page({
     wx.showLoading({ title: '发送中...', mask: true })
 
     try {
+      // 统一走 comment 云函数 create（服务端写 postId 字段 + commentCount 计数）
       const commentData = {
-        post_id: postId,
-        content: text,
-        create_time: db.serverDate(),
-        status: 0 // 0=正常, -1=已删除
+        action: 'create',
+        postId,
+        content: text
       }
 
       // 如果是回复某条评论
@@ -271,15 +266,16 @@ Page({
         commentData.reply_nickname = replyTo.nickname
       }
 
-      await COMMENTS.add({ data: commentData })
-
-      // 更新帖子评论计数
-      await POSTS.doc(postId).update({
-        data: {
-          comment_count: _.inc(1),
-          engagement: _.inc(1)
-        }
+      const res = await wx.cloud.callFunction({
+        name: 'comment',
+        data: commentData
       })
+
+      if (!res.result || res.result.code !== 0) {
+        wx.hideLoading()
+        wx.showToast({ title: (res.result && res.result.message) || '评论失败', icon: 'none' })
+        return
+      }
 
       wx.hideLoading()
       wx.showToast({ title: '评论成功', icon: 'success' })
@@ -294,7 +290,7 @@ Page({
       // 更新帖子评论数
       if (this.data.post) {
         this.setData({
-          'post.comment_count': (this.data.post.comment_count || 0) + 1
+          'post.commentCount': (this.data.post.commentCount || 0) + 1
         })
       }
     } catch (err) {
