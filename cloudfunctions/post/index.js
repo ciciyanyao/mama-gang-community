@@ -194,8 +194,8 @@ async function deletePost(event, openid) {
   if (!postRes || !postRes.data) return { code: -1, msg: '帖子不存在' }
   const post = postRes.data
 
-  // 校验权限：本人 or 管理员
-  if (post.openid !== openid) {
+  // 校验权限：本人（authorId 对齐 myPosts 查询口径；历史帖无 openid 字段，兼容两者） or 管理员
+  if (post.authorId !== openid && post.openid !== openid) {
     const uRes = await users.where({ openid }).get()
     const me = uRes.data[0]
     if (!me || me.role !== 2) return { code: -1, msg: '无权限删除' }

@@ -56,15 +56,22 @@ Page({
       // 格式化时间
       post.timeText = this._formatTime(post.create_time)
 
-      // 检查当前用户是否已点赞
+      // 检查当前用户是否已点赞（统一协议：likes 集合，由 post 云函数 like 维护）
       const app = getApp()
       const openid = app.globalData.openid
-      const isLiked = openid && post.liked_users && post.liked_users.includes(openid)
+      let isLiked = false
+      if (openid) {
+        const likeRes = await db.collection('likes')
+          .where({ postId: id, _openid: openid })
+          .limit(1)
+          .get()
+        isLiked = likeRes.data.length > 0
+      }
 
       this.setData({
         post,
-        likeCount: post.likes || 0,
-        isLiked: !!isLiked,
+        likeCount: post.likeCount || post.likes || 0,
+        isLiked,
         previewImages: post.images || []
       })
 
@@ -131,40 +138,36 @@ Page({
     this.checkFavoriteStatus(this.data.postId)
   },
 
-  // ==================== 点赞/取消点赞 ====================
+  // ==================== 点赞/取消点赞（统一走 post 云函数 like，与论坛列表同一套协议） ====================
   async onLikeTap() {
     // 未登录：弹登录弹窗，不继续
     if (!auth.requireLogin(this)) return
 
     const { postId, isLiked, likeCount } = this.data
-    const app = getApp()
-    const openid = app.globalData.openid
 
     // 乐观更新 UI
     this.setData({
       isLiked: !isLiked,
-      likeCount: isLiked ? likeCount - 1 : likeCount + 1
+      likeCount: isLiked ? Math.max(0, likeCount - 1) : likeCount + 1
     })
 
     try {
-      if (isLiked) {
-        // 取消点赞
-        await POSTS.doc(postId).update({
-          data: {
-            likes: _.inc(-1),
-            engagement: _.inc(-1),
-            liked_users: _.pull(openid)
-          }
+      const res = await wx.cloud.callFunction({
+        name: 'post',
+        data: { action: 'like', postId }
+      })
+
+      if (res.result.code === 0) {
+        // 以服务端结果为准
+        const liked = res.result.data && res.result.data.liked
+        this.setData({
+          isLiked: liked,
+          likeCount: liked ? likeCount + 1 : Math.max(0, likeCount - 1)
         })
       } else {
-        // 点赞
-        await POSTS.doc(postId).update({
-          data: {
-            likes: _.inc(1),
-            engagement: _.inc(1),
-            liked_users: _.push(openid)
-          }
-        })
+        // 服务端失败：回滚 UI
+        this.setData({ isLiked, likeCount })
+        wx.showToast({ title: res.result.message || '操作失败', icon: 'none' })
       }
     } catch (err) {
       console.error('[onLikeTap] 失败：', err)
