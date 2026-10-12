@@ -31,7 +31,6 @@
         <view class="post-stats" bindtap="onPostTap" data-id="{{item._id}}">
           <text class="stat">👍 {{item.likeCount || 0}}</text>
           <text class="stat">💬 {{item.commentCount || 0}}</text>
-          <text class="stat category" wx:if="{{item.category}}">{{item.category}}</text>
         </view>
         <view
           class="delete-btn"

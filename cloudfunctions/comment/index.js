@@ -45,10 +45,25 @@ async function handleCreate(event, openid) {
       return { code: -1, message: '帖子不存在或已被删除' }
     }
 
+    // 冗余作者昵称/头像（与 post 云函数同一协议，供详情页评论直接显示）
+    let authorName = ''
+    let authorAvatar = ''
+    try {
+      const userRes = await db.collection('users').where({ openid }).limit(1).get()
+      if (userRes.data.length > 0) {
+        authorName = userRes.data[0].nickname || ''
+        authorAvatar = userRes.data[0].avatar || ''
+      }
+    } catch (e) {
+      console.error('查询评论用户信息失败：', e)
+    }
+
     // 写入评论
     const commentData = {
       postId,
       authorId: openid,
+      authorName,   // 冗余作者昵称（历史评论无此字段则详情页显示兜底）
+      authorAvatar, // 冗余作者头像
       content: content.trim(),
       is_read: false, // 对帖子作者来说是未读的
       status: 1,      // 1=正常, 2=已删除

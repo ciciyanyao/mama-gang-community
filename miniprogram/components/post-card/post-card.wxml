@@ -18,8 +18,6 @@
       </view>
       <view wx:if="{{!post.is_anonymous}}" class="post-time">{{post.createTimeStr || '刚刚'}}</view>
     </view>
-    <!-- 板块标签 -->
-    <view wx:if="{{post.category}}" class="post-category-tag">{{post.category}}</view>
   </view>
 
   <!-- 正文摘要 -->

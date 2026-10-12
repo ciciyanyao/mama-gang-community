@@ -12,12 +12,11 @@
 
     <!-- 用户信息 -->
     <view class="detail-header">
-      <image class="detail-avatar" src="{{post.avatar || '/images/default-avatar.svg'}}" mode="aspectFill" />
+      <image class="detail-avatar" src="{{post.authorAvatar || '/images/default-avatar.svg'}}" mode="aspectFill" />
       <view class="detail-user-info">
-        <text class="detail-nickname">{{post.nickname || '匿名用户'}}</text>
+        <text class="detail-nickname">{{post.authorName || '宝妈用户'}}</text>
         <text class="detail-time">{{post.timeText}}</text>
       </view>
-      <view class="detail-category-tag" wx:if="{{post.category}}">{{post.category}}</view>
     </view>
 
     <!-- 标题 -->
@@ -71,10 +70,10 @@
     <!-- 评论列表 -->
     <view class="comment-list" wx:if="{{comments.length > 0}}">
       <view class="comment-item" wx:for="{{comments}}" wx:key="_id">
-        <image class="comment-avatar" src="{{item.avatar || '/images/default-avatar.svg'}}" mode="aspectFill" />
+        <image class="comment-avatar" src="{{item.authorAvatar || '/images/default-avatar.svg'}}" mode="aspectFill" />
         <view class="comment-body">
           <view class="comment-meta">
-            <text class="comment-nickname">{{item.nickname || '匿名用户'}}</text>
+            <text class="comment-nickname">{{item.authorName || '宝妈用户'}}</text>
             <text class="comment-time">{{item.timeText}}</text>
           </view>
 
@@ -89,7 +88,7 @@
             <view
               class="reply-btn"
               data-commentid="{{item._id}}"
-              data-nickname="{{item.nickname || '匿名用户'}}"
+              data-nickname="{{item.authorName || '宝妈用户'}}"
               bindtap="onReplyTap"
             >回复</view>
           </view>
