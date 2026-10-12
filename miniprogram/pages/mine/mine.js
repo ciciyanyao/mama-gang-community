@@ -10,9 +10,9 @@ Page({
     hasUserInfo: false,
     // 菜单列表
     menuList: [
-      { id: 'my-posts',     title: '我的帖子', icon: '📝', url: '/pages/my-posts/my-posts' },
-      { id: 'my-favorites', title: '我的收藏', icon: '⭐', url: '/pages/my-favorites/my-favorites' },
-      { id: 'admin',        title: '管理后台', icon: '🛡️', url: '/pages/admin/admin', adminOnly: true },
+      { id: 'my-posts',     title: '我的帖子', icon: '📝', url: '/subpkg/my-posts/my-posts' },
+      { id: 'my-favorites', title: '我的收藏', icon: '⭐', url: '/subpkg/my-favorites/my-favorites' },
+      { id: 'admin',        title: '管理后台', icon: '🛡️', url: '/subpkg/admin/admin', adminOnly: true },
       { id: 'about',        title: '关于',     icon: 'ℹ️', url: '' }
     ],
     // 是否管理员（role === 2）

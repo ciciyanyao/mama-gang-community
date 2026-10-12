@@ -53,7 +53,7 @@ Page({
   // 关于
   onAboutTap() {
     wx.navigateTo({
-      url: '/pages/about/about'
+      url: '/subpkg/about/about'
     })
   }
 })

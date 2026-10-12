@@ -11,7 +11,7 @@ const CATEGORIES = ['全部', '求职交流', '职场经验', '育儿互助', '�
 
 // 功能宫格：案例库有真实页面，其余未实现 → toast"开发中"
 const GRID_ITEMS = [
-  { id: 'cases', icon: '📚', name: '案例库', url: '/pages/cases/cases' },
+  { id: 'cases', icon: '📚', name: '案例库', url: '/subpkg/cases/cases' },
   { id: 'policy', icon: '📋', name: '政策资讯', url: '' },
   { id: 'jobs', icon: '💼', name: '招聘', url: '' },
   { id: 'help', icon: '🤝', name: '互助', url: '' }
@@ -219,7 +219,7 @@ Page({
   onHotTap(e) {
     const id = e.currentTarget.dataset.id
     if (!id) return
-    wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${id}` })
+    wx.navigateTo({ url: `/subpkg/post-detail/post-detail?id=${id}` })
   },
 
   // ==================== 工具函数：格式化时间 ====================

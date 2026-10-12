@@ -28,7 +28,7 @@ Component({
     onTapCard() {
       const { _id } = this.properties.post
       if (_id) {
-        wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${_id}` })
+        wx.navigateTo({ url: `/subpkg/post-detail/post-detail?id=${_id}` })
       }
     },
     // 点赞/取消点赞
@@ -39,7 +39,7 @@ Component({
     onTapComment() {
       const { _id } = this.properties.post
       if (_id) {
-        wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${_id}` })
+        wx.navigateTo({ url: `/subpkg/post-detail/post-detail?id=${_id}` })
       }
     }
   }

@@ -84,7 +84,7 @@ Page({
   onPostTap(e) {
     const id = e.currentTarget.dataset.id
     if (!id) return
-    wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${id}` })
+    wx.navigateTo({ url: `/subpkg/post-detail/post-detail?id=${id}` })
   },
 
   // ==================== 点击删除按钮 ====================

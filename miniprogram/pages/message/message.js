@@ -224,6 +224,6 @@ Page({
   onTapMessage(e) {
     const postId = e.currentTarget.dataset.postid
     if (!postId) return
-    wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${postId}` })
+    wx.navigateTo({ url: `/subpkg/post-detail/post-detail?id=${postId}` })
   }
 })

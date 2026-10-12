@@ -14,11 +14,11 @@ Page({
 
   onLoad() {
     const bgList = [
-      '/pages/case-detail/paper/bg1.jpg',
-      '/pages/case-detail/paper/bg2.jpg',
-      '/pages/case-detail/paper/bg3.jpg',
-      '/pages/case-detail/paper/bg4.jpg',
-      '/pages/case-detail/paper/bg5.jpg'
+      '/subpkg/case-detail/paper/bg1.jpg',
+      '/subpkg/case-detail/paper/bg2.jpg',
+      '/subpkg/case-detail/paper/bg3.jpg',
+      '/subpkg/case-detail/paper/bg4.jpg',
+      '/subpkg/case-detail/paper/bg5.jpg'
     ];
     const allCasesWithBg = this.data.allCases.map(item => ({
       ...item,
@@ -59,7 +59,7 @@ Page({
     const id = e.currentTarget.dataset.id;
     console.log('点击了案例，准备跳转，id =', id); // 🚨 调试用，看控制台有没有打印
     wx.navigateTo({
-      url: '/pages/case-detail/case-detail?id=' + id
+      url: '/subpkg/case-detail/case-detail?id=' + id
     });
   }
 });

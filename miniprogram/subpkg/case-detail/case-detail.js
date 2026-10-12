@@ -11,11 +11,11 @@ Page({
 
     // 1. 随机背景图
     const bgList = [
-      '/pages/case-detail/paper/bg1.jpg',
-      '/pages/case-detail/paper/bg2.jpg',
-      '/pages/case-detail/paper/bg3.jpg',
-      '/pages/case-detail/paper/bg4.jpg',
-      '/pages/case-detail/paper/bg5.jpg'
+      '/subpkg/case-detail/paper/bg1.jpg',
+      '/subpkg/case-detail/paper/bg2.jpg',
+      '/subpkg/case-detail/paper/bg3.jpg',
+      '/subpkg/case-detail/paper/bg4.jpg',
+      '/subpkg/case-detail/paper/bg5.jpg'
     ];
     const randomBg = bgList[Math.floor(Math.random() * bgList.length)];
     this.setData({ bgImage: randomBg });
@@ -37,7 +37,7 @@ Page({
     if (pages.length > 1) {
       wx.navigateBack();
     } else {
-      wx.reLaunch({ url: '/pages/cases/cases' });
+      wx.reLaunch({ url: '/subpkg/cases/cases' });
     }
   },
 
