@@ -23,9 +23,9 @@
         <!-- 文字内容：绝对居中 -->
         <view class="card-content">
           <view class="post-header">
-            <view class="avatar">🫥</view>
+            <image class="avatar" src="/images/anonymous/anon-7-treehole.png" mode="aspectFill"></image>
             <view class="user-info">
-              <view class="user-name">{{item.nickname}}</view>
+              <view class="user-name">Mummy</view>
               <view class="post-time">{{item.time}}</view>
             </view>
             <view class="mood-tag" wx:if="{{item.mood}}">{{item.mood}}</view>

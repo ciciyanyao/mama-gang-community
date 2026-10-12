@@ -5,6 +5,15 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 
+// djb2 hash（与前端 utils/anonymous.js 同一算法）
+function hash(str) {
+  let h = 5381
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) + h + str.charCodeAt(i)) | 0
+  }
+  return Math.abs(h)
+}
+
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   const { action } = event
@@ -34,7 +43,7 @@ exports.main = async (event, context) => {
  */
 async function handleCreate(event, openid) {
   try {
-    const { postId, content, reply_to, reply_nickname } = event
+    const { postId, content, reply_to, reply_nickname, is_anonymous = false } = event
     if (!postId || !content || !content.trim()) {
       return { code: -1, message: '缺少必要参数' }
     }
@@ -45,30 +54,34 @@ async function handleCreate(event, openid) {
       return { code: -1, message: '帖子不存在或已被删除' }
     }
 
-    // 冗余作者昵称/头像（与 post 云函数同一协议，供详情页评论直接显示）
-    let authorName = ''
-    let authorAvatar = ''
-    try {
-      const userRes = await db.collection('users').where({ openid }).limit(1).get()
-      if (userRes.data.length > 0) {
-        authorName = userRes.data[0].nickname || ''
-        authorAvatar = userRes.data[0].avatar || ''
-      }
-    } catch (e) {
-      console.error('查询评论用户信息失败：', e)
-    }
-
     // 写入评论
     const commentData = {
       postId,
       authorId: openid,
-      authorName,   // 冗余作者昵称（历史评论无此字段则详情页显示兜底）
-      authorAvatar, // 冗余作者头像
       content: content.trim(),
       is_read: false, // 对帖子作者来说是未读的
       status: 1,      // 1=正常, 2=已删除
       create_time: db.serverDate()
     }
+
+    if (is_anonymous) {
+      // 匿名评论：不冗余真实昵称/头像，按 openid + postId 派生 anonymousId
+      // 同帖同人多条评论 → 同 ID → 同头像昵称；跨帖重洗
+      commentData.is_anonymous = true
+      commentData.anonymousId = hash(openid + '::' + postId)
+    } else {
+      // 实名评论：冗余作者昵称/头像（与 post 云函数同一协议，供详情页评论直接显示）
+      try {
+        const userRes = await db.collection('users').where({ openid }).limit(1).get()
+        if (userRes.data.length > 0) {
+          commentData.authorName = userRes.data[0].nickname || ''
+          commentData.authorAvatar = userRes.data[0].avatar || ''
+        }
+      } catch (e) {
+        console.error('查询评论用户信息失败：', e)
+      }
+    }
+
     // 支持回复指定评论（可选参数）
     if (reply_to) {
       commentData.reply_to = reply_to

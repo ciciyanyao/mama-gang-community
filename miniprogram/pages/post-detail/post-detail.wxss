@@ -338,3 +338,42 @@
 .send-btn.active {
   background: #2E7D5B;
 }
+
+/* 匿名发表开关 */
+.anon-switch {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  height: 52rpx;
+  padding: 0 18rpx;
+  border-radius: 26rpx;
+  background: #F0F0F0;
+  transition: background 0.2s ease;
+}
+
+.anon-switch.on {
+  background: rgba(46, 125, 91, 0.15);
+}
+
+.anon-switch-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #BBBBBB;
+  transition: background 0.2s ease;
+}
+
+.anon-switch.on .anon-switch-dot {
+  background: #2E7D5B;
+}
+
+.anon-switch-text {
+  font-size: 24rpx;
+  color: #888888;
+}
+
+.anon-switch.on .anon-switch-text {
+  color: #2E7D5B;
+  font-weight: 600;
+}

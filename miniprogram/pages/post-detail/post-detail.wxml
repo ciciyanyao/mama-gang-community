@@ -12,9 +12,16 @@
 
     <!-- 用户信息 -->
     <view class="detail-header">
-      <image class="detail-avatar" src="{{post.authorAvatar || '/images/default-avatar.svg'}}" mode="aspectFill" />
+      <image
+        class="detail-avatar"
+        src="{{post.is_anonymous ? postAnonAvatar : (post.authorAvatar || '/images/default-avatar.svg')}}"
+        mode="aspectFill"
+      />
       <view class="detail-user-info">
-        <text class="detail-nickname">{{post.authorName || '宝妈用户'}}</text>
+        <text class="detail-nickname">
+          {{post.is_anonymous ? postAnonNickname : (post.authorName || '宝妈用户')}}
+          <text wx:if="{{post.is_anonymous}}" class="anon-tag">匿名</text>
+        </text>
         <text class="detail-time">{{post.timeText}}</text>
       </view>
     </view>
@@ -70,10 +77,17 @@
     <!-- 评论列表 -->
     <view class="comment-list" wx:if="{{comments.length > 0}}">
       <view class="comment-item" wx:for="{{comments}}" wx:key="_id">
-        <image class="comment-avatar" src="{{item.authorAvatar || '/images/default-avatar.svg'}}" mode="aspectFill" />
+        <image
+          class="comment-avatar"
+          src="{{item.is_anonymous ? item.anonAvatar : (item.authorAvatar || '/images/default-avatar.svg')}}"
+          mode="aspectFill"
+        />
         <view class="comment-body">
           <view class="comment-meta">
-            <text class="comment-nickname">{{item.authorName || '宝妈用户'}}</text>
+            <text class="comment-nickname">
+              {{item.is_anonymous ? item.anonNickname : (item.authorName || '宝妈用户')}}
+              <text wx:if="{{item.is_anonymous}}" class="anon-tag">匿名</text>
+            </text>
             <text class="comment-time">{{item.timeText}}</text>
           </view>
 
@@ -88,7 +102,7 @@
             <view
               class="reply-btn"
               data-commentid="{{item._id}}"
-              data-nickname="{{item.authorName || '宝妈用户'}}"
+              data-nickname="{{item.is_anonymous ? item.anonNickname : (item.authorName || '宝妈用户')}}"
               bindtap="onReplyTap"
             >回复</view>
           </view>
@@ -115,6 +129,10 @@
   </view>
 
   <view class="input-row">
+    <view class="anon-switch {{commentAnon ? 'on' : ''}}" bindtap="onToggleCommentAnon">
+      <text class="anon-switch-dot"></text>
+      <text class="anon-switch-text">匿名</text>
+    </view>
     <input
       class="comment-input"
       placeholder="{{replyTo ? '回复 ' + replyTo.nickname + '...' : '写评论...'}}"

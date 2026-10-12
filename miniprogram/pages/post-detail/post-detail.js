@@ -2,6 +2,7 @@
 const db = wx.cloud.database()
 const _ = db.command
 const auth = require('../../utils/auth.js')
+const { pickAnonymous } = require('../../utils/anonymous.js')
 const POSTS = db.collection('posts')
 const COMMENTS = db.collection('comments')
 
@@ -11,6 +12,10 @@ Page({
     post: null,
     postId: '',
     loading: true,
+
+    // 帖子作者匿名身份（匿名帖时用）
+    postAnonAvatar: '',
+    postAnonNickname: '',
 
     // 评论
     comments: [],
@@ -26,6 +31,7 @@ Page({
     commentText: '',
     inputFocused: false,
     replyTo: null, // 回复目标 { commentId, nickname }
+    commentAnon: false, // 评论是否匿名发表
 
     // 图片预览
     previewImages: []
@@ -55,6 +61,15 @@ Page({
       // 格式化时间
       post.timeText = this._formatTime(post.create_time)
 
+      // 匿名帖：根据 anonymousId 算头像/昵称
+      let postAnonAvatar = ''
+      let postAnonNickname = ''
+      if (post.is_anonymous && post.anonymousId) {
+        const id = pickAnonymous(post.anonymousId)
+        postAnonAvatar = id.avatar
+        postAnonNickname = id.nickname
+      }
+
       // 检查当前用户是否已点赞（统一协议：likes 集合，由 post 云函数 like 维护）
       const app = getApp()
       const openid = app.globalData.openid
@@ -69,6 +84,8 @@ Page({
 
       this.setData({
         post,
+        postAnonAvatar,
+        postAnonNickname,
         likeCount: post.likeCount || post.likes || 0,
         isLiked,
         previewImages: post.images || []
@@ -94,10 +111,22 @@ Page({
         .limit(100)
         .get()
 
-      const comments = res.data.map(c => ({
-        ...c,
-        timeText: this._formatTime(c.create_time)
-      }))
+      const comments = res.data.map(c => {
+        // 匿名评论：根据 anonymousId 算头像/昵称
+        let anonAvatar = ''
+        let anonNickname = ''
+        if (c.is_anonymous && c.anonymousId) {
+          const id = pickAnonymous(c.anonymousId)
+          anonAvatar = id.avatar
+          anonNickname = id.nickname
+        }
+        return {
+          ...c,
+          anonAvatar,
+          anonNickname,
+          timeText: this._formatTime(c.create_time)
+        }
+      })
 
       this.setData({
         comments,
@@ -237,12 +266,17 @@ Page({
     this.setData({ replyTo: null })
   },
 
+  // 切换"匿名发表"开关
+  onToggleCommentAnon() {
+    this.setData({ commentAnon: !this.data.commentAnon })
+  },
+
   // ==================== 提交评论 ====================
   async onSubmitComment() {
     // 未登录：弹登录弹窗，不继续
     if (!auth.requireLogin(this)) return
 
-    const { commentText, postId, replyTo } = this.data
+    const { commentText, postId, replyTo, commentAnon } = this.data
     const text = commentText.trim()
 
     if (!text) {
@@ -257,7 +291,8 @@ Page({
       const commentData = {
         action: 'create',
         postId,
-        content: text
+        content: text,
+        is_anonymous: commentAnon
       }
 
       // 如果是回复某条评论
