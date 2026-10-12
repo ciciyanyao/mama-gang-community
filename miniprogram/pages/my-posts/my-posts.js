@@ -77,5 +77,66 @@ Page({
     const id = e.currentTarget.dataset.id
     if (!id) return
     wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${id}` })
+  },
+
+  // ==================== 点击删除按钮 ====================
+  onDeleteTap(e) {
+    const id = e.currentTarget.dataset.id
+    if (!id) return
+    this.confirmDelete(id)
+  },
+
+  // ==================== 长按帖子 → 操作菜单 ====================
+  onPostLongPress(e) {
+    const { id } = e.currentTarget.dataset
+    if (!id) return
+    wx.showActionSheet({
+      itemList: ['删除帖子'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.confirmDelete(id)
+        }
+      }
+    })
+  },
+
+  // ==================== 确认删除 ====================
+  confirmDelete(postId) {
+    wx.showModal({
+      title: '确认删除',
+      content: '删除后将无法恢复，确定要删除这篇帖子吗？',
+      confirmColor: '#e74c3c',
+      success: (res) => {
+        if (res.confirm) {
+          this.deletePost(postId)
+        }
+      }
+    })
+  },
+
+  // ==================== 执行删除 ====================
+  async deletePost(postId) {
+    wx.showLoading({ title: '删除中...', mask: true })
+    try {
+      const db = wx.cloud.database()
+      // 删除帖子
+      await db.collection('posts').doc(postId).remove()
+      // 删除该帖子下的评论
+      try { await db.collection('comments').where({ post_id: postId }).remove() } catch (e) { /* 忽略 */ }
+      // 删除该帖子下的点赞
+      try { await db.collection('likes').where({ post_id: postId }).remove() } catch (e) { /* 忽略 */ }
+
+      wx.hideLoading()
+      wx.showToast({ title: '已删除', icon: 'success' })
+
+      // 从本地列表移除
+      const postList = this.data.postList.filter(p => p._id !== postId)
+      const isEmpty = postList.length === 0
+      this.setData({ postList, isEmpty })
+    } catch (err) {
+      wx.hideLoading()
+      console.error('[my-posts] 删除失败:', err)
+      wx.showToast({ title: '删除失败，请重试', icon: 'none' })
+    }
   }
 })

@@ -17,6 +17,7 @@
       wx:for="{{postList}}"
       wx:key="_id"
       bindtap="onPostTap"
+      bindlongpress="onPostLongPress"
       data-id="{{item._id}}"
     >
       <view class="post-header">
@@ -31,6 +32,7 @@
         <text class="stat">👍 {{item.likeCount || 0}}</text>
         <text class="stat">💬 {{item.commentCount || 0}}</text>
         <text class="stat category" wx:if="{{item.category}}">{{item.category}}</text>
+        <view class="delete-btn" data-id="{{item._id}}" catchtap="onDeleteTap">删除</view>
       </view>
     </view>
   </view>

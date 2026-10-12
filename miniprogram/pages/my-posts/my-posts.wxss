@@ -127,6 +127,20 @@
   margin-left: auto;
 }
 
+/* 删除按钮 */
+.delete-btn {
+  padding: 6rpx 20rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  color: #E5484D;
+  background: rgba(229, 72, 77, 0.1);
+  flex-shrink: 0;
+}
+
+.delete-btn:active {
+  background: rgba(229, 72, 77, 0.25);
+}
+
 /* ==================== 加载状态 ==================== */
 .loading-wrap {
   display: flex;
