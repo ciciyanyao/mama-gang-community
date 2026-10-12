@@ -1,34 +1,28 @@
-/* pages/case-detail/case-detail.wxss */
-page { background-color: #f5f7fa; font-family: sans-serif; }
+page { background-color: #F0EBE1; font-family: sans-serif; }
 .container { padding: 0 30rpx 40rpx; }
 
-/* 顶部导航 */
-.nav-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  height: 88rpx; margin-bottom: 20rpx;
-}
+.nav-bar { display: flex; align-items: center; justify-content: space-between; height: 88rpx; margin-bottom: 20rpx; }
 .back-btn { font-size: 30rpx; color: #059669; font-weight: bold; }
 .nav-title { font-size: 34rpx; font-weight: bold; color: #333; }
-.placeholder { width: 80rpx; } /* 占位，让标题居中 */
+.placeholder { width: 80rpx; }
 
-/* 详情卡片 */
-.detail-card {
-  background: #ffffff; border-radius: 24rpx; padding: 40rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
-}
-.detail-title { font-size: 36rpx; font-weight: bold; color: #222; line-height: 1.4; margin-bottom: 20rpx; }
-
-/* 标签 */
-.detail-tags { display: flex; gap: 20rpx; margin-bottom: 30rpx; }
-.tag {
-  background: #e6f7f3; color: #059669;
-  padding: 6rpx 20rpx; border-radius: 12rpx; font-size: 24rpx;
+.paper-card {
+  position: relative;
+  width: 100%;
+  background-size: 100% 100%; 
+  background-repeat: no-repeat;
+  background-position: center;
+  box-sizing: border-box;
+  padding: 150rpx 80rpx 160rpx 80rpx; 
+  margin-bottom: 40rpx;
+  box-shadow: 0 10rpx 20rpx rgba(0,0,0,0.1);
 }
 
-/* 分割线 */
-.divider { height: 2rpx; background: #f0f0f0; margin-bottom: 30rpx; }
-
-/* 章节 */
+.paper-content { position: relative; z-index: 2; word-break: break-all; }
+.detail-title { font-size: 36rpx; font-weight: bold; color: #4A3B32; line-height: 1.5; margin-bottom: 24rpx; text-align: center; }
+.detail-tags { display: flex; justify-content: center; gap: 20rpx; margin-bottom: 30rpx; }
+.tag { background: rgba(230, 220, 205, 0.8); color: #8C7A6B; padding: 6rpx 20rpx; border-radius: 12rpx; font-size: 24rpx; }
+.divider { height: 2rpx; background: rgba(200, 180, 160, 0.5); margin-bottom: 30rpx; }
 .section { margin-bottom: 30rpx; }
-.section-title { font-size: 28rpx; font-weight: bold; color: #059669; margin-bottom: 12rpx; }
-.section-content { font-size: 30rpx; color: #555; line-height: 1.7; }
+.section-title { font-size: 28rpx; font-weight: bold; color: #9C7C5B; margin-bottom: 12rpx; }
+.section-content { font-size: 30rpx; color: #5C4F45; line-height: 1.8; text-align: justify; }
