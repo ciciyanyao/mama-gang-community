@@ -34,7 +34,7 @@ exports.main = async (event, context) => {
  */
 async function handleCreate(event, openid) {
   try {
-    const { postId, content } = event
+    const { postId, content, reply_to, reply_nickname } = event
     if (!postId || !content || !content.trim()) {
       return { code: -1, message: '缺少必要参数' }
     }
@@ -53,6 +53,11 @@ async function handleCreate(event, openid) {
       is_read: false, // 对帖子作者来说是未读的
       status: 1,      // 1=正常, 2=已删除
       create_time: db.serverDate()
+    }
+    // 支持回复指定评论（可选参数）
+    if (reply_to) {
+      commentData.reply_to = reply_to
+      if (reply_nickname) commentData.reply_nickname = reply_nickname
     }
 
     const addRes = await db.collection('comments').add({ data: commentData })

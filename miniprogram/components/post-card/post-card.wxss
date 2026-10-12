@@ -1,136 +1,163 @@
+/* components/post-card/post-card.wxss —— 帖子卡片样式 */
 .post-card {
   position: relative;
-  background: #fff;
-  margin: 20rpx;
+  background: #FFFFFF;
   border-radius: 16rpx;
-  overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  padding: 28rpx 24rpx 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
-.top-tag {
+/* 置顶标识 */
+.pin-badge {
   position: absolute;
   top: 0;
-  left: 0;
-  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-  padding: 8rpx 24rpx;
-  border-radius: 0 0 16rpx 0;
-  z-index: 10;
-}
-
-.top-text {
-  font-size: 22rpx;
-  color: #fff;
-  font-weight: bold;
-}
-
-.post-content {
-  padding: 24rpx;
-}
-
-.post-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20rpx;
-}
-
-.avatar {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 50%;
-  margin-right: 16rpx;
-  background: #f0f0f0;
-}
-
-.user-info {
-  flex: 1;
-}
-
-.nickname {
-  display: block;
-  font-size: 28rpx;
-  color: #333;
+  right: 24rpx;
+  background: #E5484D;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 0 0 8rpx 8rpx;
   font-weight: 500;
 }
 
-.time {
-  display: block;
-  font-size: 22rpx;
-  color: #999;
+/* 作者信息行 */
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.post-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #F0F0F0;
+  flex-shrink: 0;
+}
+
+.post-author-info {
+  flex: 1;
+  margin-left: 16rpx;
+  overflow: hidden;
+}
+
+.post-author-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.anon-tag {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #999999;
+  background: #F5F5F5;
+  padding: 2rpx 10rpx;
+  border-radius: 6rpx;
+  font-weight: 400;
+}
+
+.post-time {
+  font-size: 24rpx;
+  color: #999999;
   margin-top: 4rpx;
 }
 
-.category-tag {
-  background: #e8f5e9;
-  padding: 8rpx 16rpx;
-  border-radius: 8rpx;
-}
-
-.category-text {
+.post-category-tag {
   font-size: 22rpx;
   color: #2E7D5B;
+  background: rgba(46, 125, 91, 0.08);
+  padding: 4rpx 14rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+  margin-left: 12rpx;
 }
 
-.post-body {
-  margin-bottom: 20rpx;
+/* 正文区域 */
+.post-content {
+  margin-bottom: 16rpx;
 }
 
-.title {
+.post-title {
   display: block;
-  font-size: 32rpx;
-  color: #333;
-  font-weight: bold;
-  margin-bottom: 12rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222222;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.summary {
-  display: block;
-  font-size: 28rpx;
-  color: #666;
-  line-height: 1.6;
+.post-summary {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
+  font-size: 28rpx;
+  color: #555555;
+  line-height: 1.6;
 }
 
+/* 图片区域 */
 .post-images {
   display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 20rpx;
-  gap: 12rpx;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
 }
 
 .post-image {
-  width: 200rpx;
-  height: 200rpx;
   border-radius: 8rpx;
-  background: #f0f0f0;
+  background: #F5F5F5;
 }
 
-.post-image.single {
-  width: 400rpx;
-  height: 300rpx;
+.post-images-1 .post-image {
+  width: 100%;
+  height: 360rpx;
 }
 
-.post-stats {
-  display: flex;
-  gap: 40rpx;
-  padding-top: 20rpx;
-  border-top: 1rpx solid #f5f5f5;
+.post-images-2 .post-image {
+  width: calc(50% - 4rpx);
+  height: 240rpx;
 }
 
-.stat-item {
+.post-images-3 .post-image {
+  width: calc(33.33% - 6rpx);
+  height: 200rpx;
+}
+
+/* 底部操作栏：常规点赞/评论 */
+.post-actions {
   display: flex;
   align-items: center;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #F5F5F5;
 }
 
-.stat-icon {
-  width: 36rpx;
-  height: 36rpx;
+.action-item {
+  display: flex;
+  align-items: center;
+  margin-right: 48rpx;
+  padding: 8rpx 0;
+}
+
+.action-icon {
+  font-size: 28rpx;
+  color: #999999;
   margin-right: 8rpx;
 }
 
-.stat-num {
+.action-icon.liked {
+  color: #E5484D;
+}
+
+.action-count {
   font-size: 24rpx;
-  color: #999;
+  color: #999999;
 }

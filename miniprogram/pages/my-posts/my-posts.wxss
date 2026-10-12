@@ -53,6 +53,12 @@
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
+/* 已删除帖子：半透明 + 灰底（PR#7 样式优化） */
+.post-card.post-deleted {
+  opacity: 0.6;
+  background: #f5f5f5;
+}
+
 .post-header {
   display: flex;
   align-items: center;
@@ -112,6 +118,7 @@
   display: flex;
   align-items: center;
   gap: 24rpx;
+  flex: 1;
 }
 
 .stat {
@@ -124,7 +131,22 @@
   color: #2E7D5B;
   padding: 4rpx 14rpx;
   border-radius: 6rpx;
-  margin-left: auto;
+}
+
+/* 删除按钮 */
+.post-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.delete-btn {
+  font-size: 24rpx;
+  color: #E5484D;
+  background: rgba(229, 72, 77, 0.08);
+  padding: 8rpx 24rpx;
+  border-radius: 8rpx;
+  margin-left: 16rpx;
 }
 
 /* ==================== 加载状态 ==================== */

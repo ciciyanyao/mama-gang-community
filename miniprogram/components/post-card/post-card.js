@@ -1,35 +1,34 @@
-// components/post-card/post-card.js
-const { relativeTime } = require('../../utils/util.js')
-
+// components/post-card/post-card.js —— 帖子卡片组件
 Component({
   properties: {
+    // 帖子数据对象
     post: {
       type: Object,
       value: {}
-    },
-    showTopTag: {
-      type: Boolean,
-      value: true
     }
   },
   data: {
-    timeText: ''
-  },
-  observers: {
-    'post.create_time': function(time) {
-      if (time) {
-        this.setData({
-          timeText: relativeTime(time)
-        })
-      }
-    }
+    // 默认匿名头像
+    defaultAvatar: '/images/user-3-line.svg'
   },
   methods: {
-    onTap() {
-      this.triggerEvent('tap', { postId: this.data.post._id })
+    // 点击帖子卡片，跳转详情
+    onTapCard() {
+      const { _id } = this.properties.post
+      if (_id) {
+        wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${_id}` })
+      }
     },
-    onLikeTap() {
-      this.triggerEvent('like', { postId: this.data.post._id })
+    // 点赞/取消点赞
+    onTapLike() {
+      this.triggerEvent('like', { postId: this.properties.post._id })
+    },
+    // 评论
+    onTapComment() {
+      const { _id } = this.properties.post
+      if (_id) {
+        wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${_id}` })
+      }
     }
   }
 })

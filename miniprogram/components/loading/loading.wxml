@@ -1,4 +1,5 @@
-<view class="loading-container">
+<!-- components/loading/loading.wxml -->
+<view class="loading-wrap">
   <view class="loading-spinner"></view>
   <text class="loading-text">{{text}}</text>
 </view>

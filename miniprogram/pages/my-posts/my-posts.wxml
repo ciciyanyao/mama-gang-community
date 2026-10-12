@@ -1,4 +1,4 @@
-<!-- pages/my-posts/my-posts.wxml —— 我的帖子 -->
+<!-- pages/my-posts/my-posts.wxml —— 我的帖子（压缩包版：删除按钮 + 已删除半透明） -->
 <view class="page-wrap">
 
   <!-- 空状态 -->
@@ -13,11 +13,11 @@
   <!-- 帖子列表 -->
   <view class="post-list" wx:if="{{!isEmpty}}">
     <view
-      class="post-card"
+      class="post-card {{item.status === -1 ? 'post-deleted' : ''}}"
       wx:for="{{postList}}"
       wx:key="_id"
-      bindtap="onPostTap"
       data-id="{{item._id}}"
+      data-status="{{item.status}}"
     >
       <view class="post-header">
         <view class="status-tag {{item.status === 1 ? 'status-normal' : 'status-deleted'}}">
@@ -25,12 +25,20 @@
         </view>
         <text class="post-time">{{item.timeText}}</text>
       </view>
-      <text class="post-title" wx:if="{{item.title}}">{{item.title}}</text>
-      <text class="post-content">{{item.contentPreview}}</text>
-      <view class="post-stats">
-        <text class="stat">👍 {{item.likeCount || 0}}</text>
-        <text class="stat">💬 {{item.commentCount || 0}}</text>
-        <text class="stat category" wx:if="{{item.category}}">{{item.category}}</text>
+      <text class="post-title" wx:if="{{item.title}}" bindtap="onPostTap" data-id="{{item._id}}">{{item.title}}</text>
+      <text class="post-content" bindtap="onPostTap" data-id="{{item._id}}">{{item.contentPreview}}</text>
+      <view class="post-footer">
+        <view class="post-stats" bindtap="onPostTap" data-id="{{item._id}}">
+          <text class="stat">👍 {{item.likeCount || 0}}</text>
+          <text class="stat">💬 {{item.commentCount || 0}}</text>
+          <text class="stat category" wx:if="{{item.category}}">{{item.category}}</text>
+        </view>
+        <view
+          class="delete-btn"
+          wx:if="{{item.status === 1}}"
+          catchtap="onDeleteTap"
+          data-id="{{item._id}}"
+        >删除</view>
       </view>
     </view>
   </view>

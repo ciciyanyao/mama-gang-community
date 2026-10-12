@@ -1,23 +1,39 @@
-/* pages/index/index.wxss —— 论坛首页样式 */
+/* pages/index/index.wxss —— 论坛首页样式（融合版：压缩包 UI 样式） */
 
-/* ==================== 分类 Tab 栏 ==================== */
+.page-index {
+  min-height: 100vh;
+  background: #F7F3EA;
+  padding-bottom: 40rpx;
+}
+
+/* 顶部标题 */
+.page-header {
+  padding: 24rpx 32rpx 0;
+  background: #F7F3EA;
+}
+
+.page-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #222222;
+}
+
+/* 板块分类 Tab */
 .category-bar {
   white-space: nowrap;
-  background: #FFFFFF;
-  border-radius: 16rpx;
-  padding: 16rpx 12rpx;
-  margin-bottom: 24rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  padding: 20rpx 24rpx 16rpx;
+  background: #F7F3EA;
 }
 
 .category-item {
   display: inline-block;
   padding: 12rpx 28rpx;
-  margin: 0 8rpx;
+  margin-right: 16rpx;
   font-size: 26rpx;
   color: #666666;
-  border-radius: 32rpx;
-  transition: all 0.25s ease;
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  transition: all 0.2s ease;
 }
 
 .category-item.active {
@@ -26,9 +42,170 @@
   font-weight: 600;
 }
 
-/* ==================== B6 热门榜 ==================== */
+/* ===== 热门榜（日历撕页效果）===== */
 .hot-section {
-  margin-bottom: 28rpx;
+  padding: 16rpx 24rpx;
+}
+
+.hot-header {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 16rpx;
+}
+
+.hot-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #222222;
+}
+
+.hot-subtitle {
+  font-size: 24rpx;
+  color: #999999;
+  margin-left: 12rpx;
+}
+
+/* 日历卡片外观 */
+.hot-calendar-card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+/* 日历顶部装饰条（模仿日历挂钩） */
+.calendar-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 24rpx;
+  background: linear-gradient(135deg, #E8845C 0%, #E07A3F 100%);
+}
+
+.calendar-hole {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: 2rpx solid rgba(255, 255, 255, 0.6);
+}
+
+.calendar-line {
+  flex: 1;
+  height: 4rpx;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 0 16rpx;
+  border-radius: 2rpx;
+}
+
+/* 撕页边缘效果 */
+.hot-calendar-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 8rpx,
+    #F0EDE6 8rpx,
+    #F0EDE6 10rpx
+  );
+}
+
+/* swiper 容器 */
+.hot-swiper {
+  height: 120rpx;
+}
+
+/* 单条热门帖 */
+.hot-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 28rpx;
+  height: 120rpx;
+  box-sizing: border-box;
+}
+
+.hot-rank {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(135deg, #E8845C 0%, #E07A3F 100%);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+
+.hot-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hot-post-title {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 6rpx;
+}
+
+.hot-heat {
+  font-size: 22rpx;
+  color: #E07A3F;
+}
+
+/* ===== 功能宫格 ===== */
+.grid-section {
+  display: flex;
+  justify-content: space-around;
+  padding: 24rpx 24rpx 16rpx;
+  margin: 0 24rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.grid-icon {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  background: linear-gradient(135deg, #F0F8F4 0%, #E8F5EE 100%);
+  border-radius: 20rpx;
+  margin-bottom: 10rpx;
+}
+
+.grid-name {
+  font-size: 24rpx;
+  color: #555555;
+}
+
+/* ===== 帖子信息流 ===== */
+.post-section {
+  padding: 16rpx 24rpx 24rpx;
 }
 
 .section-header {
@@ -37,270 +214,22 @@
 
 .section-title {
   font-size: 32rpx;
-  font-weight: bold;
-  color: #333333;
-}
-
-.hot-scroll {
-  white-space: nowrap;
-}
-
-.hot-card {
-  display: inline-block;
-  width: 280rpx;
-  background: #FFFFFF;
-  border-radius: 16rpx;
-  padding: 20rpx;
-  margin-right: 16rpx;
-  vertical-align: top;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
-}
-
-.hot-rank {
-  display: inline-block;
-  width: 40rpx;
-  height: 40rpx;
-  line-height: 40rpx;
-  text-align: center;
-  font-size: 22rpx;
-  font-weight: bold;
-  border-radius: 8rpx;
-  margin-bottom: 12rpx;
-  color: #FFFFFF;
-}
-
-/* 前三名特殊颜色 */
-.hot-rank.rank-1 {
-  background: linear-gradient(135deg, #FF6B6B, #E5484D);
-}
-.hot-rank.rank-2 {
-  background: linear-gradient(135deg, #FFA940, #F0880A);
-}
-.hot-rank.rank-3 {
-  background: linear-gradient(135deg, #FFD666, #FADB14);
-  color: #8B6914;
-}
-.hot-rank.rank-normal {
-  background: #CCCCCC;
-}
-
-.hot-title {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: #333333;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-bottom: 12rpx;
-}
-
-.hot-stats {
-  display: flex;
-  gap: 16rpx;
-}
-
-.hot-stat {
-  font-size: 22rpx;
-  color: #999999;
-}
-
-/* ==================== 帖子列表 ==================== */
-.post-section {
-  margin-top: 8rpx;
-}
-
-.post-card {
-  background: #FFFFFF;
-  border-radius: 16rpx;
-  padding: 24rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-  position: relative;
-}
-
-/* 置顶标签 */
-.top-tag {
-  position: absolute;
-  top: 20rpx;
-  right: 20rpx;
-  background: linear-gradient(135deg, #2E7D5B, #3DA074);
-  color: #FFFFFF;
-  font-size: 20rpx;
-  font-weight: 600;
-  padding: 4rpx 16rpx;
-  border-radius: 8rpx;
-}
-
-/* 用户信息行 */
-.post-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16rpx;
-}
-
-.post-avatar {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 50%;
-  background: #EFEFEF;
-  flex-shrink: 0;
-}
-
-.post-user-info {
-  flex: 1;
-  margin-left: 16rpx;
-  display: flex;
-  flex-direction: column;
-}
-
-.post-nickname {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: #333333;
-}
-
-.post-time {
-  font-size: 22rpx;
-  color: #999999;
-  margin-top: 4rpx;
-}
-
-.post-category-tag {
-  font-size: 20rpx;
-  color: #2E7D5B;
-  background: rgba(46, 125, 91, 0.1);
-  padding: 4rpx 16rpx;
-  border-radius: 8rpx;
-  flex-shrink: 0;
-}
-
-/* 帖子标题 */
-.post-title {
-  font-size: 30rpx;
-  font-weight: bold;
+  font-weight: 700;
   color: #222222;
-  margin-bottom: 12rpx;
-  line-height: 1.4;
 }
 
-/* 内容预览 */
-.post-content {
-  font-size: 26rpx;
-  color: #666666;
-  line-height: 1.6;
-  margin-bottom: 16rpx;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
+.post-list {
+  /* post-card 组件自带卡片样式，这里控制间距 */
 }
 
-/* 图片预览 */
-.post-images {
-  display: flex;
-  gap: 12rpx;
-  margin-bottom: 16rpx;
-}
-
-.post-image {
-  width: 210rpx;
-  height: 210rpx;
-  border-radius: 12rpx;
-  background: #F5F5F5;
-}
-
-/* 底部统计 */
-.post-footer {
-  display: flex;
-  gap: 32rpx;
-  padding-top: 16rpx;
-  border-top: 1rpx solid #F5F5F5;
-}
-
-.post-stat {
-  display: flex;
-  align-items: center;
-  gap: 6rpx;
-}
-
-.stat-icon {
-  font-size: 24rpx;
-}
-
-.stat-num {
-  font-size: 24rpx;
-  color: #999999;
-}
-
-/* ==================== 加载状态 ==================== */
-.loading-more {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32rpx 0;
-}
-
-/* 首次进入/切分类时列表为空：居中加载状态 */
-.loading-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 96rpx 0;
-}
-
-.loading-spinner {
-  width: 36rpx;
-  height: 36rpx;
-  border: 4rpx solid #E5E5E5;
-  border-top-color: #2E7D5B;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-right: 12rpx;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading-text {
-  font-size: 24rpx;
-  color: #999999;
+/* 触底加载中与空态间距 */
+.post-section loading {
+  margin: 24rpx 0;
 }
 
 .no-more {
   text-align: center;
   padding: 32rpx 0;
-}
-
-.no-more-text {
-  font-size: 24rpx;
-  color: #CCCCCC;
-}
-
-/* ==================== 空状态 ==================== */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 80rpx 0;
-}
-
-.empty-icon {
-  width: 200rpx;
-  height: 200rpx;
-  margin-bottom: 24rpx;
-  opacity: 0.6;
-}
-
-.empty-text {
-  font-size: 30rpx;
-  color: #999999;
-  margin-bottom: 8rpx;
-}
-
-.empty-hint {
   font-size: 24rpx;
   color: #CCCCCC;
 }

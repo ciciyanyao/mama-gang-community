@@ -1,50 +1,55 @@
-<view class="post-card" bindtap="onTap">
-  <!-- 置顶标识 -->
-  <view class="top-tag" wx:if="{{showTopTag && post.is_top}}">
-    <text class="top-text">置顶</text>
+<!-- components/post-card/post-card.wxml —— 帖子卡片 -->
+<view class="post-card" bindtap="onTapCard">
+  <!-- 置顶标识：仅 is_top 时显示 -->
+  <view wx:if="{{post.is_top}}" class="pin-badge">置顶</view>
+
+  <!-- 作者信息行 -->
+  <view class="post-header">
+    <image
+      class="post-avatar"
+      src="{{post.is_anonymous ? defaultAvatar : (post.authorAvatar || defaultAvatar)}}"
+      mode="aspectFill"
+    />
+    <view class="post-author-info">
+      <view class="post-author-name">
+        {{post.is_anonymous ? '匿名宝妈' : (post.authorName || '宝妈用户')}}
+        <!-- 匿名标识 -->
+        <text wx:if="{{post.is_anonymous}}" class="anon-tag">匿名</text>
+      </view>
+      <view wx:if="{{!post.is_anonymous}}" class="post-time">{{post.createTimeStr || '刚刚'}}</view>
+    </view>
+    <!-- 板块标签 -->
+    <view wx:if="{{post.category}}" class="post-category-tag">{{post.category}}</view>
   </view>
 
+  <!-- 正文摘要 -->
   <view class="post-content">
-    <!-- 用户信息 -->
-    <view class="post-header">
-      <image class="avatar" src="{{post.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
-      <view class="user-info">
-        <text class="nickname">{{post.nickname || '匿名用户'}}</text>
-        <text class="time">{{timeText}}</text>
-      </view>
-      <view class="category-tag" wx:if="{{post.category}}">
-        <text class="category-text">{{post.category}}</text>
-      </view>
-    </view>
+    <text class="post-title" wx:if="{{post.title}}">{{post.title}}</text>
+    <text class="post-summary">{{post.content || ''}}</text>
+  </view>
 
-    <!-- 帖子内容 -->
-    <view class="post-body">
-      <text class="title" wx:if="{{post.title}}">{{post.title}}</text>
-      <text class="summary">{{post.content}}</text>
-    </view>
+  <!-- 图片区域 -->
+  <view wx:if="{{post.images && post.images.length > 0}}" class="post-images post-images-{{post.images.length > 3 ? 3 : post.images.length}}">
+    <image
+      wx:for="{{post.images}}"
+      wx:key="*this"
+      wx:if="{{index < 3}}"
+      class="post-image"
+      src="{{item}}"
+      mode="aspectFill"
+      lazy-load
+    />
+  </view>
 
-    <!-- 图片展示 -->
-    <view class="post-images" wx:if="{{post.images && post.images.length > 0}}">
-      <image
-        class="post-image {{post.images.length === 1 ? 'single' : ''}}"
-        wx:for="{{post.images}}"
-        wx:key="*this"
-        src="{{item}}"
-        mode="aspectFill"
-        lazy-load
-      />
+  <!-- 底部操作栏：常规点赞/评论 -->
+  <view class="post-actions">
+    <view class="action-item" catchtap="onTapLike">
+      <text class="action-icon {{post.isLiked ? 'liked' : ''}}">♥</text>
+      <text class="action-count">{{post.likeCount || 0}}</text>
     </view>
-
-    <!-- 统计信息 -->
-    <view class="post-stats">
-      <view class="stat-item" catchtap="onLikeTap">
-        <image class="stat-icon" src="/images/like-line.svg" />
-        <text class="stat-num">{{post.likeCount || 0}}</text>
-      </view>
-      <view class="stat-item">
-        <image class="stat-icon" src="/images/comment-line.svg" />
-        <text class="stat-num">{{post.commentCount || 0}}</text>
-      </view>
+    <view class="action-item" catchtap="onTapComment">
+      <text class="action-icon">💬</text>
+      <text class="action-count">{{post.commentCount || 0}}</text>
     </view>
   </view>
 </view>
