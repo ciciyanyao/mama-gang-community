@@ -68,8 +68,8 @@ Page({
         previewImages: post.images || []
       })
 
-      // 更新页面标题
-      wx.setNavigationBarTitle({ title: post.title || '帖子详情' })
+      // 更新页面标题（PR#7：顶部固定显示"详情"，不显示帖子标题）
+      wx.setNavigationBarTitle({ title: '详情' })
     } catch (err) {
       console.error('[loadPostDetail] 失败：', err)
       wx.showToast({ title: '加载失败', icon: 'none' })

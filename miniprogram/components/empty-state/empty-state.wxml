@@ -1,8 +1,5 @@
-<view class="empty-container">
-  <image wx:if="{{icon}}" class="empty-icon" src="{{icon}}" mode="aspectFit" />
-  <view wx:else class="empty-icon-default">
-    <text class="icon-text">📭</text>
-  </view>
+<!-- components/empty-state/empty-state.wxml -->
+<view class="empty-state">
+  <text class="empty-icon">{{icon}}</text>
   <text class="empty-text">{{text}}</text>
-  <text wx:if="{{subText}}" class="empty-sub-text">{{subText}}</text>
 </view>

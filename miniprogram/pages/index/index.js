@@ -1,35 +1,44 @@
-// pages/index/index.js —— 论坛首页（B6 热门榜 + B7 置顶帖）
+// pages/index/index.js —— 论坛首页
+// 融合版：main 数据库逻辑（真实数据） + 压缩包 UI（功能宫格 / 日历撕页热门榜 / post-card 组件）
+// 登录：点赞需登录（auth.requireLogin 弹窗）；游客可浏览列表/热门榜
 const db = wx.cloud.database()
 const _ = db.command
 const POSTS = db.collection('posts')
-const PAGE_SIZE = 20
+const { requireLogin } = require('../../utils/auth.js')
 
-// 分类枚举，'全部' 不传 category 字段即为查全部
+const PAGE_SIZE = 20
 const CATEGORIES = ['全部', '求职交流', '职场经验', '育儿互助', '情绪倾诉', '政策资讯']
+
+// 功能宫格：案例库有真实页面，其余未实现 → toast"开发中"
+const GRID_ITEMS = [
+  { id: 'cases', icon: '📚', name: '案例库', url: '/pages/cases/cases' },
+  { id: 'policy', icon: '📋', name: '政策资讯', url: '' },
+  { id: 'jobs', icon: '💼', name: '招聘', url: '' },
+  { id: 'help', icon: '🤝', name: '互助', url: '' }
+]
 
 Page({
   data: {
-    // 分类 tab
     categories: CATEGORIES,
-    activeCategory: 0, // 当前选中的分类索引（0 = 全部）
+    currentCategory: 0,
 
-    // 热门帖子（B6 热门榜）
+    // 热门榜（真实 top10，接数据库）
     hotPosts: [],
 
-    // 帖子列表（B7 置顶帖 + 普通帖）
-    postList: [],
-    page: 0,           // 当前分页页码（从 0 开始）
-    noMore: false,      // 是否已加载全部
-    loading: false,     // 列表加载中
-    hotLoading: false,  // 热门加载中
+    // 功能宫格
+    gridItems: GRID_ITEMS,
 
-    // 空状态
+    // 帖子列表（post-card 组件数据）
+    posts: [],
+    page: 0,
+    noMore: false,
+    loading: false,
     isEmpty: false
   },
 
   onLoad() {
     this.loadHotPosts()
-    this.loadPosts(true) // true = 首次加载，重置列表
+    this.loadPosts(true)
   },
 
   onShow() {
@@ -56,37 +65,53 @@ Page({
     }
   },
 
-  // ==================== B6 热门榜：加载 top 10 ====================
+  // ==================== 切换板块分类 ====================
+  onTapCategory(e) {
+    const idx = e.currentTarget.dataset.index
+    if (idx === this.data.currentCategory) return
+    this.setData({ currentCategory: idx })
+    this.loadPosts(true)
+  },
+
+  // ==================== 点击功能宫格 ====================
+  onTapGrid(e) {
+    const { url } = e.currentTarget.dataset
+    if (url) {
+      wx.navigateTo({ url })
+    } else {
+      wx.showToast({ title: '开发中', icon: 'none' })
+    }
+  },
+
+  // ==================== 热门榜：加载真实 top 10 ====================
   async loadHotPosts() {
-    this.setData({ hotLoading: true })
     try {
-      // 热门排序：按 engagement（likes + comments）降序，取前 10
+      // 按点赞数降序取前 10，热度 = 点赞 + 评论
       const res = await POSTS
         .where({ status: _.neq(-1) }) // 排除已删除
-        .orderBy('engagement', 'desc')
+        .orderBy('likeCount', 'desc')
         .limit(10)
-        .field({ // 只取需要的字段，减少传输
+        .field({
           title: true,
-          likes: true,
-          comment_count: true,
+          likeCount: true,
+          commentCount: true,
           _id: true
         })
         .get()
 
-      const hotPosts = res.data.map((item, index) => ({
-        ...item,
-        rank: index + 1
+      const hotPosts = res.data.map((item) => ({
+        _id: item._id,
+        title: item.title || '未命名帖子',
+        heat: (item.likeCount || 0) + (item.commentCount || 0)
       }))
 
       this.setData({ hotPosts })
     } catch (err) {
       console.error('[loadHotPosts] 失败：', err)
-    } finally {
-      this.setData({ hotLoading: false })
     }
   },
 
-  // ==================== B7 帖子列表（含置顶） ====================
+  // ==================== 帖子列表（真实数据 → post-card 组件字段） ====================
   async loadPosts(reset) {
     if (this.data.loading) return
 
@@ -95,16 +120,13 @@ Page({
 
     try {
       const skip = page * PAGE_SIZE
-
-      // 构造查询条件
       const where = { status: _.neq(-1) }
-      const catIndex = this.data.activeCategory
+      const catIndex = this.data.currentCategory
       if (catIndex > 0) {
-        // activeCategory > 0 表示选了具体分类（跳过"全部"）
         where.category = CATEGORIES[catIndex]
       }
 
-      // 查询帖子：置顶帖优先，再按创建时间倒序
+      // 查询帖子：置顶优先 + 创建时间倒序
       const res = await POSTS
         .where(where)
         .orderBy('is_top', 'desc')
@@ -113,58 +135,95 @@ Page({
         .limit(PAGE_SIZE)
         .get()
 
+      // 批量查询当前用户点赞状态（likes 集合），避免 N+1
+      let likedSet = new Set()
+      const openid = getApp().globalData.openid
+      if (openid && res.data.length > 0) {
+        const ids = res.data.map(p => p._id)
+        const likeRes = await db.collection('likes')
+          .where({ _openid: openid, postId: _.in(ids) })
+          .field({ postId: true })
+          .get()
+        likedSet = new Set(likeRes.data.map(l => l.postId))
+      }
+
+      // 字段映射：post-card 组件期望 authorName/authorAvatar/likeCount/commentCount/createTimeStr/isLiked
       const newList = res.data.map(post => ({
         ...post,
-        // 格式化时间为 "x分钟前 / x小时前 / MM-DD"
-        timeText: this._formatTime(post.create_time),
-        // 内容预览：截取前 80 字
-        contentPreview: post.content ? post.content.substring(0, 80) : ''
+        authorName: post.authorName || post.nickname || '',
+        authorAvatar: post.authorAvatar || post.avatar || '',
+        likeCount: post.likeCount || 0,
+        commentCount: post.commentCount || 0,
+        createTimeStr: this._formatTime(post.create_time),
+        isLiked: likedSet.has(post._id)
       }))
 
-      const postList = reset ? newList : [...this.data.postList, ...newList]
+      const posts = reset ? newList : [...this.data.posts, ...newList]
 
       this.setData({
-        postList,
+        posts,
         page: page + 1,
         noMore: newList.length < PAGE_SIZE,
-        isEmpty: postList.length === 0
+        isEmpty: posts.length === 0,
+        loading: false
       })
     } catch (err) {
       console.error('[loadPosts] 失败：', err)
       wx.showToast({ title: '加载失败', icon: 'none' })
-    } finally {
       this.setData({ loading: false })
     }
   },
 
-  // ==================== 分类 tab 切换 ====================
-  onCategoryTap(e) {
-    const index = e.currentTarget.dataset.index
-    if (index === this.data.activeCategory) return
+  // ==================== 点赞（需登录） ====================
+  async onPostLike(e) {
+    const { postId } = e.detail
+    if (!postId) return
 
-    this.setData({ activeCategory: index })
-    this.loadPosts(true) // 切换分类后重新加载
+    // 未登录 → 弹登录窗（与全局权限设计一致：点赞需登录）
+    if (!requireLogin(this)) return
+
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'post',
+        data: { action: 'like', postId }
+      })
+
+      if (res.result.code === 0) {
+        const liked = res.result.data && res.result.data.liked
+        // 更新本地点赞状态与计数
+        const posts = this.data.posts.map(p => {
+          if (p._id !== postId) return p
+          const cur = p.likeCount || 0
+          return {
+            ...p,
+            isLiked: liked,
+            likeCount: liked ? cur + 1 : Math.max(0, cur - 1)
+          }
+        })
+        this.setData({ posts })
+      } else {
+        wx.showToast({ title: res.result.message || '操作失败', icon: 'none' })
+      }
+    } catch (err) {
+      console.error('[onPostLike] 失败：', err)
+      wx.showToast({ title: '操作失败', icon: 'none' })
+    }
   },
 
-  // ==================== 点击帖子 → 帖子详情 ====================
-  onPostTap(e) {
-    const id = e.currentTarget.dataset.id
-    wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${id}` })
+  // ==================== 登录弹窗成功回调 ====================
+  // 登录后重新加载列表，刷新 isLiked 状态（点赞需登录，登录成功后可再次操作）
+  onLoginSuccess() {
+    this.loadPosts(true)
   },
 
-  // ==================== 点击热门帖子 → 帖子详情 ====================
+  // ==================== 点击热门帖 → 详情 ====================
   onHotTap(e) {
     const id = e.currentTarget.dataset.id
+    if (!id) return
     wx.navigateTo({ url: `/pages/post-detail/post-detail?id=${id}` })
   },
 
-  // ==================== 工具函数 ====================
-
-  /**
-   * 格式化时间戳为相对时间
-   * @param {Date|number|string} timestamp
-   * @returns {string}
-   */
+  // ==================== 工具函数：格式化时间 ====================
   _formatTime(timestamp) {
     if (!timestamp) return ''
     const date = timestamp instanceof Date ? timestamp : new Date(timestamp)
@@ -180,7 +239,6 @@ Page({
     if (diff < day) return Math.floor(diff / hour) + '小时前'
     if (diff < 7 * day) return Math.floor(diff / day) + '天前'
 
-    // 超过 7 天显示日期
     const M = (date.getMonth() + 1).toString().padStart(2, '0')
     const D = date.getDate().toString().padStart(2, '0')
     return `${M}-${D}`

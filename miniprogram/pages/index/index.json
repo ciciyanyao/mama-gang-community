@@ -1,5 +1,11 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "post-card": "/components/post-card/post-card",
+    "empty-state": "/components/empty-state/empty-state",
+    "loading": "/components/loading/loading",
+    "login-modal": "/components/login-modal/index"
+  },
   "enablePullDownRefresh": true,
-  "backgroundTextStyle": "dark"
+  "backgroundTextStyle": "dark",
+  "navigationBarTitleText": "妈妈岗社区"
 }

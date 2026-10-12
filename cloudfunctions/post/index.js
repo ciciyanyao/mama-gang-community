@@ -101,6 +101,8 @@ async function createPost(event, openid) {
   // 5. 写入 posts 集合
   const postData = {
     authorId: user.openid || user._id, // 论坛版按 openid 查作者，冗余兼容 _id
+    authorName: user.nickname || '',   // 冗余作者昵称，供论坛列表/帖子卡片直接显示（历史帖无此字段则显示兜底）
+    authorAvatar: user.avatar || '',   // 冗余作者头像
     openid,               // 冗余 openid 方便查询（仅服务端可见，不外泄）
     title: title.trim(),
     content: content.trim(),
@@ -183,7 +185,7 @@ async function pollMediaResult(traceId, maxSeconds) {
 }
 
 // ========== 删除帖子（仅本人或管理员） ==========
-// 来自 cici 分支（类C）。软删除：status 置 2
+// 来自 cici 分支（类C）。软删除：status 置 -1（与论坛列表 status != -1 过滤对齐，删掉即从论坛/热门榜消失）
 async function deletePost(event, openid) {
   const { id } = event
   if (!id) return { code: -1, msg: '缺少帖子ID' }
@@ -199,7 +201,7 @@ async function deletePost(event, openid) {
     if (!me || me.role !== 2) return { code: -1, msg: '无权限删除' }
   }
 
-  await posts.doc(id).update({ data: { status: 2, updated_at: db.serverDate() } })
+  await posts.doc(id).update({ data: { status: -1, updated_at: db.serverDate() } })
   return { code: 0, msg: '已删除' }
 }
 

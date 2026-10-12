@@ -1,204 +1,185 @@
-/* pages/message/message.wxss —— 消息列表样式 */
+/* pages/message/message.wxss —— 消息页样式（小红书式结构，压缩包版） */
 
-.page-wrap {
-  min-height: 100vh;
+/* 顶部标题 */
+.page-header {
+  padding: 24rpx 32rpx 0;
   background: #F7F3EA;
-  padding-bottom: 120rpx;
 }
 
-/* ==================== 空状态 ==================== */
-.empty-state {
+.page-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #222222;
+}
+
+/* 消息类型 Tab 栏 */
+.msg-tab-bar {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 240rpx 0 0;
+  padding: 20rpx 32rpx 0;
+  background: #F7F3EA;
+  border-bottom: 1rpx solid #EEEEEE;
 }
 
-.empty-icon-wrap {
-  width: 180rpx;
-  height: 180rpx;
-  border-radius: 50%;
-  background: rgba(46, 125, 91, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 40rpx;
-}
-
-.empty-icon {
-  width: 96rpx;
-  height: 96rpx;
-  opacity: 0.4;
-}
-
-.empty-text {
-  font-size: 32rpx;
-  color: #999;
-  margin-bottom: 12rpx;
-}
-
-.empty-hint {
-  font-size: 26rpx;
-  color: #C0C0C0;
-}
-
-/* ==================== 消息列表 ==================== */
-.message-list {
-  padding: 20rpx 24rpx;
-}
-
-.message-card {
-  display: flex;
-  align-items: center;
-  background: #FFFFFF;
-  border-radius: 16rpx;
-  padding: 28rpx 24rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-}
-
-/* 左侧图标 */
-.msg-icon-area {
+.msg-tab-item {
   position: relative;
-  margin-right: 24rpx;
-  flex-shrink: 0;
-}
-
-.msg-icon-circle {
-  width: 88rpx;
-  height: 88rpx;
-  border-radius: 50%;
-  background: rgba(46, 125, 91, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.msg-icon {
-  width: 44rpx;
-  height: 44rpx;
-}
-
-.msg-badge {
-  position: absolute;
-  top: -8rpx;
-  right: -8rpx;
-  min-width: 32rpx;
-  height: 32rpx;
-  padding: 0 10rpx;
-  border-radius: 16rpx;
-  background: #E5484D;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-.msg-badge-text {
-  font-size: 18rpx;
-  color: #FFFFFF;
-  line-height: 1;
-}
-
-/* 中间内容 */
-.msg-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.msg-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12rpx;
-}
-
-.msg-post-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  padding: 16rpx 32rpx 20rpx;
   margin-right: 16rpx;
 }
 
-.msg-time {
-  font-size: 22rpx;
-  color: #B0B0B0;
-  flex-shrink: 0;
+.msg-tab-text {
+  font-size: 30rpx;
+  color: #666666;
+  font-weight: 500;
 }
 
-.msg-previews {
+.msg-tab-item.active .msg-tab-text {
+  color: #222222;
+  font-weight: 700;
+}
+
+.msg-tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: #2E7D5B;
+}
+
+/* 消息列表区域 */
+.msg-list-wrap {
+  padding: 0 24rpx;
+  background: #F7F3EA;
+  min-height: 70vh;
+}
+
+/* 消息分组 */
+.msg-group {
+  margin-bottom: 16rpx;
+}
+
+.msg-group-title {
+  font-size: 24rpx;
+  color: #999999;
+  padding: 20rpx 8rpx 12rpx;
+  font-weight: 500;
+}
+
+/* 消息条目 */
+.msg-item {
   display: flex;
-  flex-direction: column;
-  gap: 6rpx;
+  align-items: flex-start;
+  padding: 24rpx 20rpx;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 12rpx;
+  position: relative;
 }
 
-.msg-preview-text {
+.msg-item.unread {
+  background: #FFFBF5;
+}
+
+/* 左侧头像 */
+.msg-item-left {
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+
+.msg-avatar-wrap {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #F0F0F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.msg-avatar {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+/* 未读红点 */
+.msg-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #E5484D;
+  border: 2rpx solid #FFFFFF;
+}
+
+/* 消息内容区 */
+.msg-item-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.msg-item-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  flex-wrap: wrap;
+}
+
+.msg-user-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-right: 8rpx;
+}
+
+.msg-action {
   font-size: 26rpx;
-  color: #777;
+  color: #888888;
+}
+
+.msg-comment-content {
+  display: block;
+  font-size: 28rpx;
+  color: #444444;
+  line-height: 1.5;
+  margin-bottom: 8rpx;
+}
+
+/* 帖子引用 */
+.msg-post-ref {
+  display: inline-block;
+  background: #F5F5F5;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 8rpx;
+}
+
+.msg-post-ref-text {
+  font-size: 24rpx;
+  color: #888888;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   display: block;
+  max-width: 480rpx;
 }
 
-.msg-more {
+.msg-time {
+  display: block;
   font-size: 22rpx;
-  color: #2E7D5B;
-  margin-top: 4rpx;
+  color: #BBBBBB;
 }
 
-/* 右侧箭头 */
-.msg-arrow {
+/* 点赞图标 */
+.msg-like-icon {
+  color: #E5484D;
+  font-size: 32rpx;
   flex-shrink: 0;
-  margin-left: 16rpx;
-}
-
-.arrow-text {
-  font-size: 40rpx;
-  color: #CCC;
-  line-height: 1;
-}
-
-/* ==================== 加载状态 ==================== */
-.loading-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40rpx 0;
-}
-
-.loading-spinner {
-  width: 48rpx;
-  height: 48rpx;
-  border: 4rpx solid #E8E8E8;
-  border-top: 4rpx solid #2E7D5B;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-bottom: 16rpx;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-text {
-  font-size: 24rpx;
-  color: #999;
-}
-
-/* ==================== 没有更多 ==================== */
-.no-more {
-  text-align: center;
-  padding: 32rpx 0;
-}
-
-.no-more-text {
-  font-size: 24rpx;
-  color: #C0C0C0;
+  margin-left: 12rpx;
+  align-self: center;
 }
