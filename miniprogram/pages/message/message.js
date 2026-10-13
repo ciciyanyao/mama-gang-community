@@ -140,9 +140,9 @@ Page({
       const titleMap = {}
       myPosts.forEach(p => { titleMap[p._id] = p.title })
 
-      // 2. 这些帖子收到的赞（likes 集合，按时间倒序取最近 100 条）
+      // 2. 这些帖子收到的赞（likes 集合，排除自己，按时间倒序取最近 100 条）
       const likeRes = await db.collection('likes')
-        .where({ postId: _.in(ids) })
+        .where({ postId: _.in(ids), _openid: _.neq(openid) })
         .orderBy('create_time', 'desc')
         .limit(100)
         .get()

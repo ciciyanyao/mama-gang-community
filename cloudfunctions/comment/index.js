@@ -300,12 +300,28 @@ async function handleCheckUnread(event, openid) {
       })
       .count()
 
+    // 点赞未读：我的帖子收到的赞（排除自己），创建时间晚于前端本地"已读时间戳"（与消息页口径一致）
+    const lastLikeRead = Number(event.lastLikeRead) || 0
+    let likeUnread = 0
+    if (lastLikeRead > 0) {
+      const likeRes = await db.collection('likes')
+        .where({
+          postId: _.in(myPostIds),
+          _openid: _.neq(openid),
+          create_time: _.gt(new Date(lastLikeRead))
+        })
+        .count()
+      likeUnread = likeRes.total
+    }
+
+    const total = countRes.total + likeUnread
+
     return {
       code: 0,
       message: '获取成功',
       data: {
-        hasUnread: countRes.total > 0,
-        count: countRes.total
+        hasUnread: total > 0,
+        count: total
       }
     }
   } catch (err) {
