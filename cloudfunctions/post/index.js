@@ -26,6 +26,43 @@ function hash(str) {
   return Math.abs(h)
 }
 
+// 收集对象里所有 cloud:// 开头的 fileID
+function collectFileIds(obj, set = new Set()) {
+  if (!obj || typeof obj !== 'object') return set
+  for (const v of Object.values(obj)) {
+    if (typeof v === 'string' && v.startsWith('cloud://')) set.add(v)
+    else if (Array.isArray(v)) v.forEach(item => collectFileIds(item, set))
+    else if (v && typeof v === 'object') collectFileIds(v, set)
+  }
+  return set
+}
+
+// 批量把 cloud:// fileID 换成临时 https URL（云函数管理员身份，绕过存储权限）
+async function hydrateCloudUrls(list) {
+  if (!Array.isArray(list) || list.length === 0) return list
+  const fileIds = [...collectFileIds(list)]
+  if (fileIds.length === 0) return list
+  try {
+    const res = await cloud.getTempFileURL({ fileList: fileIds })
+    const map = {}
+    (res.fileList || []).forEach(f => { map[f.fileID] = f.tempFileURL })
+    // 递归替换
+    const replace = (o) => {
+      if (!o || typeof o !== 'object') return
+      for (const k of Object.keys(o)) {
+        const v = o[k]
+        if (typeof v === 'string' && map[v]) o[k] = map[v]
+        else if (Array.isArray(v)) v.forEach(replace)
+        else if (v && typeof v === 'object') replace(v)
+      }
+    }
+    list.forEach(replace)
+  } catch (e) {
+    console.error('hydrateCloudUrls 失败：', e)
+  }
+  return list
+}
+
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   const { action } = event
@@ -249,6 +286,9 @@ async function handleList(event) {
         .get()
     ])
 
+    // 批量把 cloud:// fileID 换成临时 https URL（绕过云存储"仅创建者可读"限制）
+    await hydrateCloudUrls(listRes.data)
+
     return {
       code: 0,
       message: '获取成功',
@@ -297,6 +337,9 @@ async function handleDetail(event) {
         // 查不到作者不影响帖子返回
       }
     }
+
+    // 把 post 里的 cloud:// fileID 换成临时 https URL
+    await hydrateCloudUrls([post])
 
     return {
       code: 0,
@@ -359,6 +402,9 @@ async function handleMyPosts(event, openid) {
         .limit(parseInt(pageSize))
         .get()
     ])
+
+    // 批量把 cloud:// fileID 换成临时 https URL（绕过云存储"仅创建者可读"限制）
+    await hydrateCloudUrls(listRes.data)
 
     return {
       code: 0,

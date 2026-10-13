@@ -83,12 +83,19 @@ Page({
         isLiked = likeRes.data.length > 0
       }
 
-      // 云存储图片：fileID → 临时 https 链接（cloud:// 在开发者工具渲染层不稳定）
+      // 云存储图片：fileID → 临时 https 链接（含作者头像 + 帖子图片）
+      const cloudIDs = []
       if (post.images && post.images.length) {
-        const cloudIDs = post.images.filter(id => id && id.indexOf('cloud://') === 0)
-        if (cloudIDs.length > 0) {
-          const { map } = await resolveTempUrls(cloudIDs)
-          post.images = post.images.map(id => (map[id] || id))
+        post.images.forEach(id => { if (id && id.indexOf('cloud://') === 0) cloudIDs.push(id) })
+      }
+      if (post.authorAvatar && post.authorAvatar.indexOf('cloud://') === 0) {
+        cloudIDs.push(post.authorAvatar)
+      }
+      if (cloudIDs.length > 0) {
+        const { map } = await resolveTempUrls(cloudIDs)
+        post.images = (post.images || []).map(id => (map[id] || id))
+        if (post.authorAvatar && map[post.authorAvatar]) {
+          post.authorAvatar = map[post.authorAvatar]
         }
       }
 
@@ -137,6 +144,17 @@ Page({
           timeText: this._formatTime(c.create_time)
         }
       })
+
+      // 评论作者头像：fileID → 临时 https 链接
+      const avatarIDs = comments
+        .map(c => c.authorAvatar)
+        .filter(a => a && a.indexOf('cloud://') === 0)
+      if (avatarIDs.length > 0) {
+        const { map } = await resolveTempUrls(avatarIDs)
+        comments.forEach(c => {
+          if (c.authorAvatar && map[c.authorAvatar]) c.authorAvatar = map[c.authorAvatar]
+        })
+      }
 
       this.setData({
         comments,
