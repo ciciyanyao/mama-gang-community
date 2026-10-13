@@ -10,8 +10,8 @@
 .loading-spinner {
   width: 48rpx;
   height: 48rpx;
-  border: 4rpx solid #E0E0E0;
-  border-top-color: #2E7D5B;
+  border: 4rpx solid #E9E2D4;
+  border-top-color: #3A7A5C;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 16rpx;
@@ -23,5 +23,5 @@
 
 .loading-text {
   font-size: 24rpx;
-  color: #999999;
+  color: #8B958C;
 }

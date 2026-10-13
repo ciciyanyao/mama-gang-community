@@ -14,7 +14,7 @@
 
 .empty-text {
   font-size: 28rpx;
-  color: #999999;
+  color: #8B958C;
   text-align: center;
   line-height: 1.6;
 }

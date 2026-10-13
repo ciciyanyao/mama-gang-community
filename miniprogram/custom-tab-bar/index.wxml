@@ -2,6 +2,7 @@
 <view class="tab-bar">
   <view
     class="tab-bar-item {{item.isAdd ? 'tab-bar-add' : ''}} {{selected === index ? 'active-tab' : ''}}"
+    hover-class="tab-item-hover"
     wx:for="{{list}}"
     wx:key="pagePath"
     bindtap="switchTab"

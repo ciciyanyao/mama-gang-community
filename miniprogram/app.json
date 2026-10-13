@@ -24,15 +24,15 @@
   ],
   "window": {
     "navigationBarTitleText": "妈妈港",
-    "navigationBarBackgroundColor": "#F7F3EA",
+    "navigationBarBackgroundColor": "#F8F3E8",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#F7F3EA"
+    "backgroundColor": "#F8F3E8"
   },
   "lazyCodeLoading": "requiredComponents",
   "tabBar": {
     "custom": true,
-    "color": "#7A7A7A",
-    "selectedColor": "#2E7D5B",
+    "color": "#7C887E",
+    "selectedColor": "#3A7A5C",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "black",
     "list": [

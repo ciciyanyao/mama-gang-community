@@ -21,10 +21,10 @@
       <text class="gender-label">性别</text>
       <radio-group bindchange="onGenderChange">
         <label class="gender-option">
-          <radio value="female" checked="{{tempGender === 'female'}}" color="#2E7D5B" />女
+          <radio value="female" checked="{{tempGender === 'female'}}" color="#3A7A5C" />女
         </label>
         <label class="gender-option">
-          <radio value="male" checked="{{tempGender === 'male'}}" color="#2E7D5B" />男
+          <radio value="male" checked="{{tempGender === 'male'}}" color="#3A7A5C" />男
         </label>
       </radio-group>
     </view>

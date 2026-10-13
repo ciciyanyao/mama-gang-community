@@ -32,6 +32,7 @@
   <view class="menu-section">
     <view
       class="menu-item"
+      hover-class="menu-item-hover"
       wx:for="{{menuList}}"
       wx:key="id"
       bindtap="onMenuTap"

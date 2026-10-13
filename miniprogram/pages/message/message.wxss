@@ -3,21 +3,21 @@
 /* 顶部标题 */
 .page-header {
   padding: 24rpx 32rpx 0;
-  background: #F7F3EA;
+  background: #F8F3E8;
 }
 
 .page-title {
   font-size: 44rpx;
   font-weight: 700;
-  color: #222222;
+  color: #2E3A33;
 }
 
 /* 消息类型 Tab 栏 */
 .msg-tab-bar {
   display: flex;
   padding: 20rpx 32rpx 0;
-  background: #F7F3EA;
-  border-bottom: 1rpx solid #EEEEEE;
+  background: #F8F3E8;
+  border-bottom: 1rpx solid #E9E2D4;
 }
 
 .msg-tab-item {
@@ -28,12 +28,12 @@
 
 .msg-tab-text {
   font-size: 30rpx;
-  color: #666666;
+  color: #7C887E;
   font-weight: 500;
 }
 
 .msg-tab-item.active .msg-tab-text {
-  color: #222222;
+  color: #2E3A33;
   font-weight: 700;
 }
 
@@ -45,13 +45,13 @@
   width: 40rpx;
   height: 6rpx;
   border-radius: 3rpx;
-  background: #2E7D5B;
+  background: #3A7A5C;
 }
 
 /* 消息列表区域 */
 .msg-list-wrap {
   padding: 0 24rpx;
-  background: #F7F3EA;
+  background: #F8F3E8;
   min-height: 70vh;
 }
 
@@ -62,7 +62,7 @@
 
 .msg-group-title {
   font-size: 24rpx;
-  color: #999999;
+  color: #8B958C;
   padding: 20rpx 8rpx 12rpx;
   font-weight: 500;
 }
@@ -73,13 +73,13 @@
   align-items: flex-start;
   padding: 24rpx 20rpx;
   background: #FFFFFF;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   margin-bottom: 12rpx;
   position: relative;
 }
 
 .msg-item.unread {
-  background: #FFFBF5;
+  background: #FBF5EB;
 }
 
 /* 左侧头像 */
@@ -94,7 +94,7 @@
   height: 80rpx;
   border-radius: 50%;
   overflow: hidden;
-  background: #F0F0F0;
+  background: #E9E2D4;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -133,19 +133,19 @@
 .msg-user-name {
   font-size: 28rpx;
   font-weight: 600;
-  color: #333333;
+  color: #2E3A33;
   margin-right: 8rpx;
 }
 
 .msg-action {
   font-size: 26rpx;
-  color: #888888;
+  color: #8B958C;
 }
 
 .msg-comment-content {
   display: block;
   font-size: 28rpx;
-  color: #444444;
+  color: #66736A;
   line-height: 1.5;
   margin-bottom: 8rpx;
 }
@@ -153,7 +153,7 @@
 /* 帖子引用 */
 .msg-post-ref {
   display: inline-block;
-  background: #F5F5F5;
+  background: #E9E2D4;
   padding: 8rpx 16rpx;
   border-radius: 8rpx;
   margin-bottom: 8rpx;
@@ -161,7 +161,7 @@
 
 .msg-post-ref-text {
   font-size: 24rpx;
-  color: #888888;
+  color: #8B958C;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -172,7 +172,7 @@
 .msg-time {
   display: block;
   font-size: 22rpx;
-  color: #BBBBBB;
+  color: #8B958C;
 }
 
 /* 点赞图标 */

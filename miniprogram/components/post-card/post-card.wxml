@@ -1,5 +1,5 @@
 <!-- components/post-card/post-card.wxml —— 帖子卡片 -->
-<view class="post-card" bindtap="onTapCard">
+<view class="post-card" hover-class="post-card-hover" bindtap="onTapCard">
   <!-- 作者信息行 -->
   <view class="post-header">
     <image

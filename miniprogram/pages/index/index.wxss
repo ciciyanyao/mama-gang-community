@@ -2,27 +2,27 @@
 
 .page-index {
   min-height: 100vh;
-  background: #F7F3EA;
+  background: #F8F3E8;
   padding-bottom: 40rpx;
 }
 
 /* 顶部标题 */
 .page-header {
   padding: 24rpx 32rpx 0;
-  background: #F7F3EA;
+  background: #F8F3E8;
 }
 
 .page-title {
   font-size: 44rpx;
   font-weight: 700;
-  color: #222222;
+  color: #2E3A33;
 }
 
 /* 板块分类 Tab */
 .category-bar {
   white-space: nowrap;
   padding: 20rpx 24rpx 16rpx;
-  background: #F7F3EA;
+  background: #F8F3E8;
 }
 
 .category-item {
@@ -30,14 +30,14 @@
   padding: 12rpx 28rpx;
   margin-right: 16rpx;
   font-size: 26rpx;
-  color: #666666;
+  color: #7C887E;
   background: #FFFFFF;
   border-radius: 28rpx;
   transition: all 0.2s ease;
 }
 
 .category-item.active {
-  background: #2E7D5B;
+  background: #3A7A5C;
   color: #FFFFFF;
   font-weight: 600;
 }
@@ -56,21 +56,21 @@
 .hot-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: #222222;
+  color: #2E3A33;
 }
 
 .hot-subtitle {
   font-size: 24rpx;
-  color: #999999;
+  color: #8B958C;
   margin-left: 12rpx;
 }
 
 /* 日历卡片外观 */
 .hot-calendar-card {
   background: #FFFFFF;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   overflow: hidden;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06), 0 16rpx 40rpx rgba(0, 0, 0, 0.05);
   position: relative;
 }
 
@@ -80,7 +80,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12rpx 24rpx;
-  background: linear-gradient(135deg, #E8845C 0%, #E07A3F 100%);
+  background: linear-gradient(135deg, #E8C19A 0%, #D9A576 100%);
 }
 
 .calendar-hole {
@@ -111,8 +111,8 @@
     90deg,
     transparent,
     transparent 8rpx,
-    #F0EDE6 8rpx,
-    #F0EDE6 10rpx
+    #F1EBDE 8rpx,
+    #F1EBDE 10rpx
   );
 }
 
@@ -134,7 +134,7 @@
   width: 48rpx;
   height: 48rpx;
   border-radius: 12rpx;
-  background: linear-gradient(135deg, #E8845C 0%, #E07A3F 100%);
+  background: linear-gradient(135deg, #E8C19A 0%, #D9A576 100%);
   color: #FFFFFF;
   font-size: 28rpx;
   font-weight: 700;
@@ -155,7 +155,7 @@
 
 .hot-post-title {
   font-size: 28rpx;
-  color: #333333;
+  color: #2E3A33;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -165,7 +165,7 @@
 
 .hot-heat {
   font-size: 22rpx;
-  color: #E07A3F;
+  color: #D9A576;
 }
 
 /* ===== 功能宫格 ===== */
@@ -175,8 +175,8 @@
   padding: 24rpx 24rpx 16rpx;
   margin: 0 24rpx;
   background: #FFFFFF;
-  border-radius: 16rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04), 0 12rpx 32rpx rgba(0, 0, 0, 0.05);
 }
 
 .grid-item {
@@ -193,14 +193,14 @@
   align-items: center;
   justify-content: center;
   font-size: 40rpx;
-  background: linear-gradient(135deg, #F0F8F4 0%, #E8F5EE 100%);
+  background: linear-gradient(135deg, #EAF1E9 0%, #DFE9E1 100%);
   border-radius: 20rpx;
   margin-bottom: 10rpx;
 }
 
 .grid-name {
   font-size: 24rpx;
-  color: #555555;
+  color: #7C887E;
 }
 
 /* ===== 帖子信息流 ===== */
@@ -215,7 +215,7 @@
 .section-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: #222222;
+  color: #2E3A33;
 }
 
 .post-list {
@@ -231,5 +231,5 @@
   text-align: center;
   padding: 32rpx 0;
   font-size: 24rpx;
-  color: #CCCCCC;
+  color: #8B958C;
 }

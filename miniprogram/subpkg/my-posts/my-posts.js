@@ -96,7 +96,7 @@ Page({
       title: '提示',
       content: '确定要删除这条帖子吗？',
       confirmText: '删除',
-      confirmColor: '#e74c3c',
+      confirmColor: '#E5484D',
       success: (res) => {
         if (res.confirm) {
           this.deletePost(id)

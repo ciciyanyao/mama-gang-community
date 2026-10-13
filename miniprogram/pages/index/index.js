@@ -5,6 +5,7 @@ const db = wx.cloud.database()
 const _ = db.command
 const POSTS = db.collection('posts')
 const { requireLogin } = require('../../utils/auth.js')
+const { resolveTempUrls, applyUrlMap } = require('../../utils/image-url.js')
 
 const PAGE_SIZE = 20
 const CATEGORIES = ['全部', '求职交流', '职场经验', '育儿互助', '情绪倾诉', '政策资讯']
@@ -156,6 +157,14 @@ Page({
         createTimeStr: this._formatTime(post.create_time),
         isLiked: likedSet.has(post._id)
       }))
+
+      // 云存储 fileID → 临时 https 链接（cloud:// 在开发者工具渲染层不稳定，转换后两端稳定显示）
+      const cloudIDs = newList.reduce((acc, p) => acc.concat(p.images || []), [])
+        .filter(id => id && id.indexOf('cloud://') === 0)
+      if (cloudIDs.length > 0) {
+        const { map } = await resolveTempUrls(cloudIDs)
+        newList.forEach(p => applyUrlMap(p, map))
+      }
 
       const posts = reset ? newList : [...this.data.posts, ...newList]
 

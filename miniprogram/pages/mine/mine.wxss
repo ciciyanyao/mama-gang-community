@@ -2,12 +2,12 @@
 
 .page-wrap {
   min-height: 100vh;
-  background: #F7F3EA;
+  background: #F8F3E8;
 }
 
 /* ==================== 用户信息区域 ==================== */
 .user-section {
-  background: linear-gradient(135deg, #2E7D5B 0%, #3A9D72 100%);
+  background: linear-gradient(135deg, #3A7A5C 0%, #5A987B 100%);
   padding: 80rpx 40rpx 60rpx;
   border-radius: 0 0 32rpx 32rpx;
 }
@@ -71,7 +71,7 @@
   background: #FFFFFF;
   border-radius: 20rpx;
   overflow: hidden;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06), 0 16rpx 40rpx rgba(0, 0, 0, 0.05);
 }
 
 .menu-item {
@@ -79,6 +79,12 @@
   align-items: center;
   padding: 32rpx 28rpx;
   position: relative;
+  transition: opacity 0.15s ease;
+}
+
+/* iOS 按压反馈 */
+.menu-item-hover {
+  opacity: 0.75;
 }
 
 .menu-item::after {
@@ -88,7 +94,7 @@
   left: 96rpx;
   right: 28rpx;
   height: 1rpx;
-  background: #F0EDE5;
+  background: #F1EBDE;
 }
 
 .menu-item:last-child::after {
@@ -111,7 +117,7 @@
 .menu-title {
   flex: 1;
   font-size: 30rpx;
-  color: #333;
+  color: #2E3A33;
 }
 
 .menu-arrow {
@@ -120,7 +126,7 @@
 
 .arrow-symbol {
   font-size: 36rpx;
-  color: #CCC;
+  color: #8B958C;
   line-height: 1;
 }
 
@@ -131,10 +137,10 @@
 
 .logout-btn {
   background: #FFFFFF;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   padding: 28rpx 0;
   text-align: center;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04), 0 12rpx 32rpx rgba(0, 0, 0, 0.05);
 }
 
 .logout-text {
@@ -150,5 +156,5 @@
 
 .version-text {
   font-size: 22rpx;
-  color: #C0C0C0;
+  color: #8B958C;
 }

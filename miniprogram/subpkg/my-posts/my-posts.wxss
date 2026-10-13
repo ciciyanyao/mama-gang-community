@@ -2,7 +2,7 @@
 
 .page-wrap {
   min-height: 100vh;
-  background: #F7F3EA;
+  background: #F8F3E8;
   padding-bottom: 40rpx;
 }
 
@@ -18,7 +18,7 @@
   width: 160rpx;
   height: 160rpx;
   border-radius: 50%;
-  background: rgba(46, 125, 91, 0.08);
+  background: rgba(58, 122, 92, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,13 +31,13 @@
 
 .empty-text {
   font-size: 30rpx;
-  color: #999;
+  color: #8B958C;
   margin-bottom: 8rpx;
 }
 
 .empty-hint {
   font-size: 24rpx;
-  color: #C0C0C0;
+  color: #8B958C;
 }
 
 /* ==================== 帖子列表 ==================== */
@@ -47,16 +47,16 @@
 
 .post-card {
   background: #FFFFFF;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   padding: 28rpx 24rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04), 0 12rpx 32rpx rgba(0, 0, 0, 0.05);
 }
 
 /* 已删除帖子：半透明 + 灰底（PR#7 样式优化） */
 .post-card.post-deleted {
   opacity: 0.6;
-  background: #f5f5f5;
+  background: #E9E2D4;
 }
 
 .post-header {
@@ -73,8 +73,8 @@
 }
 
 .status-normal {
-  background: rgba(46, 125, 91, 0.1);
-  color: #2E7D5B;
+  background: rgba(58, 122, 92, 0.1);
+  color: #3A7A5C;
 }
 
 .status-deleted {
@@ -88,14 +88,14 @@
 
 .post-time {
   font-size: 22rpx;
-  color: #B0B0B0;
+  color: #8B958C;
 }
 
 .post-title {
   display: block;
   font-size: 32rpx;
   font-weight: 600;
-  color: #333;
+  color: #2E3A33;
   margin-bottom: 12rpx;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -105,7 +105,7 @@
 .post-content {
   display: block;
   font-size: 26rpx;
-  color: #777;
+  color: #7C887E;
   line-height: 1.6;
   margin-bottom: 16rpx;
   display: -webkit-box;
@@ -123,12 +123,12 @@
 
 .stat {
   font-size: 22rpx;
-  color: #999;
+  color: #8B958C;
 }
 
 .stat.category {
-  background: rgba(46, 125, 91, 0.08);
-  color: #2E7D5B;
+  background: rgba(58, 122, 92, 0.08);
+  color: #3A7A5C;
   padding: 4rpx 14rpx;
   border-radius: 6rpx;
 }
@@ -160,8 +160,8 @@
 .loading-spinner {
   width: 48rpx;
   height: 48rpx;
-  border: 4rpx solid #E8E8E8;
-  border-top: 4rpx solid #2E7D5B;
+  border: 4rpx solid #E9E2D4;
+  border-top: 4rpx solid #3A7A5C;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 16rpx;
@@ -174,7 +174,7 @@
 
 .loading-text {
   font-size: 24rpx;
-  color: #999;
+  color: #8B958C;
 }
 
 /* ==================== 没有更多 ==================== */
@@ -185,5 +185,5 @@
 
 .no-more-text {
   font-size: 24rpx;
-  color: #C0C0C0;
+  color: #8B958C;
 }

@@ -16,8 +16,8 @@
 .loading-spinner {
   width: 48rpx;
   height: 48rpx;
-  border: 4rpx solid #E5E5E5;
-  border-top-color: #2E7D5B;
+  border: 4rpx solid #E9E2D4;
+  border-top-color: #3A7A5C;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 16rpx;
@@ -35,7 +35,7 @@
 
 .loading-text {
   font-size: 26rpx;
-  color: #999999;
+  color: #8B958C;
 }
 
 /* ==================== 帖子内容区 ==================== */
@@ -56,7 +56,7 @@
   width: 80rpx;
   height: 80rpx;
   border-radius: 50%;
-  background: #EFEFEF;
+  background: #E9E2D4;
   flex-shrink: 0;
 }
 
@@ -70,19 +70,19 @@
 .detail-nickname {
   font-size: 30rpx;
   font-weight: 600;
-  color: #333333;
+  color: #2E3A33;
 }
 
 .detail-time {
   font-size: 24rpx;
-  color: #999999;
+  color: #8B958C;
   margin-top: 4rpx;
 }
 
 .detail-category-tag {
   font-size: 22rpx;
-  color: #2E7D5B;
-  background: rgba(46, 125, 91, 0.1);
+  color: #3A7A5C;
+  background: rgba(58, 122, 92, 0.1);
   padding: 6rpx 20rpx;
   border-radius: 8rpx;
   flex-shrink: 0;
@@ -92,7 +92,7 @@
 .detail-title {
   font-size: 38rpx;
   font-weight: bold;
-  color: #222222;
+  color: #2E3A33;
   line-height: 1.4;
   margin-bottom: 24rpx;
 }
@@ -100,7 +100,7 @@
 /* 正文 */
 .detail-content {
   font-size: 30rpx;
-  color: #444444;
+  color: #66736A;
   line-height: 1.8;
   margin-bottom: 24rpx;
   word-break: break-all;
@@ -118,7 +118,7 @@
 .detail-image {
   width: 100%;
   border-radius: 12rpx;
-  background: #F5F5F5;
+  background: #E9E2D4;
 }
 
 /* ==================== 统计栏 ==================== */
@@ -126,7 +126,7 @@
   display: flex;
   align-items: center;
   padding-top: 24rpx;
-  border-top: 1rpx solid #F0F0F0;
+  border-top: 1rpx solid #E9E2D4;
   gap: 40rpx;
 }
 
@@ -143,7 +143,7 @@
 
 .stat-text {
   font-size: 26rpx;
-  color: #666666;
+  color: #7C887E;
 }
 
 .stat-item.liked .stat-text {
@@ -151,7 +151,7 @@
 }
 
 .stat-item.favorited .stat-text {
-  color: #F0880A;
+  color: #D9A576;
 }
 
 /* ==================== 评论区 ==================== */
@@ -167,7 +167,7 @@
 .comment-title {
   font-size: 32rpx;
   font-weight: bold;
-  color: #333333;
+  color: #2E3A33;
 }
 
 .comment-loading {
@@ -185,7 +185,7 @@
 .comment-item {
   display: flex;
   padding: 24rpx 0;
-  border-bottom: 1rpx solid #F5F5F5;
+  border-bottom: 1rpx solid #E9E2D4;
 }
 
 .comment-item:last-child {
@@ -196,7 +196,7 @@
   width: 60rpx;
   height: 60rpx;
   border-radius: 50%;
-  background: #EFEFEF;
+  background: #E9E2D4;
   flex-shrink: 0;
 }
 
@@ -215,27 +215,27 @@
 .comment-nickname {
   font-size: 26rpx;
   font-weight: 600;
-  color: #333333;
+  color: #2E3A33;
 }
 
 .comment-time {
   font-size: 22rpx;
-  color: #BBBBBB;
+  color: #8B958C;
 }
 
 .reply-hint {
   font-size: 24rpx;
-  color: #999999;
+  color: #8B958C;
   margin-bottom: 8rpx;
 }
 
 .reply-name {
-  color: #2E7D5B;
+  color: #3A7A5C;
 }
 
 .comment-content {
   font-size: 28rpx;
-  color: #444444;
+  color: #66736A;
   line-height: 1.6;
   margin-bottom: 12rpx;
 }
@@ -247,7 +247,7 @@
 
 .reply-btn {
   font-size: 24rpx;
-  color: #999999;
+  color: #8B958C;
   padding: 4rpx 0;
 }
 
@@ -259,7 +259,7 @@
 
 .comment-empty-text {
   font-size: 26rpx;
-  color: #CCCCCC;
+  color: #8B958C;
 }
 
 /* 底部占位 */
@@ -274,7 +274,7 @@
   right: 0;
   bottom: 0;
   background: #FFFFFF;
-  border-top: 1rpx solid #EFEFEF;
+  border-top: 1rpx solid #E9E2D4;
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 100;
   transition: box-shadow 0.2s ease;
@@ -290,16 +290,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 12rpx 24rpx;
-  background: #F7F3EA;
+  background: #F8F3E8;
   font-size: 24rpx;
 }
 
 .reply-bar-text {
-  color: #666666;
+  color: #7C887E;
 }
 
 .reply-bar-cancel {
-  color: #2E7D5B;
+  color: #3A7A5C;
   font-weight: 600;
 }
 
@@ -314,11 +314,11 @@
 .comment-input {
   flex: 1;
   height: 72rpx;
-  background: #F5F5F5;
+  background: #E9E2D4;
   border-radius: 36rpx;
   padding: 0 28rpx;
   font-size: 28rpx;
-  color: #333333;
+  color: #2E3A33;
 }
 
 .send-btn {
@@ -327,7 +327,7 @@
   line-height: 72rpx;
   padding: 0 32rpx;
   border-radius: 36rpx;
-  background: #CCCCCC;
+  background: #8B958C;
   color: #FFFFFF;
   font-size: 28rpx;
   font-weight: 600;
@@ -336,7 +336,7 @@
 }
 
 .send-btn.active {
-  background: #2E7D5B;
+  background: #3A7A5C;
 }
 
 /* 匿名发表开关 */
@@ -348,32 +348,32 @@
   height: 52rpx;
   padding: 0 18rpx;
   border-radius: 26rpx;
-  background: #F0F0F0;
+  background: #E9E2D4;
   transition: background 0.2s ease;
 }
 
 .anon-switch.on {
-  background: rgba(46, 125, 91, 0.15);
+  background: rgba(58, 122, 92, 0.15);
 }
 
 .anon-switch-dot {
   width: 16rpx;
   height: 16rpx;
   border-radius: 50%;
-  background: #BBBBBB;
+  background: #8B958C;
   transition: background 0.2s ease;
 }
 
 .anon-switch.on .anon-switch-dot {
-  background: #2E7D5B;
+  background: #3A7A5C;
 }
 
 .anon-switch-text {
   font-size: 24rpx;
-  color: #888888;
+  color: #8B958C;
 }
 
 .anon-switch.on .anon-switch-text {
-  color: #2E7D5B;
+  color: #3A7A5C;
   font-weight: 600;
 }

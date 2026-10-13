@@ -2,8 +2,8 @@ page { background-color: #F0EBE1; font-family: sans-serif; }
 .container { padding: 0 30rpx 40rpx; }
 
 .nav-bar { display: flex; align-items: center; justify-content: space-between; height: 88rpx; margin-bottom: 20rpx; }
-.back-btn { font-size: 30rpx; color: #059669; font-weight: bold; }
-.nav-title { font-size: 34rpx; font-weight: bold; color: #333; }
+.back-btn { font-size: 30rpx; color: #3A7A5C; font-weight: bold; }
+.nav-title { font-size: 34rpx; font-weight: bold; color: #2E3A33; }
 .placeholder { width: 80rpx; }
 
 .paper-card {
@@ -15,13 +15,13 @@ page { background-color: #F0EBE1; font-family: sans-serif; }
   box-sizing: border-box;
   padding: 150rpx 80rpx 160rpx 80rpx; 
   margin-bottom: 40rpx;
-  box-shadow: 0 10rpx 20rpx rgba(0,0,0,0.1);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06), 0 16rpx 40rpx rgba(0, 0, 0, 0.05);
 }
 
 .paper-content { position: relative; z-index: 2; word-break: break-all; }
 .detail-title { font-size: 36rpx; font-weight: bold; color: #4A3B32; line-height: 1.5; margin-bottom: 24rpx; text-align: center; }
 .detail-tags { display: flex; justify-content: center; gap: 20rpx; margin-bottom: 30rpx; }
-.tag { background: rgba(230, 220, 205, 0.8); color: #8C7A6B; padding: 6rpx 20rpx; border-radius: 12rpx; font-size: 24rpx; }
+.tag { background: rgba(233, 226, 212, 0.8); color: #8C7A6B; padding: 6rpx 20rpx; border-radius: 12rpx; font-size: 24rpx; }
 .divider { height: 2rpx; background: rgba(200, 180, 160, 0.5); margin-bottom: 30rpx; }
 .section { margin-bottom: 30rpx; }
 .section-title { font-size: 28rpx; font-weight: bold; color: #9C7C5B; margin-bottom: 12rpx; }

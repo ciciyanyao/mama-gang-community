@@ -13,10 +13,10 @@ page { background-color: #F0EBE1; font-family: sans-serif; }
 .tags-scroll { white-space: nowrap; margin-bottom: 20rpx; }
 .tags-container { display: inline-flex; gap: 20rpx; }
 .tag {
-  background: #ffffff; color: #666;
+  background: #ffffff; color: #7C887E;
   padding: 10rpx 30rpx; border-radius: 30rpx; font-size: 26rpx;
 }
-.tag.active { background: #059669; color: #ffffff; font-weight: bold; }
+.tag.active { background: #3A7A5C; color: #ffffff; font-weight: bold; }
 
 /* 手账卡片列表 */
 .case-list { display: flex; flex-direction: column; gap: 30rpx; }
@@ -28,7 +28,7 @@ page { background-color: #F0EBE1; font-family: sans-serif; }
   background-position: center;
   box-sizing: border-box;
   padding: 80rpx 60rpx; 
-  box-shadow: 0 6rpx 16rpx rgba(0,0,0,0.08);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06), 0 16rpx 40rpx rgba(0, 0, 0, 0.05);
 }
 .paper-content { position: relative; z-index: 2; word-break: break-all; }
 
@@ -36,9 +36,9 @@ page { background-color: #F0EBE1; font-family: sans-serif; }
 .case-info { margin-bottom: 16rpx; text-align: center; }
 .case-city, .case-type {
   font-size: 22rpx; color: #9C7C5B;
-  background: rgba(230, 220, 205, 0.8); padding: 4rpx 16rpx;
+  background: rgba(233, 226, 212, 0.8); padding: 4rpx 16rpx;
   border-radius: 10rpx; margin: 0 8rpx; display: inline-block;
 }
 .case-summary { font-size: 28rpx; color: #6B5E52; line-height: 1.6; text-align: justify; margin-top: 10rpx; }
 
-.empty-state { display: flex; justify-content: center; align-items: center; padding-top: 100rpx; color: #999; font-size: 28rpx; }
+.empty-state { display: flex; justify-content: center; align-items: center; padding-top: 100rpx; color: #8B958C; font-size: 28rpx; }

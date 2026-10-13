@@ -3,6 +3,7 @@ const db = wx.cloud.database()
 const _ = db.command
 const auth = require('../../utils/auth.js')
 const { pickAnonymous } = require('../../utils/anonymous.js')
+const { resolveTempUrls } = require('../../utils/image-url.js')
 const POSTS = db.collection('posts')
 const COMMENTS = db.collection('comments')
 
@@ -80,6 +81,15 @@ Page({
           .limit(1)
           .get()
         isLiked = likeRes.data.length > 0
+      }
+
+      // 云存储图片：fileID → 临时 https 链接（cloud:// 在开发者工具渲染层不稳定）
+      if (post.images && post.images.length) {
+        const cloudIDs = post.images.filter(id => id && id.indexOf('cloud://') === 0)
+        if (cloudIDs.length > 0) {
+          const { map } = await resolveTempUrls(cloudIDs)
+          post.images = post.images.map(id => (map[id] || id))
+        }
       }
 
       this.setData({

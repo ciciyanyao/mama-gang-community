@@ -2,14 +2,14 @@
 
 .page-wrap {
   min-height: 100vh;
-  background: #F7F3EA;
+  background: #F8F3E8;
 }
 
 /* ==================== Tab 栏 ==================== */
 .tab-bar {
   display: flex;
   background: #FFFFFF;
-  border-bottom: 1rpx solid #F0EDE5;
+  border-bottom: 1rpx solid #F1EBDE;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -25,13 +25,13 @@
 }
 
 .tab-item.active .tab-text {
-  color: #2E7D5B;
+  color: #3A7A5C;
   font-weight: 600;
 }
 
 .tab-text {
   font-size: 30rpx;
-  color: #777;
+  color: #7C887E;
 }
 
 .tab-indicator {
@@ -42,7 +42,7 @@
   width: 48rpx;
   height: 6rpx;
   border-radius: 3rpx;
-  background: #2E7D5B;
+  background: #3A7A5C;
 }
 
 .tab-badge {
@@ -52,7 +52,7 @@
   min-width: 32rpx;
   height: 32rpx;
   padding: 0 10rpx;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   background: #E5484D;
   display: flex;
   align-items: center;
@@ -81,11 +81,11 @@
   border-radius: 20rpx;
   padding: 32rpx 24rpx;
   text-align: center;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04), 0 12rpx 32rpx rgba(0, 0, 0, 0.05);
 }
 
 .stat-card.highlight {
-  background: linear-gradient(135deg, #2E7D5B 0%, #3A9D72 100%);
+  background: linear-gradient(135deg, #3A7A5C 0%, #5A987B 100%);
 }
 
 .stat-card.highlight .stat-num,
@@ -97,14 +97,14 @@
   display: block;
   font-size: 56rpx;
   font-weight: bold;
-  color: #2E7D5B;
+  color: #3A7A5C;
   margin-bottom: 8rpx;
 }
 
 .stat-label {
   display: block;
   font-size: 24rpx;
-  color: #999;
+  color: #8B958C;
 }
 
 /* ==================== 举报列表 ==================== */
@@ -124,7 +124,7 @@
   width: 160rpx;
   height: 160rpx;
   border-radius: 50%;
-  background: rgba(46, 125, 91, 0.08);
+  background: rgba(58, 122, 92, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,13 +137,13 @@
 
 .empty-text {
   font-size: 30rpx;
-  color: #999;
+  color: #8B958C;
   margin-bottom: 8rpx;
 }
 
 .empty-hint {
   font-size: 24rpx;
-  color: #C0C0C0;
+  color: #8B958C;
 }
 
 /* 举报列表 */
@@ -155,9 +155,9 @@
 
 .report-card {
   background: #FFFFFF;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   padding: 24rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04), 0 12rpx 32rpx rgba(0, 0, 0, 0.05);
 }
 
 .report-header {
@@ -182,7 +182,7 @@
 }
 
 .type-post {
-  background: rgba(46, 125, 91, 0.1);
+  background: rgba(58, 122, 92, 0.1);
 }
 
 .type-comment {
@@ -191,16 +191,16 @@
 
 .type-tag-text {
   font-size: 22rpx;
-  color: #2E7D5B;
+  color: #3A7A5C;
 }
 
 .type-comment .type-tag-text {
-  color: #F57C00;
+  color: #D9A576;
 }
 
 .report-reason {
   font-size: 26rpx;
-  color: #666;
+  color: #7C887E;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -208,7 +208,7 @@
 
 .report-time {
   font-size: 22rpx;
-  color: #B0B0B0;
+  color: #8B958C;
   flex-shrink: 0;
   margin-left: 16rpx;
 }
@@ -216,13 +216,13 @@
 .report-content {
   margin-bottom: 20rpx;
   padding: 16rpx 20rpx;
-  background: #FAFAF5;
+  background: #F8F3E8;
   border-radius: 12rpx;
 }
 
 .content-text {
   font-size: 26rpx;
-  color: #555;
+  color: #7C887E;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -231,7 +231,7 @@
 }
 
 .content-text.deleted {
-  color: #B0B0B0;
+  color: #8B958C;
   font-style: italic;
 }
 
@@ -253,7 +253,7 @@
 }
 
 .btn-reject {
-  background: #F0EDE5;
+  background: #F1EBDE;
 }
 
 .btn-approve .btn-text {
@@ -263,7 +263,7 @@
 }
 
 .btn-reject .btn-text {
-  color: #777;
+  color: #7C887E;
   font-size: 26rpx;
 }
 
@@ -278,8 +278,8 @@
 .loading-spinner {
   width: 48rpx;
   height: 48rpx;
-  border: 4rpx solid #E8E8E8;
-  border-top: 4rpx solid #2E7D5B;
+  border: 4rpx solid #E9E2D4;
+  border-top: 4rpx solid #3A7A5C;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 16rpx;
@@ -292,7 +292,7 @@
 
 .loading-text {
   font-size: 24rpx;
-  color: #999;
+  color: #8B958C;
 }
 
 /* ==================== 没有更多 ==================== */
@@ -303,5 +303,5 @@
 
 .no-more-text {
   font-size: 24rpx;
-  color: #C0C0C0;
+  color: #8B958C;
 }

@@ -2,7 +2,7 @@
   <!-- 顶部搜索 -->
   <view class="search-box">
     <!-- 🚨 原来是 iconify-icon 导致报错，现改为原生写法 -->
-    <text style="font-size: 36rpx; color: #999;">🔍</text>
+    <text style="font-size: 36rpx; color: #8B958C;">🔍</text>
     <input class="search-input" placeholder="搜索案由、城市或关键词..." bindinput="onSearchInput" value="{{keyword}}" />
   </view>
 

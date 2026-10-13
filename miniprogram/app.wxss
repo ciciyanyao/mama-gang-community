@@ -1,27 +1,28 @@
 /* app.wxss —— 全局样式 + 设计 Token（A4 全局规范） */
 /* =========================================================
    主题色规范（CSS 变量，全站 var(--xxx) 引用，改一处全局生效）
-   主色 #2E7D5B（妈妈岗绿，温润不刺眼）：CTA 按钮 / 选中态 / 链接
-   主色浅 #2E7D5B→#3A9D75：渐变 / hover
-   辅助暖米 #F7F3EA：页面背景，营造温和氛围
-   文字 #1F2933 主 / #3E4C59 次 / #7A7A7A 辅 / #9AA5B1 弱
+   主色 #3A7A5C（妈妈岗绿，温润不刺眼）：CTA 按钮 / 选中态 / 链接
+   主色浅 #3A7A5C→#5A987B：渐变 / hover
+   辅助暖米 #F8F3E8：页面背景，营造温和氛围
+   文字 #2E3A33 主 / #66736A 次 / #7C887E 辅 / #8B958C 弱
    警示 #E54848：退出 / 删除 / 红角标
    ========================================================= */
 page {
-  --color-primary: #2E7D5B;
-  --color-primary-hover: #3A9D75;
-  --color-bg: #F7F3EA;
+  --color-primary: #3A7A5C;
+  --color-primary-hover: #5A987B;
+  --color-bg: #F8F3E8;
   --color-card: #FFFFFF;
-  --color-text-strong: #1F2933;
-  --color-text: #3E4C59;
-  --color-text-muted: #7A7A7A;
-  --color-text-weak: #9AA5B1;
-  --color-divider: #F2F4F3;
+  --color-text-strong: #2E3A33;
+  --color-text: #66736A;
+  --color-text-muted: #7C887E;
+  --color-text-weak: #8B958C;
+  --color-divider: #E9E2D4;
   --color-danger: #E54848;
   --radius-card: 24rpx;
   --radius-btn: 16rpx;
-  --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
-  --shadow-card-hover: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+  /* iOS 式双层轻阴影：近层紧贴细影 + 远层弥散大影，层级比单层更柔和 */
+  --shadow-card: 0 2rpx 8rpx rgba(0, 0, 0, 0.04), 0 12rpx 32rpx rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 4rpx 12rpx rgba(0, 0, 0, 0.08), 0 16rpx 40rpx rgba(0, 0, 0, 0.06);
 
   background-color: var(--color-bg);
   font-size: 28rpx;

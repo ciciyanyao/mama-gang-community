@@ -28,20 +28,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12rpx 32rpx rgba(46, 125, 91, 0.22);
+  box-shadow: 0 12rpx 32rpx rgba(58, 122, 92, 0.22);
 }
 /* loading 态：主色绿 + 呼吸缩放 */
 .blob-loading {
-  background: #2E7D5B;
+  background: #3A7A5C;
   animation: blobBreathe 1.6s ease-in-out infinite;
 }
 @keyframes blobBreathe {
-  0%, 100% { transform: scale(1); box-shadow: 0 12rpx 32rpx rgba(46, 125, 91, 0.22); }
-  50%      { transform: scale(1.08); box-shadow: 0 16rpx 40rpx rgba(46, 125, 91, 0.3); }
+  0%, 100% { transform: scale(1); box-shadow: 0 12rpx 32rpx rgba(58, 122, 92, 0.22); }
+  50%      { transform: scale(1.08); box-shadow: 0 16rpx 40rpx rgba(58, 122, 92, 0.3); }
 }
 /* success：主色绿底 + 白勾 */
 .blob-success {
-  background: #2E7D5B;
+  background: #3A7A5C;
   animation: blobPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 @keyframes blobPop {
@@ -81,7 +81,7 @@
 .title {
   font-size: 48rpx;
   font-weight: 700;
-  color: #2E7D5B;
+  color: #3A7A5C;
   letter-spacing: 2rpx;
   margin-bottom: 40rpx;
 }
@@ -91,14 +91,14 @@
   width: 100%;
   max-width: 560rpx;
   height: 24rpx;
-  background: #E8EEE9;
+  background: #E3EFE7;
   border-radius: 12rpx;
   overflow: hidden;
   box-shadow: inset 0 2rpx 4rpx rgba(0, 0, 0, 0.06);
 }
 .stripe-fill {
   height: 100%;
-  background: #2E7D5B;
+  background: #3A7A5C;
   border-radius: 12rpx;
   transition: width 0.4s ease;
   position: relative;
@@ -131,11 +131,11 @@
 }
 .subtitle {
   font-size: 28rpx;
-  color: #7A7A7A;
+  color: #7C887E;
 }
 .pct {
   font-size: 26rpx;
-  color: #2E7D5B;
+  color: #3A7A5C;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -146,9 +146,9 @@
   padding: 18rpx 56rpx;
   font-size: 28rpx;
   color: #FFFFFF;
-  background: #2E7D5B;
+  background: #3A7A5C;
   border-radius: 40rpx;
-  box-shadow: 0 6rpx 16rpx rgba(46, 125, 91, 0.25);
+  box-shadow: 0 6rpx 16rpx rgba(58, 122, 92, 0.25);
   transition: opacity 0.2s ease;
 }
 .retry-btn:active { opacity: 0.75; }

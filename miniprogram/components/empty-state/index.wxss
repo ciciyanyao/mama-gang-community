@@ -22,10 +22,10 @@
 .illu-leaf {
   width: 140rpx;
   height: 140rpx;
-  background: linear-gradient(135deg, #C8E0D2 0%, #A8CBB9 100%);
+  background: linear-gradient(135deg, #CFE3D8 0%, #B4CDBE 100%);
   border-radius: 70rpx 70rpx 70rpx 0;
   transform: rotate(-45deg);
-  box-shadow: 0 4rpx 16rpx rgba(168, 203, 185, 0.3);
+  box-shadow: 0 4rpx 16rpx rgba(180, 205, 190, 0.3);
   position: relative;
 }
 .illu-leaf::before {
@@ -43,9 +43,9 @@
 .illu-case {
   width: 120rpx;
   height: 140rpx;
-  background: linear-gradient(135deg, #F0D9B5 0%, #E0C299 100%);
+  background: linear-gradient(135deg, #F5E7D4 0%, #E8CBA4 100%);
   border-radius: 12rpx;
-  box-shadow: 0 4rpx 16rpx rgba(224, 194, 153, 0.4);
+  box-shadow: 0 4rpx 16rpx rgba(232, 195, 156, 0.4);
   position: relative;
 }
 .illu-case::before,
@@ -65,9 +65,9 @@
 .illu-comment {
   width: 140rpx;
   height: 110rpx;
-  background: linear-gradient(135deg, #E4E9E6 0%, #CDD6D1 100%);
+  background: linear-gradient(135deg, #E2E8E2 0%, #CFDAD1 100%);
   border-radius: 24rpx;
-  box-shadow: 0 4rpx 16rpx rgba(205, 214, 209, 0.4);
+  box-shadow: 0 4rpx 16rpx rgba(207, 218, 209, 0.4);
   position: relative;
 }
 .illu-comment::before {

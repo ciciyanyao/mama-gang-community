@@ -88,7 +88,7 @@
       </view>
       <switch
         checked="{{isAnonymous}}"
-        color="#2E7D5B"
+        color="#3A7A5C"
         bindchange="onAnonymousToggle"
       />
     </view>
@@ -101,7 +101,7 @@
       </view>
       <switch
         checked="{{alsoToTreehole}}"
-        color="#2E7D5B"
+        color="#3A7A5C"
         bindchange="onTreeholeToggle"
       />
     </view>
