@@ -1,32 +1,55 @@
 <view class="container">
   <!-- 顶部搜索 -->
   <view class="search-box">
-    <!-- 🚨 原来是 iconify-icon 导致报错，现改为原生写法 -->
     <text style="font-size: 36rpx; color: #8B958C;">🔍</text>
     <input class="search-input" placeholder="搜索案由、城市或关键词..." bindinput="onSearchInput" value="{{keyword}}" />
   </view>
 
-  <!-- 筛选标签 -->
+  <!-- 城市筛选 -->
   <scroll-view class="tags-scroll" scroll-x>
     <view class="tags-container">
-      <view wx:for="{{types}}" wx:key="index" class="tag {{currentType === item ? 'active' : ''}}" bindtap="switchType" data-type="{{item}}">
-        {{item}}
+      <view wx:for="{{cityList}}" wx:key="index" class="tag {{currentCity === item.name ? 'active' : ''}}" bindtap="switchCity" data-name="{{item.name}}">
+        {{item.name}}<text wx:if="{{item.count}}">{{item.count}}</text>
       </view>
     </view>
   </scroll-view>
 
+  <!-- 类型筛选 -->
+  <scroll-view class="tags-scroll" scroll-x>
+    <view class="tags-container">
+      <view wx:for="{{types}}" wx:key="index" class="tag {{currentType === item.name ? 'active' : ''}}" bindtap="switchType" data-name="{{item.name}}">
+        {{item.name}}<text wx:if="{{item.count}}">{{item.count}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 计数条 -->
+  <view class="count-bar">共{{allCases.length}}条案例，当前筛选出{{displayList.length}}条</view>
+
+  <!-- 加载中 -->
+  <view class="empty-state" wx:if="{{loading}}">
+    <text>案例加载中...</text>
+  </view>
+
   <!-- 案例列表 -->
-  <view class="case-list" wx:if="{{displayList.length > 0}}">
+  <view class="case-list" wx:elif="{{displayList.length > 0}}">
     <block wx:for="{{displayList}}" wx:key="_id">
-      <!-- 🚨 这里绑定了 bindtap 和 data-id -->
       <view class="paper-card" bindtap="goToDetail" data-id="{{item._id}}" style="background-image: url('{{item.bgImage}}');">
         <view class="paper-content">
-          <view class="case-title">{{item.title}}</view>
-          <view class="case-info">
-            <text class="case-city">{{item.city}}</text>
-            <text class="case-type">{{item.type}}</text>
+          <view class="case-title">
+            <text wx:for="{{item.titleHL}}" wx:key="index" class="{{item.hl ? 'hl' : ''}}">{{item.text}}</text>
           </view>
-          <view class="case-summary">{{item.summary}}</view>
+          <view class="case-info">
+            <text class="case-city">
+              <text wx:for="{{item.cityHL}}" wx:key="index" class="{{item.hl ? 'hl' : ''}}">{{item.text}}</text>
+            </text>
+            <text class="case-type">
+              <text wx:for="{{item.typeHL}}" wx:key="index" class="{{item.hl ? 'hl' : ''}}">{{item.text}}</text>
+            </text>
+          </view>
+          <view class="case-summary">
+            <text wx:for="{{item.summaryHL}}" wx:key="index" class="{{item.hl ? 'hl' : ''}}">{{item.text}}</text>
+          </view>
         </view>
       </view>
     </block>

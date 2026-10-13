@@ -1,0 +1,9 @@
+{
+  "name": "getCases",
+  "version": "1.0.0",
+  "description": "云函数：案例库全量拉取",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

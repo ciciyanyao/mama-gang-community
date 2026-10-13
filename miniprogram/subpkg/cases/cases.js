@@ -8,10 +8,31 @@ function makeTitle(summary) {
   return m ? m[1] : summary.slice(0, 16)
 }
 
+// 搜索关键词高亮：把文本拆成 [普通段, 命中段, ...] 片段数组
+function splitHighlight(text, keyword) {
+  const str = text || ''
+  if (!keyword) return [{ text: str, hl: false }]
+  const lower = str.toLowerCase()
+  const kw = keyword.toLowerCase()
+  const out = []
+  let i = 0
+  let idx = lower.indexOf(kw, i)
+  while (idx !== -1) {
+    if (idx > i) out.push({ text: str.slice(i, idx), hl: false })
+    out.push({ text: str.slice(idx, idx + kw.length), hl: true })
+    i = idx + kw.length
+    idx = lower.indexOf(kw, i)
+  }
+  if (i < str.length) out.push({ text: str.slice(i), hl: false })
+  return out.length ? out : [{ text: str, hl: false }]
+}
+
 Page({
   data: {
     keyword: '',
-    types: ['全部'],
+    cityList: [{ name: '全部', count: null }],
+    currentCity: '全部',
+    types: [{ name: '全部', count: null }],
     currentType: '全部',
     allCases: [],
     displayList: [],
@@ -29,17 +50,11 @@ Page({
     this.loadCases()
   },
 
-  // 从云数据库分页拉全量（单次 get 上限 100 条，371 条需循环 4 次）
+  // 从云函数拉全量（前端 get 单次最多 20 条，改用云函数端管理员读取，一次拿完 371 条）
   async loadCases() {
     try {
-      const coll = wx.cloud.database().collection('cases')
-      const BATCH = 100
-      let all = []
-      for (let skip = 0; ; skip += BATCH) {
-        const res = await coll.skip(skip).limit(BATCH).get()
-        all = all.concat(res.data)
-        if (res.data.length < BATCH) break
-      }
+      const res = await wx.cloud.callFunction({ name: 'getCases' })
+      const all = (res.result && res.result.list) || []
       if (!all.length) {
         this.setData({ loading: false })
         wx.showToast({ title: '案例库暂无数据', icon: 'none' })
@@ -60,11 +75,22 @@ Page({
         tags: item.tags || [],
         bgImage: this.bgList[i % this.bgList.length]
       }))
-      // 类型筛选：从数据 tags 动态提取（数量上限 15，避免 chips 过长）
-      const tagSet = new Set(['全部'])
-      mapped.forEach(c => (c.tags || []).forEach(t => tagSet.add(t)))
-      const types = Array.from(tagSet).slice(0, 15)
-      this.setData({ allCases: mapped, types: types, loading: false })
+
+      // 城市筛选列表（带计数，按数量降序）
+      const cityMap = {}
+      mapped.forEach(c => { if (c.city) cityMap[c.city] = (cityMap[c.city] || 0) + 1 })
+      const cityList = [{ name: '全部', count: null }].concat(
+        Object.entries(cityMap).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ name: name, count: count }))
+      )
+
+      // 类型筛选列表（从 tags 动态提取，带计数，按数量降序）
+      const tagMap = {}
+      mapped.forEach(c => (c.tags || []).forEach(t => { tagMap[t] = (tagMap[t] || 0) + 1 }))
+      const types = [{ name: '全部', count: null }].concat(
+        Object.entries(tagMap).sort((a, b) => b[1] - a[1]).slice(0, 11).map(([name, count]) => ({ name: name, count: count }))
+      )
+
+      this.setData({ allCases: mapped, cityList: cityList, types: types, loading: false })
       this.filterData()
     } catch (e) {
       console.error('读取案例库失败：', e)
@@ -82,15 +108,21 @@ Page({
     this.filterData()
   },
 
+  switchCity(e) {
+    this.setData({ currentCity: e.currentTarget.dataset.name })
+    this.filterData()
+  },
+
   switchType(e) {
-    this.setData({ currentType: e.currentTarget.dataset.type })
+    this.setData({ currentType: e.currentTarget.dataset.name })
     this.filterData()
   },
 
   filterData() {
-    const { keyword, currentType, allCases } = this.data
+    const { keyword, currentCity, currentType, allCases } = this.data
     const lowerKeyword = (keyword || '').toLowerCase()
     const filtered = allCases.filter(item => {
+      const matchCity = currentCity === '全部' || item.city === currentCity
       const matchType = currentType === '全部' || item.type === currentType
       const matchKeyword = !lowerKeyword ||
         item.title.toLowerCase().includes(lowerKeyword) ||
@@ -101,9 +133,17 @@ Page({
         (item.court || '').toLowerCase().includes(lowerKeyword) ||
         (item.focus || '').toLowerCase().includes(lowerKeyword) ||
         (item.result || '').toLowerCase().includes(lowerKeyword)
-      return matchType && matchKeyword
+      return matchCity && matchType && matchKeyword
     })
-    this.setData({ displayList: filtered })
+    // 命中字段生成高亮片段
+    const displayList = filtered.map(item => ({
+      ...item,
+      titleHL: splitHighlight(item.title, keyword),
+      cityHL: splitHighlight(item.city, keyword),
+      typeHL: splitHighlight(item.type, keyword),
+      summaryHL: splitHighlight(item.summary, keyword)
+    }))
+    this.setData({ displayList: displayList })
   },
 
   // 点击跳转详情：传 _id

@@ -18,6 +18,12 @@ page { background-color: #F0EBE1; font-family: sans-serif; }
 }
 .tag.active { background: #3A7A5C; color: #ffffff; font-weight: bold; }
 
+/* 计数条 */
+.count-bar { font-size: 24rpx; color: #8A7F72; padding: 4rpx 8rpx 16rpx; }
+
+/* 搜索高亮 */
+.hl { color: #C2574C; font-weight: bold; }
+
 /* 手账卡片列表 */
 .case-list { display: flex; flex-direction: column; gap: 30rpx; }
 .paper-card {
