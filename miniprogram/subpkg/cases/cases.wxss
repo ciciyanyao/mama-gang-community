@@ -39,6 +39,6 @@ page { background-color: #F0EBE1; font-family: sans-serif; }
   background: rgba(233, 226, 212, 0.8); padding: 4rpx 16rpx;
   border-radius: 10rpx; margin: 0 8rpx; display: inline-block;
 }
-.case-summary { font-size: 28rpx; color: #6B5E52; line-height: 1.6; text-align: justify; margin-top: 10rpx; }
+.case-summary { font-size: 28rpx; color: #6B5E52; line-height: 1.6; text-align: justify; margin-top: 10rpx; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
 
 .empty-state { display: flex; justify-content: center; align-items: center; padding-top: 100rpx; color: #8B958C; font-size: 28rpx; }

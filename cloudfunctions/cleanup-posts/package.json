@@ -1,9 +1,0 @@
-{
-  "name": "cleanup-posts",
-  "version": "1.0.0",
-  "description": "一次性清理：删除历史老帖与关联数据",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
-}
