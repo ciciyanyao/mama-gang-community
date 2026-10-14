@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "私信",
+  "usingComponents": {
+    "empty-state": "/components/empty-state/empty-state",
+    "loading": "/components/loading/loading"
+  }
+}

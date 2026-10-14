@@ -454,11 +454,20 @@ async function handleLike(event, openid) {
       })
       return { code: 0, message: '取消点赞成功', data: { liked: false } }
     } else {
-      // 未点赞 → 点赞
+      // 未点赞 → 点赞（冗余帖子作者 openid + is_read，供消息页/未读统计直接按"接收者"查询）
+      let postAuthorId = ''
+      try {
+        const pRes = await db.collection('posts').doc(postId).get()
+        postAuthorId = (pRes.data && (pRes.data.authorId || pRes.data.openid)) || ''
+      } catch (e) {
+        console.error('[like] 查帖子作者失败：', e)
+      }
       await db.collection('likes').add({
         data: {
           postId,
           _openid: openid,
+          postAuthorId,
+          is_read: false, // 对帖子作者而言未读
           create_time: db.serverDate()
         }
       })

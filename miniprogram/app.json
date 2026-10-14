@@ -18,7 +18,8 @@
         "admin/admin",
         "jobs/jobs",
         "about/about",
-        "settings/settings"
+        "settings/settings",
+        "chat/chat"
       ]
     }
   ],

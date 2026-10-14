@@ -24,6 +24,13 @@
         </text>
         <text class="detail-time">{{post.timeText}}</text>
       </view>
+      <!-- 关注/私信（仅非匿名帖、非本人、已登录时显示） -->
+      <view class="detail-actions" wx:if="{{canInteract}}">
+        <view class="follow-btn {{isFollowing ? 'following' : ''}}" bindtap="onFollowTap">
+          {{isFollowing ? '已关注' : '+ 关注'}}
+        </view>
+        <view class="chat-btn" bindtap="onChatTap">私信</view>
+      </view>
     </view>
 
     <!-- 标题 -->

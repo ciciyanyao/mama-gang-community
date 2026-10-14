@@ -28,6 +28,11 @@ Page({
     isFavorited: false,
     likeCount: 0,
 
+    // 关注/私信（作者）
+    authorOpenid: '',
+    isFollowing: false,
+    canInteract: false, // 非匿名帖 + 非本人 → 可关注/私信
+
     // 评论输入
     commentText: '',
     inputFocused: false,
@@ -50,6 +55,7 @@ Page({
     this.loadPostDetail(id)
     this.loadComments(id)
     this.checkFavoriteStatus(id)
+    this.checkFollowStatus(id)
   },
 
   // ==================== 加载帖子详情 ====================
@@ -105,7 +111,10 @@ Page({
         postAnonNickname,
         likeCount: post.likeCount || post.likes || 0,
         isLiked,
-        previewImages: post.images || []
+        previewImages: post.images || [],
+        // 可交互作者：非匿名 + 非本人 + 已登录（未登录时 canInteract=false，由登录回调刷新）
+        authorOpenid: post.authorId || '',
+        canInteract: !post.is_anonymous && !!(post.authorId) && auth.isLogin() && openid !== post.authorId
       })
 
       // 更新页面标题（PR#7：顶部固定显示"详情"，不显示帖子标题）
@@ -187,11 +196,78 @@ Page({
     }
   },
 
-  // ==================== 登录成功回调：刷新点赞/收藏状态 ====================
+  // ==================== 检查关注状态（follow 云函数） ====================
+  async checkFollowStatus(postId) {
+    // 未登录：不可能是关注状态
+    if (!auth.isLogin()) {
+      this.setData({ isFollowing: false })
+      return
+    }
+    try {
+      const { authorOpenid } = this.data
+      if (!authorOpenid) return
+      const res = await wx.cloud.callFunction({
+        name: 'follow',
+        data: { action: 'check', targetOpenid: authorOpenid }
+      })
+      this.setData({
+        isFollowing: !!(res.result && res.result.code === 0 && res.result.data && res.result.data.isFollowing)
+      })
+    } catch (err) {
+      console.error('[checkFollowStatus] 失败：', err)
+    }
+  },
+
+  // ==================== 关注/取消关注（follow 云函数） ====================
+  async onFollowTap() {
+    // 未登录：弹登录弹窗，不继续
+    if (!auth.requireLogin(this)) return
+
+    const { authorOpenid, isFollowing } = this.data
+    if (!authorOpenid) return
+
+    // 乐观更新
+    this.setData({ isFollowing: !isFollowing })
+
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'follow',
+        data: { action: isFollowing ? 'unfollow' : 'follow', targetOpenid: authorOpenid }
+      })
+
+      if (res.result && res.result.code === 0) {
+        wx.showToast({ title: res.result.message || '操作成功', icon: 'none' })
+      } else {
+        this.setData({ isFollowing })
+        wx.showToast({ title: (res.result && res.result.message) || '操作失败', icon: 'none' })
+      }
+    } catch (err) {
+      console.error('[onFollowTap] 失败：', err)
+      this.setData({ isFollowing })
+      wx.showToast({ title: '操作失败', icon: 'none' })
+    }
+  },
+
+  // ==================== 发私信（跳对话页） ====================
+  onChatTap() {
+    // 未登录：弹登录弹窗，不继续
+    if (!auth.requireLogin(this)) return
+
+    const { authorOpenid, post } = this.data
+    if (!authorOpenid) return
+
+    const nickname = (post && post.authorName) || ''
+    wx.navigateTo({
+      url: `/subpkg/chat/chat?peer=${authorOpenid}&nickname=${encodeURIComponent(nickname)}`
+    })
+  },
+
+  // ==================== 登录成功回调：刷新点赞/收藏/关注状态 ====================
   onLoginSuccess() {
     if (!this.data.postId) return
     this.loadPostDetail(this.data.postId)
     this.checkFavoriteStatus(this.data.postId)
+    this.checkFollowStatus(this.data.postId)
   },
 
   // ==================== 点赞/取消点赞（统一走 post 云函数 like，与论坛列表同一套协议） ====================

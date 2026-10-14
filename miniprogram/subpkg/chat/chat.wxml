@@ -1,0 +1,38 @@
+<!-- subpkg/chat/chat.wxml —— 私信对话页 -->
+<view class="chat-page">
+  <!-- 消息列表 -->
+  <view class="msg-area">
+    <loading wx:if="{{loading}}" text="加载中..." />
+
+    <block wx:if="{{messages.length > 0}}">
+      <view
+        class="bubble-row {{item.isSelf ? 'self' : 'peer'}}"
+        wx:for="{{messages}}"
+        wx:key="id"
+      >
+        <view class="bubble">{{item.content}}</view>
+        <text class="bubble-time">{{item.timeText}}</text>
+      </view>
+    </block>
+
+    <empty-state
+      wx:if="{{!loading && messages.length === 0}}"
+      icon="💬"
+      text="打个招呼，开始聊天吧"
+    />
+  </view>
+
+  <!-- 底部输入栏 -->
+  <view class="input-bar">
+    <input
+      class="chat-input"
+      placeholder="发条消息吧..."
+      value="{{inputText}}"
+      bindinput="onInput"
+      confirm-type="send"
+      bindconfirm="onSend"
+      cursor-spacing="20"
+    />
+    <view class="send-btn {{inputText ? 'active' : ''}}" bindtap="onSend">发送</view>
+  </view>
+</view>

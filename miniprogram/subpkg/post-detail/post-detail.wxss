@@ -79,6 +79,43 @@
   margin-top: 4rpx;
 }
 
+/* 关注 / 私信按钮 */
+.detail-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.follow-btn {
+  font-size: 24rpx;
+  color: #FFFFFF;
+  background: #3A7A5C;
+  padding: 10rpx 24rpx;
+  border-radius: 28rpx;
+  margin-right: 12rpx;
+  font-weight: 600;
+}
+
+.follow-btn.following {
+  color: #3A7A5C;
+  background: rgba(58, 122, 92, 0.12);
+}
+
+.follow-btn:active,
+.chat-btn:active {
+  opacity: 0.7;
+}
+
+.chat-btn {
+  font-size: 24rpx;
+  color: #3A7A5C;
+  border: 2rpx solid rgba(58, 122, 92, 0.5);
+  padding: 8rpx 24rpx;
+  border-radius: 28rpx;
+  font-weight: 600;
+}
+
 .detail-category-tag {
   font-size: 22rpx;
   color: #3A7A5C;

@@ -158,12 +158,18 @@ Page({
         isLiked: likedSet.has(post._id)
       }))
 
-      // 云存储 fileID → 临时 https 链接（cloud:// 在开发者工具渲染层不稳定，转换后两端稳定显示）
-      const cloudIDs = newList.reduce((acc, p) => acc.concat(p.images || []), [])
-        .filter(id => id && id.indexOf('cloud://') === 0)
+      // 云存储 fileID → 临时 https 链接（帖子图片 + 作者头像）
+      const cloudIDs = []
+      newList.forEach(p => {
+        (p.images || []).forEach(id => { if (id && id.indexOf('cloud://') === 0) cloudIDs.push(id) })
+        if (p.authorAvatar && p.authorAvatar.indexOf('cloud://') === 0) cloudIDs.push(p.authorAvatar)
+      })
       if (cloudIDs.length > 0) {
         const { map } = await resolveTempUrls(cloudIDs)
-        newList.forEach(p => applyUrlMap(p, map))
+        newList.forEach(p => {
+          p.images = (p.images || []).map(id => (map[id] || id))
+          if (p.authorAvatar && map[p.authorAvatar]) p.authorAvatar = map[p.authorAvatar]
+        })
       }
 
       const posts = reset ? newList : [...this.data.posts, ...newList]

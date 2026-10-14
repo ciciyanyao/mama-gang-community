@@ -1,7 +1,7 @@
 {
-  "name": "migrate-category",
+  "name": "follow",
   "version": "1.0.0",
-  "description": "一次性迁移：老帖板块英文值转中文",
+  "description": "云函数：follow",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"

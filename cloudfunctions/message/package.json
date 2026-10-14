@@ -1,0 +1,9 @@
+{
+  "name": "message",
+  "version": "1.0.0",
+  "description": "云函数：message",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

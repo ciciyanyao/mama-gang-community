@@ -1,9 +1,14 @@
-/* pages/message/message.wxss —— 消息页样式（小红书式结构，压缩包版） */
+/* pages/message/message.wxss —— 消息页（小红书式：三组件入口 + 私信列表）
+   色板对齐全局方案：底 #F8F3E8 / 主绿 #3A7A5C / 文字 #2E3A33 #66736A #8B958C / 警示 #E54848 */
 
-/* 顶部标题 */
-.page-header {
-  padding: 24rpx 32rpx 0;
+/* ==================== 主视图 ==================== */
+.page-message {
+  min-height: 100vh;
   background: #F8F3E8;
+}
+
+.page-header {
+  padding: 24rpx 32rpx 8rpx;
 }
 
 .page-title {
@@ -12,50 +17,201 @@
   color: #2E3A33;
 }
 
-/* 消息类型 Tab 栏 */
-.msg-tab-bar {
+.msg-scroll {
+  padding: 8rpx 24rpx 48rpx;
+}
+
+/* 三组件入口卡片 */
+.inbox-row {
   display: flex;
-  padding: 20rpx 32rpx 0;
-  background: #F8F3E8;
-  border-bottom: 1rpx solid #E9E2D4;
+  margin: 16rpx 0 8rpx;
 }
 
-.msg-tab-item {
+.inbox-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28rpx 0 24rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  margin: 0 10rpx;
+  box-shadow: 0 2rpx 8rpx rgba(46, 58, 51, 0.05);
+}
+
+.inbox-card:first-child {
+  margin-left: 0;
+}
+
+.inbox-card:last-child {
+  margin-right: 0;
+}
+
+.inbox-card:active {
+  opacity: 0.8;
+}
+
+.inbox-icon-wrap {
   position: relative;
-  padding: 16rpx 32rpx 20rpx;
-  margin-right: 16rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #F0F4EF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
 }
 
-.msg-tab-text {
-  font-size: 30rpx;
-  color: #7C887E;
+.inbox-icon {
+  font-size: 40rpx;
+  color: #3A7A5C;
+  line-height: 1;
+}
+
+.inbox-badge {
+  position: absolute;
+  top: -10rpx;
+  right: -14rpx;
+  min-width: 34rpx;
+  height: 34rpx;
+  padding: 0 8rpx;
+  border-radius: 17rpx;
+  background: #E54848;
+  color: #FFFFFF;
+  font-size: 20rpx;
+  font-weight: 600;
+  line-height: 34rpx;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.inbox-label {
+  font-size: 26rpx;
+  color: #2E3A33;
   font-weight: 500;
 }
 
-.msg-tab-item.active .msg-tab-text {
-  color: #2E3A33;
-  font-weight: 700;
+/* 私信分区标题 */
+.section-title {
+  font-size: 26rpx;
+  color: #8B958C;
+  font-weight: 500;
+  padding: 24rpx 8rpx 12rpx;
 }
 
-.msg-tab-indicator {
+/* 私信行 */
+.chat-row {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 20rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  margin-bottom: 12rpx;
+}
+
+.chat-row:active {
+  opacity: 0.8;
+}
+
+.chat-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+
+.chat-avatar {
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 50%;
+  background: #E9E2D4;
+}
+
+.chat-unread-dot {
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40rpx;
-  height: 6rpx;
-  border-radius: 3rpx;
-  background: #3A7A5C;
+  top: 0;
+  right: 0;
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 50%;
+  background: #E54848;
+  border: 3rpx solid #FFFFFF;
 }
 
-/* 消息列表区域 */
+.chat-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6rpx;
+}
+
+.chat-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2E3A33;
+}
+
+.chat-time {
+  font-size: 22rpx;
+  color: #8B958C;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.chat-preview {
+  display: block;
+  font-size: 26rpx;
+  color: #66736A;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==================== 子列表视图通用 ==================== */
+.sub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx 16rpx;
+}
+
+.sub-back {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  color: #2E3A33;
+  margin-left: -16rpx;
+}
+
+.sub-back:active {
+  opacity: 0.6;
+}
+
+.sub-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #2E3A33;
+}
+
+.sub-placeholder {
+  width: 64rpx;
+  height: 64rpx;
+}
+
 .msg-list-wrap {
-  padding: 0 24rpx;
-  background: #F8F3E8;
+  padding: 0 24rpx 48rpx;
   min-height: 70vh;
 }
 
-/* 消息分组 */
+/* ==================== 消息条目（子列表共用） ==================== */
 .msg-group {
   margin-bottom: 16rpx;
 }
@@ -67,19 +223,29 @@
   font-weight: 500;
 }
 
-/* 消息条目 */
+.msg-group-title-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 620rpx;
+}
+
 .msg-item {
   display: flex;
   align-items: flex-start;
   padding: 24rpx 20rpx;
   background: #FFFFFF;
-  border-radius: 20rpx;
+  border-radius: 24rpx;
   margin-bottom: 12rpx;
-  position: relative;
 }
 
 .msg-item.unread {
   background: #FBF5EB;
+}
+
+.msg-item:active {
+  opacity: 0.8;
 }
 
 /* 左侧头像 */
@@ -95,9 +261,6 @@
   border-radius: 50%;
   overflow: hidden;
   background: #E9E2D4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .msg-avatar {
@@ -113,7 +276,7 @@
   width: 16rpx;
   height: 16rpx;
   border-radius: 50%;
-  background: #E5484D;
+  background: #E54848;
   border: 2rpx solid #FFFFFF;
 }
 
@@ -153,20 +316,21 @@
 /* 帖子引用 */
 .msg-post-ref {
   display: inline-block;
-  background: #E9E2D4;
+  background: #F0F4EF;
   padding: 8rpx 16rpx;
   border-radius: 8rpx;
   margin-bottom: 8rpx;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .msg-post-ref-text {
   font-size: 24rpx;
-  color: #8B958C;
+  color: #3A7A5C;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   display: block;
-  max-width: 480rpx;
 }
 
 .msg-time {
@@ -175,9 +339,9 @@
   color: #8B958C;
 }
 
-/* 点赞图标 */
+/* 点赞/收藏图标 */
 .msg-like-icon {
-  color: #E5484D;
+  color: #E54848;
   font-size: 32rpx;
   flex-shrink: 0;
   margin-left: 12rpx;

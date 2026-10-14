@@ -1,8 +1,8 @@
 // custom-tab-bar/index.js —— 自定义底部导航
 // 设计：扁平绿系；选中 = 图标变绿 + 图标上方绿色短横线；中间"+" = 绿色圆形凸起按钮
 // 角标：消息 tab 的数字角标（badge），通过 setBadge 方法动态更新
-// 未读刷新：每次切换到任意 Tab 页（pageLifetimes.show）时查询 comment 云函数 checkUnread，
-//           未读数 = 我的帖子收到的未读评论 + 未读点赞（与消息页口径一致）；消息页自身管理清零
+// 未读刷新：每次切换到任意 Tab 页（pageLifetimes.show）时查询 notify 云函数 checkUnread，
+//           未读数 = 评论 + 点赞 + 收藏 + 关注 + 私信（与各消息源集合口径一致）；消息页自身管理清零
 Component({
   data: {
     selected: 0,
@@ -47,13 +47,12 @@ Component({
       const cur = pages[pages.length - 1]
       if (cur && cur.route === 'pages/message/message') return
       try {
-        const lastLikeRead = wx.getStorageSync('msg_like_read_time') || 0
         const res = await wx.cloud.callFunction({
-          name: 'comment',
-          data: { action: 'checkUnread', lastLikeRead }
+          name: 'notify',
+          data: { action: 'checkUnread' }
         })
         const d = res.result && res.result.data
-        const count = (d && d.count) || 0
+        const count = (d && d.total) || 0
         this.setBadge(count)
       } catch (err) {
         console.error('[tabBar] 刷新未读失败', err)
