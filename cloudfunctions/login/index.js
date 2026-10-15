@@ -52,9 +52,9 @@ exports.main = async (event, context) => {
     }
   }
 
-  // ============ main 协议：完善资料（login-modal saveProfile） ============
+  // ============ main 协议：完善资料（login-modal saveProfile / 编辑资料页） ============
   if (action === 'updateProfile') {
-    const { nickname, avatar, gender } = event
+    const { nickname, avatar, gender, bio } = event
     if (!nickname || !avatar) {
       return { code: -1, msg: '昵称和头像不能为空' }
     }
@@ -65,6 +65,8 @@ exports.main = async (event, context) => {
         gender: gender === 'male' ? 'male' : 'female',
         updated_at: db.serverDate()
       }
+      // 简介（可选，编辑资料页传入；不传则不动）
+      if (typeof bio === 'string') updateData.bio = bio
       await users.where({ _openid: OPENID }).update({ data: updateData })
       await users.where({ openid: OPENID }).update({ data: updateData })
       const user = await findUser()
@@ -72,6 +74,49 @@ exports.main = async (event, context) => {
     } catch (err) {
       console.error('保存资料失败', err)
       return { code: -1, msg: '保存失败', error: err.message }
+    }
+  }
+
+  // ============ 我的主页统计（mine 页数据行：关注 / 粉丝 / 获赞与收藏） ============
+  // 粉丝数与获赞收藏数涉及"别人写的数据"（followee=me 的关注、别人赞/收藏我的帖子），
+  // 前端直读会被"仅创建者可读写"权限过滤，必须服务端统计
+  if (action === 'getStats') {
+    try {
+      const _ = db.command
+      // 我的帖子 ID（获赞与收藏按帖子归属统计，兼容历史无 postAuthorId 的数据）
+      const postRes = await db.collection('posts')
+        .where({ authorId: OPENID })
+        .field({ _id: true })
+        .get()
+      const myPostIds = postRes.data.map(p => p._id)
+
+      const [followingRes, followersRes] = await Promise.all([
+        db.collection('follows').where({ follower: OPENID }).count(),
+        db.collection('follows').where({ followee: OPENID }).count()
+      ])
+
+      let likeCount = 0
+      let favCount = 0
+      if (myPostIds.length > 0) {
+        const [likeRes, favRes] = await Promise.all([
+          db.collection('likes').where({ postId: _.in(myPostIds), _openid: _.neq(OPENID) }).count(),
+          db.collection('favorites').where({ postId: _.in(myPostIds), _openid: _.neq(OPENID) }).count()
+        ])
+        likeCount = likeRes.total
+        favCount = favRes.total
+      }
+
+      return {
+        code: 0,
+        data: {
+          following: followingRes.total,
+          followers: followersRes.total,
+          likeFav: likeCount + favCount
+        }
+      }
+    } catch (err) {
+      console.error('获取主页统计失败', err)
+      return { code: -1, msg: '获取统计失败', error: err.message }
     }
   }
 

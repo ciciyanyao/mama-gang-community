@@ -118,21 +118,43 @@ page {
   padding: 20rpx 30rpx;
   border-top: 4rpx solid #B8DCC4;
   display: flex;
-  align-items: flex-end; /* textarea 变高时按钮贴底对齐 */
+  align-items: center; /* 输入框与计数、按钮同一行垂直居中 */
   z-index: 10;
 }
-.footer-input {
+/* 视觉输入框移到外层容器：计数作为 flex 子项物理地位于框内右下角，不会溢出盖住按钮 */
+.footer-input-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* 计数靠右 */
   flex: 1;
-  min-height: 76rpx;
+  min-width: 0;
   background-color: #E3EFE7; /* 浅青色（参考图风格） */
   border-radius: 24rpx;
   border: 4rpx solid #CBE4D3;
-  padding: 18rpx 30rpx;
-  font-size: 28rpx;
+  padding: 0 20rpx 8rpx;
   margin-right: 20rpx;
+  box-sizing: border-box;
+}
+.footer-input {
+  /* 注意：不要用 flex:1 —— 在纵向 flex 容器里会把 textarea 拉伸填满，压制 auto-height（输入不再增高）。
+     高度交给 auto-height 由内容决定；min-height 保证最矮状态。 */
+  width: 100%;
+  min-height: 76rpx;
+  background: transparent;
+  border: none;
+  padding: 16rpx 10rpx 6rpx;
+  font-size: 28rpx;
   color: #2B5C45;
   line-height: 1.5;
   box-sizing: border-box;
+}
+/* 始终贴在输入框右下角（不随内容高度居中） */
+.input-count {
+  flex-shrink: 0;
+  font-size: 20rpx;
+  color: #A8B2AC;
+  line-height: 1;
+  pointer-events: none;
 }
 .footer-placeholder {
   color: #8B958C;
@@ -141,7 +163,7 @@ page {
   background-color: #3A7A5C; color: #FFFFFF; font-size: 28rpx; padding: 0 40rpx;
   height: 76rpx; line-height: 76rpx; border-radius: 36rpx; margin: 0;
   border: 4rpx solid #3A7A5C; box-shadow: 4rpx 4rpx 0 #3A7A5C; font-weight: bold;
-  flex-shrink: 0;
+  flex-shrink: 0; /* 横向布局下按钮不被压缩 */
 }
 .footer-btn:active { box-shadow: 1rpx 1rpx 0 #3A7A5C; transform: translate(3rpx, 3rpx); }
 .footer-btn::after { border: none; }

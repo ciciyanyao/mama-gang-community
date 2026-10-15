@@ -57,16 +57,19 @@
 
   <!-- 底部输入框（固定于自定义 tabBar 上方，高度随内容自适应，最大不超过页面 1/4） -->
   <view class="footer">
-    <textarea
-      class="footer-input"
-      placeholder="说点什么，这里没人认识你…"
-      placeholder-class="footer-placeholder"
-      value="{{moodInput}}"
-      bindinput="onInput"
-      auto-height
-      max-height="{{inputMaxHeight}}px"
-      cursor-spacing="16"
-    />
+    <view class="footer-input-wrap">
+      <textarea
+        class="footer-input"
+        placeholder="说点什么，这里没人认识你…"
+        placeholder-class="footer-placeholder"
+        value="{{moodInput}}"
+        bindinput="onInput"
+        style="height: {{inputHeight}}px;"
+        maxlength="{{maxInputLen}}"
+        cursor-spacing="16"
+      />
+      <text class="input-count">{{moodInput.length}}/{{maxInputLen}}</text>
+    </view>
     <button class="footer-btn" bindtap="postMood">投进树洞</button>
   </view>
 

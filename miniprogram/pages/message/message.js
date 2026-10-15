@@ -1,5 +1,6 @@
 // pages/message/message.js —— 消息页
 const { relativeTime, showError } = require('../../utils/util.js')
+const { resolveTempUrls } = require('../../utils/image-url.js') // cloud:// 头像 → https 临时链接
 
 Page({
   data: {
@@ -55,10 +56,46 @@ Page({
   },
 
   // ==================== 切换视图 ====================
+  // 点进某个组件（点赞与收藏/新增关注/评论）→ 该分类红点立即消失（云端也标记已读，无需逐条进帖子）
   onTapEntry(e) {
     const view = e.currentTarget.dataset.view
     if (!this.data.views.includes(view)) return
-    this.setData({ currentView: view })
+
+    const actionMap = {
+      likes: { action: 'markLikeFavRead', badgeKey: 'likeFav' },
+      follows: { action: 'markFollowRead', badgeKey: 'follow' },
+      comments: { action: 'markCommentRead', badgeKey: 'comment' }
+    }
+    const cfg = actionMap[view]
+    if (cfg) {
+      // 本地先清零对应红点（立即反馈）
+      this.setData({ currentView: view, ['badges.' + cfg.badgeKey]: 0 })
+      this._markCategoryRead(cfg.action)
+    } else {
+      this.setData({ currentView: view })
+    }
+  },
+
+  // 调 notify 云函数标记某分类已读，并同步 tabBar 消息角标
+  async _markCategoryRead(action) {
+    try {
+      await wx.cloud.callFunction({ name: 'notify', data: { action } })
+    } catch (err) {
+      console.error('[markCategoryRead] 失败：', err)
+    }
+    // 同步底部"消息"tab 角标（重新查未读总数）
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'notify',
+        data: { action: 'checkUnread' }
+      })
+      const d = res.result && res.result.data
+      if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+        this.getTabBar().setBadge((d && d.total) || 0)
+      }
+    } catch (err) {
+      console.error('[markCategoryRead] 刷新角标失败：', err)
+    }
   },
 
   onBackMain() {
@@ -77,19 +114,51 @@ Page({
 
       if (res.result.code === 0) {
         const d = res.result.data
+
+        // 头像批量转 https：cloud:// 不能直接给渲染层，转换失败置空（wxml 用默认头像兜底）
+        const collectAvatars = list => {
+          const ids = []
+          ;(list || []).forEach(it => {
+            if (it && it.avatar && it.avatar.indexOf('cloud://') === 0) ids.push(it.avatar)
+          })
+          return ids
+        }
+        const avatarIDs = [
+          ...collectAvatars(d.commentGroups),
+          ...collectAvatars(d.likeFavList),
+          ...collectAvatars(d.followList),
+          ...collectAvatars(d.conversations)
+        ]
+        let avatarMap = {}
+        if (avatarIDs.length > 0) {
+          try {
+            const { map } = await resolveTempUrls(avatarIDs)
+            avatarMap = map
+          } catch (e) {
+            console.error('[loadMessages] 头像转换失败：', e)
+          }
+        }
+        const cleanAvatar = list => (list || []).map(it => {
+          if (!it || !it.avatar) return it
+          if (it.avatar.indexOf('cloud://') === 0) {
+            return { ...it, avatar: avatarMap[it.avatar] || '' } // 转不出来 → 空，走默认头像
+          }
+          return it
+        })
+
         this.setData({
-          commentGroups: d.commentGroups || [],
-          likeFavList: (d.likeFavList || []).map(item => ({
+          commentGroups: cleanAvatar(d.commentGroups),
+          likeFavList: cleanAvatar(d.likeFavList).map(item => ({
             ...item,
             timeText: relativeTime(item.create_time),
             rawTime: item.create_time ? new Date(item.create_time).getTime() : Date.now()
           })),
-          followList: (d.followList || []).map(item => ({
+          followList: cleanAvatar(d.followList).map(item => ({
             ...item,
             timeText: relativeTime(item.create_time),
             rawTime: item.create_time ? new Date(item.create_time).getTime() : Date.now()
           })),
-          conversations: (d.conversations || []).map(c => ({
+          conversations: cleanAvatar(d.conversations).map(c => ({
             ...c,
             lastTime: relativeTime(c.create_time)
           })),

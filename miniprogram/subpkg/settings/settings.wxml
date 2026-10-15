@@ -35,6 +35,20 @@
       </view>
       <image class="arrow-icon" src="/images/arrow-right.svg" />
     </view>
+
+    <!-- 退出登录（仅已登录显示） -->
+    <view
+      class="setting-item"
+      hover-class="setting-item-hover"
+      bindtap="onLogout"
+      wx:if="{{isLogin}}"
+    >
+      <view class="setting-info">
+        <text class="setting-label logout-label">退出登录</text>
+        <text class="setting-desc">退出当前账号</text>
+      </view>
+      <image class="arrow-icon" src="/images/arrow-right.svg" />
+    </view>
   </view>
 
   <!-- 版本信息 -->

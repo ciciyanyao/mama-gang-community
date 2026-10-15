@@ -4,7 +4,6 @@ const _ = db.command
 const auth = require('../../utils/auth.js')
 const { pickAnonymous } = require('../../utils/anonymous.js')
 const { resolveTempUrls } = require('../../utils/image-url.js')
-const POSTS = db.collection('posts')
 const COMMENTS = db.collection('comments')
 
 Page({
@@ -32,6 +31,9 @@ Page({
     authorOpenid: '',
     isFollowing: false,
     canInteract: false, // 非匿名帖 + 非本人 → 可关注/私信
+
+    // 删除入口（仅本人或管理员可见）
+    isOwner: false,
 
     // 评论输入
     commentText: '',
@@ -62,8 +64,17 @@ Page({
   async loadPostDetail(id) {
     this.setData({ loading: true })
     try {
-      const res = await POSTS.doc(id).get()
-      const post = res.data
+      // 走 post 云函数 detail：返回帖子+作者信息+临时URL+isLiked（统一数据源）
+      const res = await wx.cloud.callFunction({
+        name: 'post',
+        data: { action: 'detail', postId: id }
+      })
+
+      if (res.result.code !== 0) {
+        throw new Error(res.result.message || '加载失败')
+      }
+
+      const post = res.result.data
 
       // 格式化时间
       post.timeText = this._formatTime(post.create_time)
@@ -72,36 +83,32 @@ Page({
       let postAnonAvatar = ''
       let postAnonNickname = ''
       if (post.is_anonymous && post.anonymousId) {
-        const id = pickAnonymous(post.anonymousId)
-        postAnonAvatar = id.avatar
-        postAnonNickname = id.nickname
+        const anon = pickAnonymous(post.anonymousId)
+        postAnonAvatar = anon.avatar
+        postAnonNickname = anon.nickname
       }
 
-      // 检查当前用户是否已点赞（统一协议：likes 集合，由 post 云函数 like 维护）
-      const app = getApp()
-      const openid = app.globalData.openid
-      let isLiked = false
-      if (openid) {
-        const likeRes = await db.collection('likes')
-          .where({ postId: id, _openid: openid })
-          .limit(1)
-          .get()
-        isLiked = likeRes.data.length > 0
-      }
+      const openid = getApp().globalData.openid
+      // 本人（authorId/openid 双兼容）或管理员 → 显示删除入口
+      const me = auth.getUserInfo()
+      const isOwner = !!openid && (
+        openid === (post.authorId || post.openid) ||
+        (me && me.role === 2)
+      )
 
-      // 云存储图片：fileID → 临时 https 链接（含作者头像 + 帖子图片）
-      const cloudIDs = []
-      if (post.images && post.images.length) {
-        post.images.forEach(id => { if (id && id.indexOf('cloud://') === 0) cloudIDs.push(id) })
-      }
-      if (post.authorAvatar && post.authorAvatar.indexOf('cloud://') === 0) {
-        cloudIDs.push(post.authorAvatar)
-      }
-      if (cloudIDs.length > 0) {
-        const { map } = await resolveTempUrls(cloudIDs)
-        post.images = (post.images || []).map(id => (map[id] || id))
-        if (post.authorAvatar && map[post.authorAvatar]) {
-          post.authorAvatar = map[post.authorAvatar]
+      // 正文图片：云函数通常已 hydrate，这里前端兜底一次（云端旧版时 images 仍是 cloud://）
+      let previewImages = post.images || []
+      const cloudImgIds = previewImages.filter(u => u && u.indexOf('cloud://') === 0)
+      if (cloudImgIds.length > 0) {
+        try {
+          const { map } = await resolveTempUrls(cloudImgIds)
+          previewImages = previewImages.map(u => {
+            if (u && u.indexOf('cloud://') === 0) return map[u] || ''
+            return u
+          }).filter(Boolean)
+        } catch (e) {
+          console.error('[loadPostDetail] 正文图片转换失败：', e)
+          previewImages = previewImages.filter(u => u && u.indexOf('cloud://') !== 0)
         }
       }
 
@@ -109,15 +116,14 @@ Page({
         post,
         postAnonAvatar,
         postAnonNickname,
-        likeCount: post.likeCount || post.likes || 0,
-        isLiked,
-        previewImages: post.images || [],
-        // 可交互作者：非匿名 + 非本人 + 已登录（未登录时 canInteract=false，由登录回调刷新）
+        likeCount: post.likeCount || 0,
+        isLiked: !!post.isLiked,
+        previewImages,
         authorOpenid: post.authorId || '',
-        canInteract: !post.is_anonymous && !!(post.authorId) && auth.isLogin() && openid !== post.authorId
+        canInteract: !post.is_anonymous && !!post.authorId && auth.isLogin() && openid !== post.authorId,
+        isOwner
       })
 
-      // 更新页面标题（PR#7：顶部固定显示"详情"，不显示帖子标题）
       wx.setNavigationBarTitle({ title: '详情' })
     } catch (err) {
       console.error('[loadPostDetail] 失败：', err)
@@ -154,14 +160,16 @@ Page({
         }
       })
 
-      // 评论作者头像：fileID → 临时 https 链接
+      // 评论作者头像：fileID → 临时 https 链接（转换失败置空，wxml 有默认头像兜底，绝不透传 cloud://）
       const avatarIDs = comments
         .map(c => c.authorAvatar)
         .filter(a => a && a.indexOf('cloud://') === 0)
       if (avatarIDs.length > 0) {
         const { map } = await resolveTempUrls(avatarIDs)
         comments.forEach(c => {
-          if (c.authorAvatar && map[c.authorAvatar]) c.authorAvatar = map[c.authorAvatar]
+          if (c.authorAvatar && c.authorAvatar.indexOf('cloud://') === 0) {
+            c.authorAvatar = map[c.authorAvatar] || ''
+          }
         })
       }
 
@@ -260,6 +268,54 @@ Page({
     wx.navigateTo({
       url: `/subpkg/chat/chat?peer=${authorOpenid}&nickname=${encodeURIComponent(nickname)}`
     })
+  },
+
+  // ==================== 删除帖子（一键无痕，仅本人/管理员入口） ====================
+  // 右上角"···" → 操作菜单 → 二次确认 → post 云函数物理删除（帖+点赞/收藏/评论+图片）
+  onMoreTap() {
+    wx.showActionSheet({
+      itemList: ['删除帖子'],
+      itemColor: '#E54848',
+      success: () => this.confirmDelete()
+    })
+  },
+
+  confirmDelete() {
+    wx.showModal({
+      title: '删除帖子',
+      content: '删除后帖子将永久消失（包括所有评论和点赞），且无法恢复。确定删除吗？',
+      confirmText: '删除',
+      confirmColor: '#E54848',
+      cancelText: '取消',
+      success: res => {
+        if (res.confirm) this.doDeletePost()
+      }
+    })
+  },
+
+  async doDeletePost() {
+    const { postId } = this.data
+    if (!postId) return
+
+    wx.showLoading({ title: '删除中...', mask: true })
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'post',
+        data: { action: 'delete', id: postId }
+      })
+      wx.hideLoading()
+
+      if (res.result && res.result.code === 0) {
+        wx.showToast({ title: '已删除', icon: 'success' })
+        setTimeout(() => wx.navigateBack(), 800)
+      } else {
+        wx.showToast({ title: (res.result && res.result.msg) || '删除失败', icon: 'none' })
+      }
+    } catch (err) {
+      wx.hideLoading()
+      console.error('[doDeletePost] 失败：', err)
+      wx.showToast({ title: '删除失败，请重试', icon: 'none' })
+    }
   },
 
   // ==================== 登录成功回调：刷新点赞/收藏/关注状态 ====================

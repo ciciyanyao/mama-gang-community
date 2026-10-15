@@ -1,16 +1,23 @@
 // pages/settings/settings.js
-const { showSuccess, confirm } = require('../../utils/util.js')
+const auth = require('../../utils/auth.js')
+const { showSuccess, showError, confirm } = require('../../utils/util.js')
 
 Page({
   data: {
     settings: {
       notification: true,
       darkMode: false
-    }
+    },
+    isLogin: false
   },
 
   onLoad() {
     this.loadSettings()
+  },
+
+  onShow() {
+    // 登录态（控制"退出登录"项显示）
+    this.setData({ isLogin: auth.isLogin() })
   },
 
   // 加载设置
@@ -55,5 +62,16 @@ Page({
     wx.navigateTo({
       url: '/subpkg/about/about'
     })
+  },
+
+  // 退出登录
+  async onLogout() {
+    const confirmed = await confirm('提示', '确定要退出登录吗？')
+    if (!confirmed) return
+
+    auth.clearUserInfo()
+    this.setData({ isLogin: false })
+    showSuccess('已退出登录')
+    setTimeout(() => wx.navigateBack(), 600)
   }
 })

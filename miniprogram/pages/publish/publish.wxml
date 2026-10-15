@@ -11,8 +11,14 @@
   <!-- 编辑区（可滚动） -->
   <scroll-view class="edit-scroll" scroll-y>
 
+    <!-- 错误提示条（审核失败时显示） -->
+    <view class="error-banner" wx:if="{{errorMsg}}">
+      <text class="error-icon">⚠</text>
+      <text class="error-text">{{errorMsg}}</text>
+    </view>
+
     <!-- 媒体网格（图片/视频） -->
-    <view class="media-grid">
+    <view class="media-grid {{errorField === 'images' ? 'has-error' : ''}}">
       <view
         class="media-item"
         wx:for="{{images}}"
@@ -41,7 +47,7 @@
     <!-- 标题输入 -->
     <view class="form-section">
       <input
-        class="title-input"
+        class="title-input {{errorField === 'title' ? 'has-error' : ''}}"
         type="text"
         placeholder="添加标题"
         placeholder-class="ph"
@@ -56,7 +62,7 @@
       <editor
         id="contentEditor"
         type="text"
-        class="content-input"
+        class="content-input {{errorField === 'content' ? 'has-error' : ''}}"
         placeholder="分享你的经历、观点或求助…"
         placeholder-class="ph"
         bindinput="onEditorInput"

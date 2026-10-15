@@ -82,6 +82,7 @@
         wx:key="_id"
         post="{{item}}"
         bind:like="onPostLike"
+        bind:favorite="onPostFavorite"
       />
     </view>
 

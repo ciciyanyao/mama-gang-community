@@ -5,7 +5,9 @@
     <view class="placeholder"></view>
   </view>
 
-  <view class="paper-card" style="background-image: url('{{bgImage}}');">
+  <view class="paper-card">
+    <!-- 背景图用 <image> 组件铺底（CSS background-image 渲染层不稳定，改为组件渲染） -->
+    <image class="paper-bg" src="{{bgImage}}" mode="aspectFill" />
     <view class="paper-content">
       <view class="detail-title">{{caseInfo.title}}</view>
       <view class="detail-tags">

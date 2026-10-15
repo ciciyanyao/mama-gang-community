@@ -31,6 +31,10 @@
         </view>
         <view class="chat-btn" bindtap="onChatTap">私信</view>
       </view>
+      <!-- 删除入口（仅本人或管理员：一键无痕） -->
+      <view class="detail-actions" wx:elif="{{isOwner}}">
+        <view class="more-btn" bindtap="onMoreTap">···</view>
+      </view>
     </view>
 
     <!-- 标题 -->
@@ -52,19 +56,19 @@
       />
     </view>
 
-    <!-- 统计栏 -->
+    <!-- 统计栏：点赞/评论/收藏（所有帖都显示） -->
     <view class="detail-stats">
       <view class="stat-item {{isLiked ? 'liked' : ''}}" bindtap="onLikeTap">
-        <text class="stat-icon">{{isLiked ? '❤️' : '🤍'}}</text>
+        <view class="stat-svg like-svg {{isLiked ? 'liked' : ''}}"></view>
         <text class="stat-text">{{likeCount}}</text>
       </view>
       <view class="stat-item">
-        <text class="stat-icon">💬</text>
+        <view class="stat-svg comment-svg"></view>
         <text class="stat-text">{{commentCount}}</text>
       </view>
       <view class="stat-item {{isFavorited ? 'favorited' : ''}}" bindtap="onFavoriteTap">
-        <text class="stat-icon">{{isFavorited ? '⭐' : '☆'}}</text>
-        <text class="stat-text">{{isFavorited ? '已收藏' : '收藏'}}</text>
+        <view class="stat-svg star-svg {{isFavorited ? 'favorited' : ''}}"></view>
+        <text class="stat-text">{{favoriteCount || 0}}</text>
       </view>
     </view>
   </view>

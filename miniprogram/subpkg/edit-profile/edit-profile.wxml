@@ -1,0 +1,40 @@
+<!-- subpkg/edit-profile/edit-profile.wxml —— 编辑资料页 -->
+<view class="page-edit">
+  <!-- 头像 -->
+  <view class="section">
+    <view class="section-title">头像</view>
+    <button class="avatar-picker" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+      <image wx:if="{{tempAvatar}}" class="avatar-preview" src="{{tempAvatar}}" mode="aspectFill" />
+      <view wx:else class="avatar-empty">选择头像</view>
+    </button>
+  </view>
+
+  <!-- 昵称 -->
+  <view class="section">
+    <view class="section-title">昵称</view>
+    <input
+      class="nickname-input"
+      type="nickname"
+      placeholder="输入昵称"
+      value="{{tempNickname}}"
+      maxlength="20"
+      bindinput="onNicknameInput"
+    />
+  </view>
+
+  <!-- 简介 -->
+  <view class="section">
+    <view class="section-title">简介（选填）</view>
+    <textarea
+      class="bio-input"
+      placeholder="一句话介绍自己，比如：全职宝妈重返职场中，分享面试与带娃心得"
+      value="{{tempBio}}"
+      maxlength="60"
+      bindinput="onBioInput"
+      auto-height
+    />
+    <text class="bio-count">{{tempBio.length}}/60</text>
+  </view>
+
+  <button class="save-btn" bindtap="onSave" loading="{{saving}}" disabled="{{saving}}">保存</button>
+</view>

@@ -19,7 +19,8 @@
         "jobs/jobs",
         "about/about",
         "settings/settings",
-        "chat/chat"
+        "chat/chat",
+        "edit-profile/edit-profile"
       ]
     }
   ],

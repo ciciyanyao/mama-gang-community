@@ -49,6 +49,10 @@ exports.main = async (event, context) => {
       return await handleCheckUnread(event, OPENID)
     case 'markLikeFavRead':
       return await handleMarkLikeFavRead(event, OPENID)
+    case 'markCommentRead':
+      return await handleMarkCommentRead(event, OPENID)
+    case 'markFollowRead':
+      return await handleMarkFollowRead(event, OPENID)
     case 'getMessageCenter':
       return await handleGetMessageCenter(event, OPENID)
     case 'markAllRead':
@@ -181,6 +185,57 @@ async function handleMarkLikeFavRead(event, openid) {
   }
 }
 
+// 评论分类已读：我的帖子收到的评论，逐批 is_read: true
+async function handleMarkCommentRead(event, openid) {
+  try {
+    const myPostsRes = await db.collection('posts')
+      .where({ authorId: openid })
+      .field({ _id: true })
+      .get()
+    const myPostIds = myPostsRes.data.map(p => p._id)
+    if (myPostIds.length === 0) {
+      return { code: 0, message: '无需标记', data: { updated: 0 } }
+    }
+
+    let total = 0
+    let hasMore = true
+    while (hasMore) {
+      const updateRes = await db.collection('comments')
+        .where({ postId: _.in(myPostIds), authorId: _.neq(openid), is_read: false, status: 1 })
+        .limit(200)
+        .update({ data: { is_read: true } })
+      const updated = updateRes.stats.updated || 0
+      total += updated
+      hasMore = updated >= 200
+    }
+
+    return { code: 0, message: '标记已读成功', data: { comment: total } }
+  } catch (err) {
+    return { code: -1, message: '标记已读失败', error: err.message }
+  }
+}
+
+// 关注分类已读：收到的关注，逐批 is_read: true
+async function handleMarkFollowRead(event, openid) {
+  try {
+    let total = 0
+    let hasMore = true
+    while (hasMore) {
+      const updateRes = await db.collection('follows')
+        .where({ followee: openid, follower: _.neq(openid), is_read: false })
+        .limit(200)
+        .update({ data: { is_read: true } })
+      const updated = updateRes.stats.updated || 0
+      total += updated
+      hasMore = updated >= 200
+    }
+
+    return { code: 0, message: '标记已读成功', data: { follow: total } }
+  } catch (err) {
+    return { code: -1, message: '标记已读失败', error: err.message }
+  }
+}
+
 // ==================== 消息中心聚合：一次返回评论/点赞/收藏/关注/私信 ====================
 async function handleGetMessageCenter(event, openid) {
   try {
@@ -195,27 +250,27 @@ async function handleGetMessageCenter(event, openid) {
 
     // 并行查 4 个数据源
     const [commentsData, likesData, followsData, conversationsData] = await Promise.all([
-      // 1. 评论消息
+      // 1. 评论消息（返回量收紧：最近 30 条，避免每次拉 200 条拖慢加载）
       myPostIds.length > 0
         ? db.collection('comments')
             .where({ postId: _.in(myPostIds), authorId: _.neq(openid), status: 1 })
             .orderBy('create_time', 'desc')
-            .limit(200)
+            .limit(30)
             .get()
         : Promise.resolve({ data: [] }),
 
-      // 2. 点赞 + 收藏消息
+      // 2. 点赞 + 收藏消息（各 30 条）
       myPostIds.length > 0
         ? Promise.all([
             db.collection('likes')
               .where({ postId: _.in(myPostIds), _openid: _.neq(openid) })
               .orderBy('create_time', 'desc')
-              .limit(100)
+              .limit(30)
               .get(),
             db.collection('favorites')
               .where({ postId: _.in(myPostIds), _openid: _.neq(openid) })
               .orderBy('create_time', 'desc')
-              .limit(100)
+              .limit(30)
               .get()
           ])
         : Promise.resolve([{ data: [] }, { data: [] }]),
@@ -224,14 +279,14 @@ async function handleGetMessageCenter(event, openid) {
       db.collection('follows')
         .where({ followee: openid, follower: _.neq(openid) })
         .orderBy('create_time', 'desc')
-        .limit(50)
+        .limit(30)
         .get(),
 
-      // 4. 私信会话
+      // 4. 私信会话（最近 80 条，够聚合出会话列表，避免一次拉 300 条）
       db.collection('messages')
         .where(_.or([{ from: openid }, { to: openid }]))
         .orderBy('create_time', 'desc')
-        .limit(300)
+        .limit(80)
         .get()
     ])
 

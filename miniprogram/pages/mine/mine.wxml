@@ -1,66 +1,187 @@
-<!-- pages/mine/mine.wxml —— 我的页（F3） -->
-<view class="page-wrap">
+<!-- pages/mine/mine.wxml —— 我的页（小红书式：用户主页 + 帖子/点赞/收藏/树洞 四 Tab） -->
+<view class="page-mine" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
 
-  <!-- ==================== 用户信息区域 ==================== -->
-  <view class="user-section">
-    <!-- 已登录 -->
-    <view class="user-info" wx:if="{{hasUserInfo && userInfo}}">
-      <image
-        class="user-avatar"
-        src="{{userInfo.avatarUrl || '/images/user-3-line.svg'}}"
-        mode="aspectFill"
-      />
-      <view class="user-detail">
-        <text class="user-name">{{userInfo.nickName || '妈妈岗用户'}}</text>
-        <text class="user-subtitle">妈妈港成员</text>
+  <!-- ==================== 用户主页 ==================== -->
+  <view class="profile">
+    <view class="profile-head">
+      <text class="profile-title">我的</text>
+      <view class="settings-ic" bindtap="onSettings" hover-class="ic-hover">
+        <image class="settings-img" src="/images/setting-line.svg" mode="aspectFit" />
       </view>
     </view>
+
+    <!-- 已登录 -->
+    <block wx:if="{{hasUserInfo && userInfo}}">
+      <view class="profile-main">
+        <view class="avatar-wrap">
+          <image wx:if="{{userInfo.avatarUrl}}" class="avatar-img" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
+          <view wx:else class="avatar-letter">{{userInfo.avatarLetter}}</view>
+        </view>
+        <view class="profile-info">
+          <view class="nickname-row">
+            <text class="nickname">{{userInfo.nickName}}</text>
+            <text class="v-badge">妈妈港</text>
+          </view>
+          <text class="bio" wx:if="{{userInfo.bio}}">{{userInfo.bio}}</text>
+          <text class="bio bio-empty" wx:else>写一句介绍自己，让姐妹们认识你吧</text>
+        </view>
+      </view>
+
+      <view class="profile-stats">
+        <view class="stat"><text class="stat-num">{{stats.following}}</text><text class="stat-label">关注</text></view>
+        <view class="stat"><text class="stat-num">{{stats.followers}}</text><text class="stat-label">粉丝</text></view>
+        <view class="stat"><text class="stat-num">{{stats.likeFav}}</text><text class="stat-label">获赞与收藏</text></view>
+      </view>
+
+      <view class="profile-actions">
+        <view class="btn-edit" bindtap="onEditProfile" hover-class="btn-hover">编辑资料</view>
+      </view>
+    </block>
 
     <!-- 未登录 -->
-    <view class="user-info" wx:else>
-      <view class="avatar-placeholder">
-        <image class="avatar-placeholder-icon" src="/images/user-3-line.svg" mode="aspectFit" />
+    <block wx:else>
+      <view class="profile-main" bindtap="onLoginTap">
+        <view class="avatar-wrap">
+          <view class="avatar-letter login-letter">
+            <image class="login-avatar-icon" src="/images/user-3-line.svg" mode="aspectFit" />
+          </view>
+        </view>
+        <view class="profile-info">
+          <view class="nickname-row">
+            <text class="nickname login-prompt">点击登录</text>
+          </view>
+          <text class="bio">登录后发帖、评论、点赞，和大家一起交流</text>
+        </view>
       </view>
-      <view class="user-detail">
-        <text class="user-name login-prompt" bindtap="onLoginTap">点击登录</text>
-        <text class="user-subtitle">登录后享受更多功能</text>
+      <view class="profile-stats">
+        <view class="stat"><text class="stat-num">-</text><text class="stat-label">关注</text></view>
+        <view class="stat"><text class="stat-num">-</text><text class="stat-label">粉丝</text></view>
+        <view class="stat"><text class="stat-num">-</text><text class="stat-label">获赞与收藏</text></view>
       </view>
-    </view>
+    </block>
   </view>
 
-  <!-- ==================== 菜单列表 ==================== -->
-  <view class="menu-section">
+  <!-- ==================== 四 Tab ==================== -->
+  <view class="tabs">
     <view
-      class="menu-item"
-      hover-class="menu-item-hover"
-      wx:for="{{menuList}}"
-      wx:key="id"
-      bindtap="onMenuTap"
-      data-url="{{item.url}}"
-      data-id="{{item.id}}"
-      data-adminonly="{{item.adminOnly}}"
-      wx:if="{{!item.adminOnly || isAdmin}}"
+      class="tab {{currentTab === index ? 'active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="*this"
+      data-index="{{index}}"
+      bindtap="onTabTap"
     >
-      <view class="menu-icon-wrap">
-        <text class="menu-emoji">{{item.icon}}</text>
-      </view>
-      <text class="menu-title">{{item.title}}</text>
-      <view class="menu-arrow">
-        <text class="arrow-symbol">›</text>
-      </view>
+      <text class="tab-text">{{item}}</text>
+      <view class="tab-bar" wx:if="{{currentTab === index}}"></view>
     </view>
   </view>
 
-  <!-- ==================== 退出登录 ==================== -->
-  <view class="logout-section" wx:if="{{hasUserInfo}}">
-    <view class="logout-btn" bindtap="onLogout">
-      <text class="logout-text">退出登录</text>
-    </view>
-  </view>
+  <!-- ==================== 内容区 ==================== -->
+  <view class="content">
 
-  <!-- ==================== 版本信息 ==================== -->
-  <view class="version-info">
-    <text class="version-text">妈妈港 v1.0.0</text>
+    <!-- 帖子 -->
+    <block wx:if="{{currentTab === 0}}">
+      <view wx:if="{{posts.length > 0}}" class="card-list">
+        <view
+          class="post-card"
+          wx:for="{{posts}}"
+          wx:key="postId"
+          data-post-id="{{item.postId}}"
+          bindtap="onPostTap"
+          hover-class="card-hover"
+        >
+          <view class="card-head">
+            <text class="card-tag">{{item.category || '交流'}}</text>
+            <text class="card-time">{{item.timeText}}</text>
+          </view>
+          <text class="card-title">{{item.title}}</text>
+          <text class="card-excerpt" wx:if="{{item.excerpt}}">{{item.excerpt}}</text>
+          <view class="card-meta">
+            <view class="meta-item"><view class="meta-svg like-svg"></view>{{item.likeCount}}</view>
+            <view class="meta-item"><view class="meta-svg comment-svg"></view>{{item.commentCount}}</view>
+          </view>
+        </view>
+      </view>
+      <empty-state wx:else icon="📝" text="还没有发过帖子，去论坛聊聊吧" />
+    </block>
+
+    <!-- 点赞 -->
+    <block wx:if="{{currentTab === 1}}">
+      <view wx:if="{{likedPosts.length > 0}}" class="card-list">
+        <view
+          class="post-card"
+          wx:for="{{likedPosts}}"
+          wx:key="postId"
+          data-post-id="{{item.postId}}"
+          bindtap="onPostTap"
+          hover-class="card-hover"
+        >
+          <view class="card-head">
+            <text class="card-author">{{item.authorName}}</text>
+            <text class="card-tag">{{item.category || '交流'}}</text>
+          </view>
+          <text class="card-title">{{item.title}}</text>
+          <text class="card-excerpt" wx:if="{{item.excerpt}}">{{item.excerpt}}</text>
+          <view class="card-meta">
+            <view class="meta-item"><view class="meta-svg like-svg"></view>{{item.likeCount}}</view>
+            <view class="meta-item"><view class="meta-svg comment-svg"></view>{{item.commentCount}}</view>
+          </view>
+        </view>
+      </view>
+      <empty-state wx:else icon="🤍" text="还没有点赞过帖子" />
+    </block>
+
+    <!-- 收藏 -->
+    <block wx:if="{{currentTab === 2}}">
+      <view wx:if="{{favoritePosts.length > 0}}" class="card-list">
+        <view
+          class="post-card"
+          wx:for="{{favoritePosts}}"
+          wx:key="postId"
+          data-post-id="{{item.postId}}"
+          bindtap="onPostTap"
+          hover-class="card-hover"
+        >
+          <view class="card-head">
+            <text class="card-author">{{item.authorName}}</text>
+            <text class="card-tag">{{item.category || '交流'}}</text>
+          </view>
+          <text class="card-title">{{item.title}}</text>
+          <text class="card-excerpt" wx:if="{{item.excerpt}}">{{item.excerpt}}</text>
+          <view class="card-meta">
+            <view class="meta-item"><view class="meta-svg star-svg filled"></view>已收藏</view>
+            <view class="meta-item"><view class="meta-svg like-svg"></view>{{item.likeCount}}</view>
+          </view>
+        </view>
+      </view>
+      <empty-state wx:else icon="☆" text="还没有收藏过帖子" />
+    </block>
+
+    <!-- 树洞 -->
+    <block wx:if="{{currentTab === 3}}">
+      <view wx:if="{{treeHolePosts.length > 0}}" class="card-list">
+        <view
+          class="post-card anon-card"
+          wx:for="{{treeHolePosts}}"
+          wx:key="postId"
+          data-post-id="{{item.postId}}"
+          bindtap="onPostTap"
+          hover-class="card-hover"
+        >
+          <view class="card-head">
+            <text class="card-tag anon-tag">匿名 · 树洞</text>
+            <text class="card-time">{{item.timeText}}</text>
+          </view>
+          <text class="card-title">{{item.title}}</text>
+          <text class="card-excerpt" wx:if="{{item.excerpt}}">{{item.excerpt}}</text>
+          <view class="card-meta">
+            <view class="meta-item"><view class="meta-svg like-svg"></view>{{item.likeCount}}</view>
+            <view class="meta-item"><view class="meta-svg comment-svg"></view>{{item.commentCount}}</view>
+          </view>
+        </view>
+      </view>
+      <empty-state wx:else icon="🌙" text="还没有发过树洞帖" />
+    </block>
+
   </view>
 
   <!-- ==================== 登录弹窗 ==================== -->

@@ -46,6 +46,11 @@
   color: #8B958C;
 }
 
+/* 退出登录（警示红） */
+.logout-label {
+  color: #E54848;
+}
+
 .arrow-icon {
   width: 32rpx;
   height: 32rpx;

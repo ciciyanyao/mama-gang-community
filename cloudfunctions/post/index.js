@@ -113,17 +113,24 @@ async function createPost(event, openid) {
     return { code: -1, msg: '请选择板块' }
   }
 
-  // 2. 文本审核：msgSecCheck（必须在云函数调用，用 access_token）
-  // 把标题和正文合并审核，任一违规即拦截
-  const fullText = `${title}\n${content}`
+  // 2. 文本审核：msgSecCheck（分别审核标题和正文，定位具体字段）
   try {
-    const textRes = await cloud.openapi.security.msgSecCheck({ content: fullText })
-    // errCode 0 = 正常；87014 = 内容违规
-    if (textRes.errCode === 87014) {
-      return { code: -2, msg: '内容包含违规信息，请修改后再发布' }
+    // 审核标题
+    const titleRes = await cloud.openapi.security.msgSecCheck({ content: title.trim() })
+    if (titleRes.errCode === 87014) {
+      return { code: -2, msg: '标题包含敏感词，请修改标题后再发布', field: 'title' }
     }
-    if (textRes.errCode !== 0) {
-      console.error('文本审核异常：', textRes)
+    if (titleRes.errCode !== 0) {
+      console.error('标题审核异常：', titleRes)
+      return { code: -3, msg: '内容审核服务异常，请稍后重试' }
+    }
+    // 审核正文
+    const contentRes = await cloud.openapi.security.msgSecCheck({ content: content.trim() })
+    if (contentRes.errCode === 87014) {
+      return { code: -2, msg: '正文包含敏感词，请修改正文后再发布', field: 'content' }
+    }
+    if (contentRes.errCode !== 0) {
+      console.error('正文审核异常：', contentRes)
       return { code: -3, msg: '内容审核服务异常，请稍后重试' }
     }
   } catch (err) {
@@ -135,7 +142,12 @@ async function createPost(event, openid) {
   if (images && images.length > 0) {
     const auditRes = await auditMediaList(images)
     if (!auditRes.pass) {
-      return { code: -4, msg: auditRes.msg, failedIndex: auditRes.failedIndex }
+      return {
+        code: -4,
+        msg: auditRes.msg || '图片包含违规内容，请删除后重试',
+        field: 'images',
+        failedIndex: auditRes.failedIndex
+      }
     }
   }
 
@@ -238,7 +250,7 @@ async function pollMediaResult(traceId, maxSeconds) {
 }
 
 // ========== 删除帖子（仅本人或管理员） ==========
-// 来自 cici 分支（类C）。软删除：status 置 -1（与论坛列表 status != -1 过滤对齐，删掉即从论坛/热门榜消失）
+// 一键无痕：物理删除帖子 + 关联点赞/收藏/评论 + 云存储图片，不留回收站、不可恢复
 async function deletePost(event, openid) {
   const { id } = event
   if (!id) return { code: -1, msg: '缺少帖子ID' }
@@ -254,7 +266,26 @@ async function deletePost(event, openid) {
     if (!me || me.role !== 2) return { code: -1, msg: '无权限删除' }
   }
 
-  await posts.doc(id).update({ data: { status: -1, updated_at: db.serverDate() } })
+  // 物理删除（管理员权限，绕过集合权限限制）：帖子本体 + 该帖的点赞/收藏/评论
+  await Promise.all([
+    posts.doc(id).remove(),
+    db.collection('likes').where({ postId: id }).remove(),
+    db.collection('favorites').where({ postId: id }).remove(),
+    db.collection('comments').where({ postId: id }).remove()
+  ])
+
+  // 删除帖子关联的云存储图片（cloud:// fileID），失败不阻塞主流程
+  if (Array.isArray(post.images) && post.images.length > 0) {
+    const fileList = post.images.filter(f => f && f.indexOf('cloud://') === 0)
+    if (fileList.length > 0) {
+      try {
+        await cloud.deleteFile({ fileList })
+      } catch (e) {
+        console.error('删除帖子图片失败（不影响帖子删除）：', e)
+      }
+    }
+  }
+
   return { code: 0, msg: '已删除' }
 }
 
@@ -288,6 +319,20 @@ async function handleList(event) {
 
     // 批量把 cloud:// fileID 换成临时 https URL（绕过云存储"仅创建者可读"限制）
     await hydrateCloudUrls(listRes.data)
+
+    // 批量查当前用户对本页帖子的点赞状态
+    const openid = cloud.getWXContext().OPENID
+    if (openid && listRes.data.length > 0) {
+      const postIds = listRes.data.map(p => p._id)
+      const likeRes = await db.collection('likes')
+        .where({ _openid: openid, postId: _.in(postIds) })
+        .field({ postId: true })
+        .get()
+      const likedSet = new Set(likeRes.data.map(l => l.postId))
+      listRes.data.forEach(p => { p.isLiked = likedSet.has(p._id) })
+    } else {
+      listRes.data.forEach(p => { p.isLiked = false })
+    }
 
     return {
       code: 0,
@@ -341,6 +386,18 @@ async function handleDetail(event) {
     // 把 post 里的 cloud:// fileID 换成临时 https URL
     await hydrateCloudUrls([post])
 
+    // 判断当前用户是否已点赞
+    const openid = cloud.getWXContext().OPENID
+    if (openid) {
+      const likeRes = await db.collection('likes')
+        .where({ postId: postId, _openid: openid })
+        .limit(1)
+        .get()
+      post.isLiked = likeRes.data.length > 0
+    } else {
+      post.isLiked = false
+    }
+
     return {
       code: 0,
       message: '获取成功',
@@ -391,7 +448,7 @@ async function handleMyPosts(event, openid) {
     const { page = 1, pageSize = PAGE_SIZE } = event
     const skip = (Math.max(1, parseInt(page)) - 1) * parseInt(pageSize)
 
-    const where = { authorId: openid }
+    const where = { authorId: openid, status: _.neq(-1) }
 
     const [countRes, listRes] = await Promise.all([
       db.collection('posts').where(where).count(),

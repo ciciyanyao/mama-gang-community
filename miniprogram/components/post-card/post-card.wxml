@@ -4,7 +4,7 @@
   <view class="post-header">
     <image
       class="post-avatar"
-      src="{{post.is_anonymous ? anonAvatar : (post.authorAvatar || defaultAvatar)}}"
+      src="{{post.is_anonymous ? anonAvatar : (avatarUrl || defaultAvatar)}}"
       mode="aspectFill"
     />
     <view class="post-author-info">
@@ -24,9 +24,9 @@
   </view>
 
   <!-- 图片区域 -->
-  <view wx:if="{{post.images && post.images.length > 0}}" class="post-images post-images-{{post.images.length > 3 ? 3 : post.images.length}}">
+  <view wx:if="{{imageList && imageList.length > 0}}" class="post-images post-images-{{imageList.length > 3 ? 3 : imageList.length}}">
     <image
-      wx:for="{{post.images}}"
+      wx:for="{{imageList}}"
       wx:key="*this"
       wx:if="{{index < 3}}"
       class="post-image"
@@ -36,15 +36,19 @@
     />
   </view>
 
-  <!-- 底部操作栏：常规点赞/评论 -->
+  <!-- 底部操作栏：点赞 / 评论 / 收藏 -->
   <view class="post-actions">
     <view class="action-item" catchtap="onTapLike">
-      <text class="action-icon {{post.isLiked ? 'liked' : ''}}">♥</text>
+      <view class="action-icon like-icon {{post.isLiked ? 'liked' : ''}}"></view>
       <text class="action-count">{{post.likeCount || 0}}</text>
     </view>
     <view class="action-item" catchtap="onTapComment">
-      <text class="action-icon">💬</text>
+      <view class="action-icon comment-icon"></view>
       <text class="action-count">{{post.commentCount || 0}}</text>
+    </view>
+    <view class="action-item" catchtap="onTapFavorite">
+      <view class="action-icon star-icon {{post.isFavorited ? 'favorited' : ''}}"></view>
+      <text class="action-count">{{post.favoriteCount || 0}}</text>
     </view>
   </view>
 </view>

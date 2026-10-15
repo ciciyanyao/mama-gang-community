@@ -27,7 +27,11 @@ Page({
 
     // UI 状态
     publishing: false,
-    showDraftDialog: false
+    showDraftDialog: false,
+
+    // 错误提示（审核失败时高亮对应字段）
+    errorMsg: '',
+    errorField: ''  // 'title' | 'content' | 'images'
   },
 
   // ========== 生命周期 ==========
@@ -130,6 +134,7 @@ Page({
   // ========== input 事件 ==========
   onTitleInput(e) {
     this.setData({ title: e.detail.value })
+    if (this.data.errorField === 'title') this.setData({ errorMsg: '', errorField: '' })
   },
 
   // editor 的 bindinput：同步正文纯文本
@@ -142,6 +147,7 @@ Page({
       content: plain,
       editorHeight: e.detail.height || 240
     })
+    if (this.data.errorField === 'content') this.setData({ errorMsg: '', errorField: '' })
   },
 
   // ========== 板块选择 ==========
@@ -197,6 +203,7 @@ Page({
     const images = [...this.data.images]
     images.splice(idx, 1)
     this.setData({ images })
+    if (this.data.errorField === 'images') this.setData({ errorMsg: '', errorField: '' })
   },
 
   onPreviewMedia(e) {
@@ -305,12 +312,19 @@ Page({
         }, 800)
       } else {
         wx.hideLoading()
-        wx.showModal({ title: '发布失败', content: result.msg || '发布失败，请重试', showCancel: false })
+        // 审核失败：高亮对应字段 + 页面顶部显示错误条
+        this.setData({
+          errorMsg: result.msg || '发布失败，请修改后重试',
+          errorField: result.field || ''
+        })
       }
     } catch (err) {
       console.error('发布异常：', err)
       wx.hideLoading()
-      wx.showToast({ title: '网络异常，请重试', icon: 'none' })
+      this.setData({
+        errorMsg: '网络异常，请检查网络后重试',
+        errorField: ''
+      })
     } finally {
       this.setData({ publishing: false })
     }

@@ -29,12 +29,17 @@
       <text class="post-content" bindtap="onPostTap" data-id="{{item._id}}">{{item.contentPreview}}</text>
       <view class="post-footer">
         <view class="post-stats" bindtap="onPostTap" data-id="{{item._id}}">
-          <text class="stat">👍 {{item.likeCount || 0}}</text>
-          <text class="stat">💬 {{item.commentCount || 0}}</text>
+          <view class="stat-item">
+            <view class="stat-svg like-svg"></view>
+            <text class="stat-text">{{item.likeCount || 0}}</text>
+          </view>
+          <view class="stat-item">
+            <view class="stat-svg comment-svg"></view>
+            <text class="stat-text">{{item.commentCount || 0}}</text>
+          </view>
         </view>
         <view
           class="delete-btn"
-          wx:if="{{item.status === 1}}"
           catchtap="onDeleteTap"
           data-id="{{item._id}}"
         >删除</view>

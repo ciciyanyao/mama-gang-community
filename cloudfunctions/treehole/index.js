@@ -69,16 +69,16 @@ async function listTreehole(event) {
       treehole.count()
     ])
 
-    // 幂等补写示例：集合中没有示例内容时才写入（已有用户内容也不影响）
-    await seedTreehole()
-    const seedRefetch = countRes.total === 0
-    const finalListRes = seedRefetch
-      ? await treehole
-          .orderBy('created_at', 'desc')
-          .skip(skip)
-          .limit(pageSize)
-          .get()
-      : listRes
+    // 幂等补写示例：仅在集合为空时写入（每次进页面都查 marker 会很慢，先判断 total）
+    let finalListRes = listRes
+    if (countRes.total === 0) {
+      await seedTreehole()
+      finalListRes = await treehole
+        .orderBy('created_at', 'desc')
+        .skip(skip)
+        .limit(pageSize)
+        .get()
+    }
 
     // 只返回展示字段，剥掉 huggers（匿名性）
     const list = finalListRes.data.map(stripPrivate)

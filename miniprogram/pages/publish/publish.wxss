@@ -284,3 +284,40 @@
   color: #66736A;
   border: 2rpx solid #E9E2D4;
 }
+
+/* ========== 错误提示 ========== */
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  background: #FDE8E8;
+  border: 2rpx solid #F5C6C6;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin: 20rpx 32rpx 0;
+}
+.error-icon {
+  font-size: 32rpx;
+  color: #D9534F;
+  flex-shrink: 0;
+}
+.error-text {
+  font-size: 28rpx;
+  color: #D9534F;
+  line-height: 1.5;
+}
+
+/* 字段红色边框 */
+.title-input.has-error {
+  border: 2rpx solid #D9534F !important;
+  background: #FDF2F2;
+}
+.content-input.has-error {
+  border: 2rpx solid #D9534F !important;
+  background: #FDF2F2;
+}
+.media-grid.has-error {
+  border: 2rpx dashed #D9534F;
+  border-radius: 16rpx;
+  padding: 12rpx;
+}

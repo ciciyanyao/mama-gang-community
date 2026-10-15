@@ -24,7 +24,8 @@
   </scroll-view>
 
   <!-- 计数条 -->
-  <view class="count-bar">共{{allCases.length}}条案例，当前筛选出{{displayList.length}}条</view>
+  <view class="count-bar" wx:if="{{filterTotal > 0}}">共{{allCases.length}}条案例，筛选出{{filterTotal}}条（已显示{{totalShown}}条）</view>
+  <view class="count-bar" wx:else>共{{allCases.length}}条案例</view>
 
   <!-- 加载中 -->
   <view class="empty-state" wx:if="{{loading}}">
@@ -34,7 +35,9 @@
   <!-- 案例列表 -->
   <view class="case-list" wx:elif="{{displayList.length > 0}}">
     <block wx:for="{{displayList}}" wx:key="_id">
-      <view class="paper-card" bindtap="goToDetail" data-id="{{item._id}}" style="background-image: url('{{item.bgImage}}');">
+      <view class="paper-card" bindtap="goToDetail" data-id="{{item._id}}">
+        <!-- 背景图用 <image> 组件铺底（CSS background-image 渲染层不稳定，改为组件渲染） -->
+        <image class="paper-bg" src="{{item.bgImage}}" mode="aspectFill" lazy-load />
         <view class="paper-content">
           <view class="case-title">
             <text wx:for="{{item.titleHL}}" wx:key="index" class="{{item.hl ? 'hl' : ''}}">{{item.text}}</text>

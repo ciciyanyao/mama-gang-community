@@ -42,7 +42,11 @@ Component({
       this.setBadge(0)
     },
     // 查询未读数并刷新角标（消息页除外——消息页由自身管理已读与清零）
+    // 节流：60 秒内只查一次（每次切 Tab 都会触发 show，频繁查未读会拖慢页面切换）
     async _refreshBadge() {
+      const now = Date.now()
+      if (this._lastBadgeAt && now - this._lastBadgeAt < 60 * 1000) return
+      this._lastBadgeAt = now
       const pages = getCurrentPages()
       const cur = pages[pages.length - 1]
       if (cur && cur.route === 'pages/message/message') return

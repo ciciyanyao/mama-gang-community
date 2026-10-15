@@ -1,0 +1,101 @@
+/* subpkg/edit-profile/edit-profile.wxss —— 编辑资料页 */
+.page-edit {
+  min-height: 100vh;
+  background: #F8F3E8;
+  padding: 24rpx 32rpx 60rpx;
+}
+
+.section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  font-size: 24rpx;
+  color: #8B958C;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+/* 头像选择 */
+.avatar-picker {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  padding: 0;
+  margin: 0;
+  background: #FFFFFF;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(46, 58, 51, 0.10);
+}
+
+.avatar-picker::after {
+  border: none;
+}
+
+.avatar-preview {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+}
+
+.avatar-empty {
+  font-size: 24rpx;
+  color: #7C887E;
+}
+
+/* 昵称输入 */
+.nickname-input {
+  height: 88rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 0 28rpx;
+  font-size: 28rpx;
+  color: #2E3A33;
+}
+
+/* 简介 */
+.bio-input {
+  width: 100%;
+  min-height: 160rpx;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx 28rpx;
+  font-size: 28rpx;
+  color: #2E3A33;
+  box-sizing: border-box;
+  line-height: 1.6;
+}
+
+.bio-count {
+  display: block;
+  text-align: right;
+  font-size: 22rpx;
+  color: #8B958C;
+  margin-top: 8rpx;
+}
+
+/* 保存 */
+.save-btn {
+  margin-top: 24rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: #3A7A5C;
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 88rpx;
+  border: none;
+}
+
+.save-btn::after {
+  border: none;
+}
+
+.save-btn[disabled] {
+  opacity: 0.6;
+  color: #FFFFFF;
+}

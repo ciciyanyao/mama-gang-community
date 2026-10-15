@@ -1,10 +1,26 @@
 // pages/tree-hole/tree-hole.js
 // 数据来源：cloudfunctions/treehole（post / list / hug），云端持久化
 const auth = require('../../utils/auth.js')
+
+// 内容长度上限（与服务端 treehole 云函数 MAX_CONTENT_LEN 保持一致）
+const MAX_INPUT_LEN = 5000
+
+// 树洞输入框高度：纯算法控制（不依赖 auto-height / max-height，微信渲染层对这两个的动态行为不可靠）
+//  - 行数 = 字符数 ÷ 每行可容纳字符数（onReady 用实际宽度量出）
+//  - 高度 = 行数 × 行高 + 垂直内边距，下限 76rpx（38px）
+//  - 封顶：≥200 字时高度锁死为"200 字行数"的高度，超出内容在框内滚动，绝不再长
+//  - 全选删光：行数归零 → 高度自动回缩到下限
+const MAX_INPUT_CHARS = 200
+const CHAR_WIDTH = 14 // 字号 28rpx = 14px（中文全角字宽）
+const LINE_HEIGHT = 21 // 行高 14 × 1.5
+const PAD_V = 22 // 垂直内边距 16rpx+6rpx = 11px × 2
+const MIN_INPUT_HEIGHT = 38 // min-height 76rpx = 38px
+
 Page({
   data: {
     moodInput: '',
-    inputMaxHeight: 150, // textarea 最大高度（页面高度 1/4，onLoad 计算）
+    maxInputLen: MAX_INPUT_LEN,
+    inputHeight: MIN_INPUT_HEIGHT, // textarea style 高度（px），完全由 JS 计算
     // 卡片随机背景图（展示层，不入库）
     cardBackgrounds: [
       '/pages/tree-hole/images/card1.png',
@@ -20,12 +36,24 @@ Page({
   },
 
   onLoad() {
-    // 输入框最大高度 = 页面高度的 1/4
-    try {
-      const sys = wx.getSystemInfoSync()
-      this.setData({ inputMaxHeight: Math.floor(sys.windowHeight / 4) })
-    } catch (e) {}
+    this._lineChars = 15 // 每行可容纳字符数（onReady 用实际宽度校准）
+    this._capHeight = MIN_INPUT_HEIGHT // 200 字封顶高度
     this.loadPosts()
+  },
+
+  onReady() {
+    // 用输入框真实宽度校准"每行字符数"，高度计算才准
+    wx.createSelectorQuery()
+      .in(this)
+      .select('.footer-input')
+      .boundingClientRect(rect => {
+        if (rect && rect.width) {
+          const usable = rect.width - 10 // 减去左右 padding 10rpx×2=10px
+          this._lineChars = Math.max(1, usable / CHAR_WIDTH)
+          this._capHeight = Math.ceil(MAX_INPUT_CHARS / this._lineChars) * LINE_HEIGHT + PAD_V
+        }
+      })
+      .exec()
   },
 
   // 进入页面：同步自定义 tabBar 选中态（树洞 = index 3）
@@ -87,7 +115,17 @@ Page({
   },
 
   onInput(e) {
-    this.setData({ moodInput: e.detail.value })
+    const val = e.detail.value
+    const len = val.length
+
+    // 行数：≤200 按实际字符数算（随内容增高）；>200 锁死为 200 字的行数（封顶滚动）
+    const lines = len > MAX_INPUT_CHARS
+      ? Math.ceil(MAX_INPUT_CHARS / this._lineChars)
+      : Math.ceil(len / this._lineChars)
+    let h = lines * LINE_HEIGHT + PAD_V
+    if (h < MIN_INPUT_HEIGHT) h = MIN_INPUT_HEIGHT
+
+    this.setData({ moodInput: val, inputHeight: h })
   },
 
   // ========== 投递树洞 ==========
@@ -98,6 +136,10 @@ Page({
     const text = this.data.moodInput.trim()
     if (text.length < 5) {
       wx.showToast({ title: '再多写几个字吧', icon: 'none' })
+      return
+    }
+    if (text.length > MAX_INPUT_LEN) {
+      wx.showToast({ title: `最多 ${MAX_INPUT_LEN} 字`, icon: 'none' })
       return
     }
 

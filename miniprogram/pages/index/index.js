@@ -1,11 +1,10 @@
 // pages/index/index.js —— 论坛首页
-// 融合版：main 数据库逻辑（真实数据） + 压缩包 UI（功能宫格 / 日历撕页热门榜 / post-card 组件）
-// 登录：点赞需登录（auth.requireLogin 弹窗）；游客可浏览列表/热门榜
+const { requireLogin } = require('../../utils/auth.js')
+
+// 数据库初始化（loadHotPosts 直读 posts 集合用）
 const db = wx.cloud.database()
 const _ = db.command
 const POSTS = db.collection('posts')
-const { requireLogin } = require('../../utils/auth.js')
-const { resolveTempUrls, applyUrlMap } = require('../../utils/image-url.js')
 
 const PAGE_SIZE = 20
 const CATEGORIES = ['全部', '求职交流', '职场经验', '育儿互助', '情绪倾诉', '政策资讯']
@@ -112,72 +111,45 @@ Page({
     }
   },
 
-  // ==================== 帖子列表（真实数据 → post-card 组件字段） ====================
+  // ==================== 帖子列表（走 post 云函数 list） ====================
   async loadPosts(reset) {
     if (this.data.loading) return
 
-    const page = reset ? 0 : this.data.page
+    const page = reset ? 1 : this.data.page + 1
     this.setData({ loading: true })
 
     try {
-      const skip = page * PAGE_SIZE
-      const where = { status: _.neq(-1) }
       const catIndex = this.data.currentCategory
-      if (catIndex > 0) {
-        where.category = CATEGORIES[catIndex]
+      const category = catIndex > 0 ? CATEGORIES[catIndex] : '全部'
+
+      const res = await wx.cloud.callFunction({
+        name: 'post',
+        data: { action: 'list', page, pageSize: PAGE_SIZE, category }
+      })
+
+      if (res.result.code !== 0) {
+        throw new Error(res.result.message || '加载失败')
       }
 
-      // 查询帖子：创建时间倒序（置顶已移除，热门榜替代）
-      const res = await POSTS
-        .where(where)
-        .orderBy('create_time', 'desc')
-        .skip(skip)
-        .limit(PAGE_SIZE)
-        .get()
+      const { list, hasMore } = res.result.data
 
-      // 批量查询当前用户点赞状态（likes 集合），避免 N+1
-      let likedSet = new Set()
-      const openid = getApp().globalData.openid
-      if (openid && res.data.length > 0) {
-        const ids = res.data.map(p => p._id)
-        const likeRes = await db.collection('likes')
-          .where({ _openid: openid, postId: _.in(ids) })
-          .field({ postId: true })
-          .get()
-        likedSet = new Set(likeRes.data.map(l => l.postId))
-      }
-
-      // 字段映射：post-card 组件期望 authorName/authorAvatar/likeCount/commentCount/createTimeStr/isLiked
-      const newList = res.data.map(post => ({
+      // 字段映射：post-card 组件期望的格式
+      const newList = list.map(post => ({
         ...post,
-        authorName: post.authorName || post.nickname || '',
-        authorAvatar: post.authorAvatar || post.avatar || '',
+        authorName: post.authorName || '',
+        authorAvatar: post.authorAvatar || '',
         likeCount: post.likeCount || 0,
         commentCount: post.commentCount || 0,
         createTimeStr: this._formatTime(post.create_time),
-        isLiked: likedSet.has(post._id)
+        isLiked: !!post.isLiked
       }))
-
-      // 云存储 fileID → 临时 https 链接（帖子图片 + 作者头像）
-      const cloudIDs = []
-      newList.forEach(p => {
-        (p.images || []).forEach(id => { if (id && id.indexOf('cloud://') === 0) cloudIDs.push(id) })
-        if (p.authorAvatar && p.authorAvatar.indexOf('cloud://') === 0) cloudIDs.push(p.authorAvatar)
-      })
-      if (cloudIDs.length > 0) {
-        const { map } = await resolveTempUrls(cloudIDs)
-        newList.forEach(p => {
-          p.images = (p.images || []).map(id => (map[id] || id))
-          if (p.authorAvatar && map[p.authorAvatar]) p.authorAvatar = map[p.authorAvatar]
-        })
-      }
 
       const posts = reset ? newList : [...this.data.posts, ...newList]
 
       this.setData({
         posts,
-        page: page + 1,
-        noMore: newList.length < PAGE_SIZE,
+        page,
+        noMore: !hasMore,
         isEmpty: posts.length === 0,
         loading: false
       })
@@ -220,6 +192,60 @@ Page({
       }
     } catch (err) {
       console.error('[onPostLike] 失败：', err)
+      wx.showToast({ title: '操作失败', icon: 'none' })
+    }
+  },
+
+  // ==================== 收藏/取消收藏 ====================
+  async onPostFavorite(e) {
+    const { postId } = e.detail
+    if (!postId) return
+
+    if (!requireLogin(this)) return
+
+    try {
+      const posts = this.data.posts.map(p => {
+        if (p._id !== postId) return p
+        const cur = p.isFavorited
+        return {
+          ...p,
+          isFavorited: !cur,
+          favoriteCount: (p.favoriteCount || 0) + (cur ? -1 : 1)
+        }
+      })
+      this.setData({ posts })
+
+      const res = await wx.cloud.callFunction({
+        name: 'favorite',
+        data: { action: posts.find(p => p._id === postId).isFavorited ? 'add' : 'remove', postId }
+      })
+
+      if (res.result.code !== 0) {
+        // 回滚
+        const rollback = this.data.posts.map(p => {
+          if (p._id !== postId) return p
+          const cur = p.isFavorited
+          return {
+            ...p,
+            isFavorited: !cur,
+            favoriteCount: (p.favoriteCount || 0) + (cur ? -1 : 1)
+          }
+        })
+        this.setData({ posts: rollback })
+        wx.showToast({ title: res.result.message || '操作失败', icon: 'none' })
+      }
+    } catch (err) {
+      console.error('[onPostFavorite] 失败：', err)
+      const rollback = this.data.posts.map(p => {
+        if (p._id !== postId) return p
+        const cur = p.isFavorited
+        return {
+          ...p,
+          isFavorited: !cur,
+          favoriteCount: (p.favoriteCount || 0) + (cur ? -1 : 1)
+        }
+      })
+      this.setData({ posts: rollback })
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
   },
