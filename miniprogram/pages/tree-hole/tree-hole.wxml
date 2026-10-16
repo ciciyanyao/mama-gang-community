@@ -68,7 +68,7 @@
         maxlength="{{maxInputLen}}"
         cursor-spacing="16"
       />
-      <text class="input-count">{{moodInput.length}}/{{maxInputLen}}</text>
+      <text class="input-count">{{inputCount}}/{{maxInputLen}}</text>
     </view>
     <button class="footer-btn" bindtap="postMood">投进树洞</button>
   </view>

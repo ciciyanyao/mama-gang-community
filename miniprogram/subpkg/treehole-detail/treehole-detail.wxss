@@ -1,0 +1,115 @@
+/* subpkg/treehole-detail/treehole-detail.wxss —— 树洞详情（暖米×森林绿 + 匿名卡片风） */
+.page-wrap {
+  min-height: 100vh;
+  background-color: #F8F3E8;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+/* ========== 加载占位 ========== */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+.loading-spinner {
+  width: 56rpx;
+  height: 56rpx;
+  border: 6rpx solid #CBE4D3;
+  border-top-color: #3A7A5C;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.loading-text {
+  margin-top: 24rpx;
+  color: #7C887E;
+  font-size: 26rpx;
+}
+
+/* ========== 树洞卡片 ========== */
+.tree-card {
+  background: linear-gradient(135deg, #FDFBF4 0%, #F4F0E2 100%);
+  border-radius: 32rpx;
+  padding: 40rpx 36rpx;
+  box-shadow: 0 8rpx 24rpx rgba(58, 122, 92, 0.10), 0 2rpx 6rpx rgba(58, 122, 92, 0.06);
+  border: 2rpx solid #EAE4D4;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.head-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.anon-tag {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #3A7A5C;
+  background: #E3EFE7;
+  border-radius: 8rpx;
+  padding: 4rpx 12rpx;
+  font-weight: 600;
+}
+.card-time {
+  font-size: 22rpx;
+  color: #A8B2AC;
+}
+
+/* 右上角"···"：紧凑三黑点（与论坛详情一致） */
+.more-btn {
+  font-size: 26rpx;
+  letter-spacing: 0;
+  font-weight: 700;
+  color: #2E3A33;
+  padding: 8rpx 16rpx;
+  line-height: 1;
+  border-radius: 12rpx;
+}
+.more-btn:active {
+  background: rgba(46, 58, 51, 0.06);
+}
+
+.card-content {
+  display: block;
+  margin-top: 32rpx;
+  font-size: 30rpx;
+  line-height: 1.7;
+  color: #2E3A33;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.card-footer {
+  margin-top: 40rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx dashed #E2DCCB;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hug-item {
+  font-size: 24rpx;
+  color: #3A7A5C;
+  font-weight: 600;
+}
+.hint-text {
+  font-size: 20rpx;
+  color: #A8B2AC;
+}
+
+/* ========== 不存在 ========== */
+.not-found {
+  padding: 200rpx 0;
+  text-align: center;
+  color: #A8B2AC;
+  font-size: 26rpx;
+}

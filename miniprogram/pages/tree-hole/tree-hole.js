@@ -20,6 +20,7 @@ Page({
   data: {
     moodInput: '',
     maxInputLen: MAX_INPUT_LEN,
+    inputCount: 0, // 当前输入字符数（独立字段驱动计数显示，避免任何绑定问题）
     inputHeight: MIN_INPUT_HEIGHT, // textarea style 高度（px），完全由 JS 计算
     // 卡片随机背景图（展示层，不入库）
     cardBackgrounds: [
@@ -115,17 +116,19 @@ Page({
   },
 
   onInput(e) {
-    const val = e.detail.value
+    const val = e.detail.value || ''
     const len = val.length
 
     // 行数：≤200 按实际字符数算（随内容增高）；>200 锁死为 200 字的行数（封顶滚动）
+    const lineChars = this._lineChars || 15 // 防御：onReady 未校准前用兜底值
     const lines = len > MAX_INPUT_CHARS
-      ? Math.ceil(MAX_INPUT_CHARS / this._lineChars)
-      : Math.ceil(len / this._lineChars)
+      ? Math.ceil(MAX_INPUT_CHARS / lineChars)
+      : Math.ceil(len / lineChars)
     let h = lines * LINE_HEIGHT + PAD_V
     if (h < MIN_INPUT_HEIGHT) h = MIN_INPUT_HEIGHT
 
-    this.setData({ moodInput: val, inputHeight: h })
+    // inputCount 独立驱动计数显示（moodInput 同时保留给 textarea 回填）
+    this.setData({ moodInput: val, inputHeight: h, inputCount: len })
   },
 
   // ========== 投递树洞 ==========

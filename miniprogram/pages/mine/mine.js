@@ -5,7 +5,7 @@
 //   帖子 Tab：post.myPosts（我的非匿名帖）
 //   点赞 Tab：likes 直读（默认权限自动限定本人）+ posts 联查
 //   收藏 Tab：favorites 直读 + posts 联查
-//   树洞 Tab：posts 直读（我的匿名帖）
+//   树洞 Tab：treehole.myList（树洞页发的匿名帖，带删除）+ posts 匿名帖（论坛匿名发帖）合并
 const app = getApp()
 const db = wx.cloud.database()
 const _ = db.command
@@ -29,6 +29,8 @@ Page({
     likedPosts: [],
     favoritePosts: [],
     treeHolePosts: [],
+    myTreeHolePosts: [], // treehole 集合中我的帖子（可删除）
+    anonForumPosts: [], // posts 集合中的匿名论坛帖（点进详情）
 
     loading: false,
     loaded: false
@@ -120,16 +122,18 @@ Page({
     }
   },
 
-  // ==================== 我的帖子（post.myPosts，拆 帖子/树洞） ====================
+  // ==================== 我的帖子（post.myPosts 拆 帖子/树洞论坛帖 + treehole.myList 树洞页帖） ====================
   async _loadMyPosts() {
     try {
-      const res = await wx.cloud.callFunction({
-        name: 'post',
-        data: { action: 'myPosts', page: 1, pageSize: 50 }
-      })
-      const list = (res.result && res.result.data && res.result.data.list) || []
+      const [forumRes, treeRes] = await Promise.all([
+        wx.cloud.callFunction({ name: 'post', data: { action: 'myPosts', page: 1, pageSize: 50 } }),
+        wx.cloud.callFunction({ name: 'treehole', data: { action: 'myList', page: 1, pageSize: 50 } })
+      ])
+
+      // 论坛帖（非匿名 → 帖子 Tab；匿名 → 树洞 Tab 的 anonForumPosts）
+      const list = (forumRes.result && forumRes.result.data && forumRes.result.data.list) || []
       const posts = []
-      const treeHolePosts = []
+      const anonForumPosts = []
       list.forEach(p => {
         const item = {
           postId: p._id,
@@ -141,14 +145,32 @@ Page({
           timeText: relativeTime(p.create_time),
           isAnon: !!p.is_anonymous
         }
-        if (p.is_anonymous) treeHolePosts.push(item)
+        if (p.is_anonymous) anonForumPosts.push(item)
         else posts.push(item)
       })
-      this.setData({ posts, treeHolePosts })
+
+      // 树洞页发的帖（treehole 集合，可删除）
+      const myTreeHolePosts = ((treeRes.result && treeRes.result.data && treeRes.result.data.list) || []).map(p => ({
+        postId: p._id,
+        title: p.content ? p.content.substring(0, 16) : '树洞',
+        excerpt: p.content || '',
+        timeText: relativeTime(p.created_at),
+        hugCount: p.hug_count || 0,
+        isTreeHole: true
+      }))
+
+      this.setData({ posts, anonForumPosts, myTreeHolePosts })
     } catch (err) {
       console.error('[mine] 加载我的帖子失败：', err)
-      this.setData({ posts: [], treeHolePosts: [] })
+      this.setData({ posts: [], anonForumPosts: [], myTreeHolePosts: [] })
     }
+  },
+
+  // ==================== 跳转树洞详情（删除在详情页右上角···） ====================
+  onTreeHoleTap(e) {
+    const id = e.currentTarget.dataset.id
+    if (!id) return
+    wx.navigateTo({ url: '/subpkg/treehole-detail/treehole-detail?id=' + id })
   },
 
   // ==================== 我赞过的帖子（likes 直读 + posts 联查） ====================

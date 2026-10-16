@@ -156,19 +156,40 @@
       <empty-state wx:else icon="☆" text="还没有收藏过帖子" />
     </block>
 
-    <!-- 树洞 -->
+    <!-- 树洞（treehole 集合我的帖 + posts 匿名论坛帖，合并展示） -->
     <block wx:if="{{currentTab === 3}}">
-      <view wx:if="{{treeHolePosts.length > 0}}" class="card-list">
+      <view wx:if="{{myTreeHolePosts.length > 0 || anonForumPosts.length > 0}}" class="card-list">
+        <!-- 树洞页发的帖：点进树洞详情（右上角···可删） -->
         <view
           class="post-card anon-card"
-          wx:for="{{treeHolePosts}}"
+          wx:for="{{myTreeHolePosts}}"
+          wx:key="postId"
+          data-id="{{item.postId}}"
+          bindtap="onTreeHoleTap"
+          hover-class="card-hover"
+        >
+          <view class="card-head">
+            <text class="card-tag anon-tag">匿名 · 树洞</text>
+            <text class="card-time">{{item.timeText}}</text>
+          </view>
+          <text class="card-title">{{item.title}}</text>
+          <text class="card-excerpt" wx:if="{{item.excerpt}}">{{item.excerpt}}</text>
+          <view class="card-meta">
+            <view class="meta-item"><text class="meta-text">🤗 {{item.hugCount}}</text></view>
+          </view>
+        </view>
+
+        <!-- 论坛匿名帖：点进详情（详情页右上角可删） -->
+        <view
+          class="post-card anon-card"
+          wx:for="{{anonForumPosts}}"
           wx:key="postId"
           data-post-id="{{item.postId}}"
           bindtap="onPostTap"
           hover-class="card-hover"
         >
           <view class="card-head">
-            <text class="card-tag anon-tag">匿名 · 树洞</text>
+            <text class="card-tag anon-tag">匿名 · 树洞帖</text>
             <text class="card-time">{{item.timeText}}</text>
           </view>
           <text class="card-title">{{item.title}}</text>

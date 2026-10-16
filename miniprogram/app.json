@@ -11,6 +11,7 @@
       "root": "subpkg",
       "pages": [
         "post-detail/post-detail",
+        "treehole-detail/treehole-detail",
         "cases/cases",
         "case-detail/case-detail",
         "my-posts/my-posts",

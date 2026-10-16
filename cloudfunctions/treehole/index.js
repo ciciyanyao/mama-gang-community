@@ -24,18 +24,26 @@ exports.main = async (event, context) => {
 
   switch (action) {
     case 'post':
-      return await postToTreehole(event)
+      return await postToTreehole(event, OPENID)
     case 'list':
       return await listTreehole(event)
     case 'hug':
       return await hugPost(event, OPENID)
+    case 'myList':
+      return await myListTreehole(event, OPENID)
+    case 'detail':
+      return await detailTreehole(event, OPENID)
+    case 'delete':
+      return await deleteTreehole(event, OPENID)
     default:
       return { code: -1, msg: '未知操作' }
   }
 }
 
 // ========== 投递树洞（仅纯文本，随机匿名昵称） ==========
-async function postToTreehole(event) {
+// 匿名性说明：对"其他用户"完全匿名（昵称随机、不暴露身份）；
+// 服务端存 authorId（openid）仅用于"我的树洞"查询与删除权限校验，绝不返回前端
+async function postToTreehole(event, openid) {
   const content = (event.content || '').trim()
   if (!content) return { code: -1, msg: '内容不能为空' }
   if (content.length > MAX_CONTENT_LEN) return { code: -1, msg: '内容过长' }
@@ -47,10 +55,89 @@ async function postToTreehole(event) {
       content,
       hug_count: 0,
       huggers: [],              // 已抱抱用户的 openid（服务端去重，绝不返回前端）
+      authorId: openid,         // 归属人（仅服务端用：我的树洞/删除），不返回前端
       created_at: db.serverDate()
     }
   })
   return { code: 0, data: { _id: addRes._id, nickname } }
+}
+
+// ========== 我的树洞（按 authorId 查自己发的，分页） ==========
+async function myListTreehole(event, openid) {
+  try {
+    const page = Math.max(1, parseInt(event.page) || 1)
+    const pageSize = Math.min(Math.max(parseInt(event.pageSize) || 20, 1), 50)
+    const skip = (page - 1) * pageSize
+
+    const [listRes, countRes] = await Promise.all([
+      treehole
+        .where({ authorId: openid })
+        .orderBy('created_at', 'desc')
+        .skip(skip)
+        .limit(pageSize)
+        .get(),
+      treehole.where({ authorId: openid }).count()
+    ])
+
+    const list = listRes.data.map(stripPrivate)
+    return {
+      code: 0,
+      data: {
+        list,
+        total: countRes.total,
+        page,
+        pageSize,
+        hasMore: skip + list.length < countRes.total
+      }
+    }
+  } catch (err) {
+    console.error('myListTreehole 异常：', err)
+    return { code: -1, msg: '获取我的树洞失败' }
+  }
+}
+
+// ========== 树洞单条详情（返回是否本人，用于右上角删除入口） ==========
+async function detailTreehole(event, openid) {
+  try {
+    const { id } = event
+    if (!id) return { code: -1, msg: '缺少帖子ID' }
+
+    const res = await treehole.doc(id).get().catch(() => null)
+    if (!res || !res.data) return { code: -1, msg: '内容不存在' }
+
+    const post = res.data
+    return {
+      code: 0,
+      data: {
+        ...stripPrivate(post),
+        isOwner: !!post.authorId && post.authorId === openid
+      }
+    }
+  } catch (err) {
+    console.error('detailTreehole 异常：', err)
+    return { code: -1, msg: '获取详情失败' }
+  }
+}
+
+// ========== 删除我的树洞帖（物理删除，仅本人） ==========
+async function deleteTreehole(event, openid) {
+  try {
+    const { id } = event
+    if (!id) return { code: -1, msg: '缺少帖子ID' }
+
+    const res = await treehole.doc(id).get().catch(() => null)
+    if (!res || !res.data) return { code: -1, msg: '内容不存在' }
+    const post = res.data
+    if (post.authorId && post.authorId !== openid) {
+      return { code: -1, msg: '只能删除自己的树洞帖' }
+    }
+
+    await treehole.doc(id).remove()
+    return { code: 0, msg: '已删除', data: { _id: id } }
+  } catch (err) {
+    console.error('deleteTreehole 异常：', err)
+    return { code: -1, msg: '删除失败' }
+  }
 }
 
 // ========== 树洞列表（按时间倒序，分页） ==========

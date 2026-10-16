@@ -336,6 +336,12 @@
   color: #8B958C;
 }
 
+/* 树洞帖：抱抱数 */
+.meta-text {
+  font-size: 22rpx;
+  color: #8B958C;
+}
+
 .meta-svg {
   width: 28rpx;
   height: 28rpx;
