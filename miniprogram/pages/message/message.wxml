@@ -1,210 +1,209 @@
 <!-- pages/message/message.wxml —— 消息页（小红书式：三组件入口 + 私信列表） -->
 <view class="page-message">
 
-  <!-- ==================== 主视图 ==================== -->
-  <block wx:if="{{currentView === 'main'}}">
-    <!-- 顶部标题 -->
-    <view class="page-header">
-      <text class="page-title">消息</text>
-    </view>
+<!-- ==================== 主视图 ==================== -->
+<block wx:if="{{currentView === 'main'}}">
+  <view class="page-header">
+    <text class="page-title">消息</text>
+  </view>
 
-    <view class="msg-scroll">
-      <!-- 三组件入口卡片 -->
-      <view class="inbox-row">
-        <view class="inbox-card" data-view="likes" bindtap="onTapEntry">
-          <view class="inbox-icon-wrap">
-            <text class="inbox-icon">♡</text>
-            <view wx:if="{{badges.likeFav > 0}}" class="inbox-badge">{{badges.likeFav > 99 ? '99+' : badges.likeFav}}</view>
-          </view>
-          <text class="inbox-label">点赞与收藏</text>
+  <view class="msg-scroll">
+    <!-- 三组件入口卡片 -->
+    <view class="inbox-row">
+      <view class="inbox-card" data-view="likes" bindtap="onTapEntry">
+        <view class="inbox-icon-wrap">
+          <view class="inbox-icon icon-like"></view>
+          <view wx:if="{{badges.likeFav > 0}}" class="inbox-badge">{{badges.likeFav > 99 ? '99+' : badges.likeFav}}</view>
         </view>
-
-        <view class="inbox-card" data-view="follows" bindtap="onTapEntry">
-          <view class="inbox-icon-wrap">
-            <text class="inbox-icon">＋</text>
-            <view wx:if="{{badges.follow > 0}}" class="inbox-badge">{{badges.follow > 99 ? '99+' : badges.follow}}</view>
-          </view>
-          <text class="inbox-label">新增关注</text>
-        </view>
-
-        <view class="inbox-card" data-view="comments" bindtap="onTapEntry">
-          <view class="inbox-icon-wrap">
-            <text class="inbox-icon">…</text>
-            <view wx:if="{{badges.comment > 0}}" class="inbox-badge">{{badges.comment > 99 ? '99+' : badges.comment}}</view>
-          </view>
-          <text class="inbox-label">评论</text>
-        </view>
+        <text class="inbox-label">点赞与收藏</text>
       </view>
 
-      <!-- 私信分区 -->
-      <view class="section-title">私信</view>
-
-      <loading wx:if="{{loading && !loaded}}" text="加载中..." />
-
-      <view wx:if="{{!loading || loaded}}">
-        <!-- 私信列表 -->
-        <block wx:if="{{conversations.length > 0}}">
-          <view
-            class="chat-row"
-            wx:for="{{conversations}}"
-            wx:key="peer"
-            data-peer="{{item.peer}}"
-            data-nickname="{{item.nickname}}"
-            bindtap="onTapChat"
-          >
-            <view class="chat-avatar-wrap">
-              <image class="chat-avatar" src="{{item.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
-              <view wx:if="{{item.unread > 0}}" class="chat-unread-dot"></view>
-            </view>
-            <view class="chat-body">
-              <view class="chat-header">
-                <text class="chat-name">{{item.nickname}}</text>
-                <text class="chat-time">{{item.lastTime}}</text>
-              </view>
-              <text class="chat-preview">{{item.lastContent}}</text>
-            </view>
-          </view>
-        </block>
-
-        <!-- 私信空态 -->
-        <empty-state
-          wx:if="{{conversations.length === 0}}"
-          icon="💌"
-          text="暂无私信，去帖子详情页找 TA 聊聊吧"
-        />
-      </view>
-    </view>
-  </block>
-
-  <!-- ==================== 点赞与收藏子列表 ==================== -->
-  <block wx:if="{{currentView === 'likes'}}">
-    <view class="sub-header">
-      <view class="sub-back" bindtap="onBackMain">‹</view>
-      <text class="sub-title">点赞与收藏</text>
-      <view class="sub-placeholder"></view>
-    </view>
-
-    <view class="msg-list-wrap">
-      <view
-        class="msg-item {{item.isRead ? '' : 'unread'}}"
-        wx:for="{{likeFavList}}"
-        wx:key="id"
-        data-postid="{{item.postId}}"
-        bindtap="onTapMessage"
-      >
-        <view class="msg-item-left">
-          <view class="msg-avatar-wrap">
-            <image class="msg-avatar" src="{{item.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
-          </view>
-          <view class="msg-dot" wx:if="{{!item.isRead}}"></view>
+      <view class="inbox-card" data-view="follows" bindtap="onTapEntry">
+        <view class="inbox-icon-wrap">
+          <view class="inbox-icon icon-follow"></view>
+          <view wx:if="{{badges.follow > 0}}" class="inbox-badge">{{badges.follow > 99 ? '99+' : badges.follow}}</view>
         </view>
-        <view class="msg-item-body">
-          <view class="msg-item-header">
-            <text class="msg-user-name">{{item.name}}</text>
-            <text class="msg-action">{{item.action}}</text>
-          </view>
-          <view class="msg-post-ref" wx:if="{{item.postTitle}}">
-            <text class="msg-post-ref-text">{{item.postTitle}}</text>
-          </view>
-          <text class="msg-time">{{item.timeText}}</text>
-        </view>
-        <view class="msg-like-icon">{{item.action === '赞了你的帖子' ? '♥' : '☆'}}</view>
+        <text class="inbox-label">新增关注</text>
       </view>
 
-      <empty-state
-        wx:if="{{!loading && likeFavList.length === 0}}"
-        icon="💛"
-        text="还没有人点赞或收藏你的帖子"
-      />
-    </view>
-  </block>
-
-  <!-- ==================== 新增关注子列表 ==================== -->
-  <block wx:if="{{currentView === 'follows'}}">
-    <view class="sub-header">
-      <view class="sub-back" bindtap="onBackMain">‹</view>
-      <text class="sub-title">新增关注</text>
-      <view class="sub-placeholder"></view>
-    </view>
-
-    <view class="msg-list-wrap">
-      <view
-        class="msg-item {{item.isRead ? '' : 'unread'}}"
-        wx:for="{{followList}}"
-        wx:key="id"
-        data-peer="{{item.peer}}"
-        data-nickname="{{item.name}}"
-        bindtap="onTapChat"
-      >
-        <view class="msg-item-left">
-          <view class="msg-avatar-wrap">
-            <image class="msg-avatar" src="{{item.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
-          </view>
-          <view class="msg-dot" wx:if="{{!item.isRead}}"></view>
+      <view class="inbox-card" data-view="comments" bindtap="onTapEntry">
+        <view class="inbox-icon-wrap">
+          <view class="inbox-icon icon-comment"></view>
+          <view wx:if="{{badges.comment > 0}}" class="inbox-badge">{{badges.comment > 99 ? '99+' : badges.comment}}</view>
         </view>
-        <view class="msg-item-body">
-          <view class="msg-item-header">
-            <text class="msg-user-name">{{item.name}}</text>
-            <text class="msg-action">{{item.action}}</text>
-          </view>
-          <text class="msg-time">{{item.timeText}}</text>
-        </view>
+        <text class="inbox-label">评论</text>
       </view>
-
-      <empty-state
-        wx:if="{{!loading && followList.length === 0}}"
-        icon="🌱"
-        text="还没有人关注你"
-      />
-    </view>
-  </block>
-
-  <!-- ==================== 评论子列表 ==================== -->
-  <block wx:if="{{currentView === 'comments'}}">
-    <view class="sub-header">
-      <view class="sub-back" bindtap="onBackMain">‹</view>
-      <text class="sub-title">评论</text>
-      <view class="sub-placeholder"></view>
     </view>
 
-    <view class="msg-list-wrap">
-      <block wx:if="{{commentGroups.length > 0}}">
-        <view class="msg-group" wx:for="{{commentGroups}}" wx:key="postId">
-          <view class="msg-group-title">
-            <text class="msg-group-title-text" wx:if="{{item.postTitle}}">关于「{{item.postTitle}}」</text>
+    <!-- 私信分区 -->
+    <view class="section-title">私信</view>
+
+    <loading wx:if="{{loading && !loaded}}" text="加载中..." />
+
+    <view wx:if="{{!loading || loaded}}">
+      <!-- 私信列表 -->
+      <block wx:if="{{conversations.length > 0}}">
+        <view
+          class="chat-row"
+          wx:for="{{conversations}}"
+          wx:key="peer"
+          data-peer="{{item.peer}}"
+          data-nickname="{{item.nickname}}"
+          bindtap="onTapChat"
+        >
+          <view class="chat-avatar-wrap">
+            <image class="chat-avatar" src="{{item.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
+            <view wx:if="{{item.unread > 0}}" class="chat-unread-dot"></view>
           </view>
-          <view
-            class="msg-item {{c.isRead ? '' : 'unread'}}"
-            wx:for="{{item.comments}}"
-            wx:for-item="c"
-            wx:key="id"
-            data-postid="{{c.postId}}"
-            bindtap="onTapMessage"
-          >
-            <view class="msg-item-left">
-              <view class="msg-avatar-wrap">
-                <image class="msg-avatar" src="{{c.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
-              </view>
-              <view class="msg-dot" wx:if="{{!c.isRead}}"></view>
+          <view class="chat-body">
+            <view class="chat-header">
+              <text class="chat-name">{{item.nickname}}</text>
+              <text class="chat-time">{{item.lastTime}}</text>
             </view>
-            <view class="msg-item-body">
-              <view class="msg-item-header">
-                <text class="msg-user-name">{{c.name}}</text>
-                <text class="msg-action">评论了你的帖子</text>
-              </view>
-              <text class="msg-comment-content">{{c.content}}</text>
-              <text class="msg-time">{{c.timeText}}</text>
-            </view>
+            <text class="chat-preview">{{item.lastContent}}</text>
           </view>
         </view>
       </block>
 
+      <!-- 私信空态：恢复为💌 -->
       <empty-state
-        wx:if="{{!loading && commentGroups.length === 0}}"
-        icon="💬"
-        text="还没有人评论你的帖子"
+        wx:if="{{conversations.length === 0}}"
+        icon="💌"
+        text="暂无私信，去帖子详情页找 TA 聊聊吧"
       />
     </view>
-  </block>
+  </view>
+</block>
+
+<!-- ==================== 点赞与收藏子列表 ==================== -->
+<block wx:if="{{currentView === 'likes'}}">
+  <view class="sub-header">
+    <view class="sub-back" bindtap="onBackMain">‹</view>
+    <text class="sub-title">点赞与收藏</text>
+    <view class="sub-placeholder"></view>
+  </view>
+
+  <view class="msg-list-wrap">
+    <view
+      class="msg-item {{item.isRead ? '' : 'unread'}}"
+      wx:for="{{likeFavList}}"
+      wx:key="id"
+      data-postid="{{item.postId}}"
+      bindtap="onTapMessage"
+    >
+      <view class="msg-item-left">
+        <view class="msg-avatar-wrap">
+          <image class="msg-avatar" src="{{item.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
+        </view>
+        <view class="msg-dot" wx:if="{{!item.isRead}}"></view>
+      </view>
+      <view class="msg-item-body">
+        <view class="msg-item-header">
+          <text class="msg-user-name">{{item.name}}</text>
+          <text class="msg-action">{{item.action}}</text>
+        </view>
+        <view class="msg-post-ref" wx:if="{{item.postTitle}}">
+          <text class="msg-post-ref-text">{{item.postTitle}}</text>
+        </view>
+        <text class="msg-time">{{item.timeText}}</text>
+      </view>
+      <view class="msg-like-icon">{{item.action === '赞了你的帖子' ? '♥' : '☆'}}</view>
+    </view>
+
+    <empty-state
+      wx:if="{{!loading && likeFavList.length === 0}}"
+      icon="💛"
+      text="还没有人点赞或收藏你的帖子"
+    />
+  </view>
+</block>
+
+<!-- ==================== 新增关注子列表 ==================== -->
+<block wx:if="{{currentView === 'follows'}}">
+  <view class="sub-header">
+    <view class="sub-back" bindtap="onBackMain">‹</view>
+    <text class="sub-title">新增关注</text>
+    <view class="sub-placeholder"></view>
+  </view>
+
+  <view class="msg-list-wrap">
+    <view
+      class="msg-item {{item.isRead ? '' : 'unread'}}"
+      wx:for="{{followList}}"
+      wx:key="id"
+      data-peer="{{item.peer}}"
+      data-nickname="{{item.name}}"
+      bindtap="onTapChat"
+    >
+      <view class="msg-item-left">
+        <view class="msg-avatar-wrap">
+          <image class="msg-avatar" src="{{item.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
+        </view>
+        <view class="msg-dot" wx:if="{{!item.isRead}}"></view>
+      </view>
+      <view class="msg-item-body">
+        <view class="msg-item-header">
+          <text class="msg-user-name">{{item.name}}</text>
+          <text class="msg-action">{{item.action}}</text>
+        </view>
+        <text class="msg-time">{{item.timeText}}</text>
+      </view>
+    </view>
+
+    <empty-state
+      wx:if="{{!loading && followList.length === 0}}"
+      icon="🌱"
+      text="还没有人关注你"
+    />
+  </view>
+</block>
+
+<!-- ==================== 评论子列表 ==================== -->
+<block wx:if="{{currentView === 'comments'}}">
+  <view class="sub-header">
+    <view class="sub-back" bindtap="onBackMain">‹</view>
+    <text class="sub-title">评论</text>
+    <view class="sub-placeholder"></view>
+  </view>
+
+  <view class="msg-list-wrap">
+    <block wx:if="{{commentGroups.length > 0}}">
+      <view class="msg-group" wx:for="{{commentGroups}}" wx:key="postId">
+        <view class="msg-group-title">
+          <text class="msg-group-title-text" wx:if="{{item.postTitle}}">关于「{{item.postTitle}}」</text>
+        </view>
+        <view
+          class="msg-item {{c.isRead ? '' : 'unread'}}"
+          wx:for="{{item.comments}}"
+          wx:for-item="c"
+          wx:key="id"
+          data-postid="{{c.postId}}"
+          bindtap="onTapMessage"
+        >
+          <view class="msg-item-left">
+            <view class="msg-avatar-wrap">
+              <image class="msg-avatar" src="{{c.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
+            </view>
+            <view class="msg-dot" wx:if="{{!c.isRead}}"></view>
+          </view>
+          <view class="msg-item-body">
+            <view class="msg-item-header">
+              <text class="msg-user-name">{{c.name}}</text>
+              <text class="msg-action">评论了你的帖子</text>
+            </view>
+            <text class="msg-comment-content">{{c.content}}</text>
+            <text class="msg-time">{{c.timeText}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <empty-state
+      wx:if="{{!loading && commentGroups.length === 0}}"
+      icon="💬"
+      text="还没有人评论你的帖子"
+    />
+  </view>
+</block>
 
 </view>

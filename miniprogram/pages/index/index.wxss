@@ -1,12 +1,10 @@
-/* pages/index/index.wxss —— 论坛首页样式（融合版：压缩包 UI 样式） */
-
+/* pages/index/index.wxss —— 论坛首页样式 */
 .page-index {
   min-height: 100vh;
   background: #F8F3E8;
   padding-bottom: 40rpx;
 }
 
-/* 顶部标题 */
 .page-header {
   padding: 24rpx 32rpx 0;
   background: #F8F3E8;
@@ -18,7 +16,6 @@
   color: #2E3A33;
 }
 
-/* 板块分类 Tab */
 .category-bar {
   white-space: nowrap;
   padding: 20rpx 24rpx 16rpx;
@@ -42,30 +39,25 @@
   font-weight: 600;
 }
 
-/* ===== 热门榜（日历撕页效果）===== */
-.hot-section {
-  padding: 16rpx 24rpx;
+/* ===== 热门榜 ===== */
+.hot-section { padding: 16rpx 24rpx; }
+.hot-header { display: flex; align-items: baseline; margin-bottom: 16rpx; }
+.hot-title { font-size: 32rpx; font-weight: 700; color: #2E3A33; display: flex; align-items: center; }
+
+/* 热门榜火焰图标 (简笔画) */
+.hot-title::before {
+  content: '';
+  display: inline-block;
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 8rpx;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2c0 0-4 4-4 8a4 4 0 0 0 8 0c0-4-4-8-4-8z'/%3E%3Cpath d='M12 22a6 6 0 0 0 6-6c0-4-6-8-6-8s-6 4-6 8a6 6 0 0 0 6 6z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
-.hot-header {
-  display: flex;
-  align-items: baseline;
-  margin-bottom: 16rpx;
-}
+.hot-subtitle { font-size: 24rpx; color: #8B958C; margin-left: 12rpx; }
 
-.hot-title {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #2E3A33;
-}
-
-.hot-subtitle {
-  font-size: 24rpx;
-  color: #8B958C;
-  margin-left: 12rpx;
-}
-
-/* 日历卡片外观 */
 .hot-calendar-card {
   background: #FFFFFF;
   border-radius: 20rpx;
@@ -74,7 +66,6 @@
   position: relative;
 }
 
-/* 日历顶部装饰条（模仿日历挂钩） */
 .calendar-top-bar {
   display: flex;
   align-items: center;
@@ -83,90 +74,22 @@
   background: linear-gradient(135deg, #E8C19A 0%, #D9A576 100%);
 }
 
-.calendar-hole {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  border: 2rpx solid rgba(255, 255, 255, 0.6);
-}
+.calendar-hole { width: 16rpx; height: 16rpx; border-radius: 50%; background: rgba(255, 255, 255, 0.4); border: 2rpx solid rgba(255, 255, 255, 0.6); }
+.calendar-line { flex: 1; height: 4rpx; background: rgba(255, 255, 255, 0.3); margin: 0 16rpx; border-radius: 2rpx; }
 
-.calendar-line {
-  flex: 1;
-  height: 4rpx;
-  background: rgba(255, 255, 255, 0.3);
-  margin: 0 16rpx;
-  border-radius: 2rpx;
-}
-
-/* 撕页边缘效果 */
 .hot-calendar-card::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 6rpx;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 8rpx,
-    #F1EBDE 8rpx,
-    #F1EBDE 10rpx
-  );
+  bottom: 0; left: 0; right: 0; height: 6rpx;
+  background: repeating-linear-gradient(90deg, transparent, transparent 8rpx, #F1EBDE 8rpx, #F1EBDE 10rpx);
 }
 
-/* swiper 容器 */
-.hot-swiper {
-  height: 120rpx;
-}
-
-/* 单条热门帖 */
-.hot-item {
-  display: flex;
-  align-items: center;
-  padding: 20rpx 28rpx;
-  height: 120rpx;
-  box-sizing: border-box;
-}
-
-.hot-rank {
-  width: 48rpx;
-  height: 48rpx;
-  border-radius: 12rpx;
-  background: linear-gradient(135deg, #E8C19A 0%, #D9A576 100%);
-  color: #FFFFFF;
-  font-size: 28rpx;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-right: 20rpx;
-}
-
-.hot-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.hot-post-title {
-  font-size: 28rpx;
-  color: #2E3A33;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-bottom: 6rpx;
-}
-
-.hot-heat {
-  font-size: 22rpx;
-  color: #D9A576;
-}
+.hot-swiper { height: 120rpx; }
+.hot-item { display: flex; align-items: center; padding: 20rpx 28rpx; height: 120rpx; box-sizing: border-box; }
+.hot-rank { width: 48rpx; height: 48rpx; border-radius: 12rpx; background: linear-gradient(135deg, #E8C19A 0%, #D9A576 100%); color: #FFFFFF; font-size: 28rpx; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 20rpx; }
+.hot-content { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.hot-post-title { font-size: 28rpx; color: #2E3A33; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 6rpx; }
+.hot-heat { font-size: 22rpx; color: #D9A576; }
 
 /* ===== 功能宫格 ===== */
 .grid-section {
@@ -179,57 +102,33 @@
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04), 0 12rpx 32rpx rgba(0, 0, 0, 0.05);
 }
 
-.grid-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12rpx 0;
-}
+.grid-item { display: flex; flex-direction: column; align-items: center; padding: 12rpx 0; }
 
+/* 宫格容器，保留原来的背景和大小，图标由 class 负责 */
 .grid-icon {
   width: 80rpx;
   height: 80rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40rpx;
   background: linear-gradient(135deg, #EAF1E9 0%, #DFE9E1 100%);
   border-radius: 20rpx;
   margin-bottom: 10rpx;
+  background-size: 48rpx 48rpx;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
-.grid-name {
-  font-size: 24rpx;
-  color: #7C887E;
-}
+.grid-name { font-size: 24rpx; color: #7C887E; }
+
+/* ===== 首页 4 个简笔画图标 (黑色粗线条) ===== */
+.icon-cases { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3C/svg%3E"); }
+.icon-policy { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3Cline x1='16' y1='13' x2='8' y2='13'/%3E%3Cline x1='16' y1='17' x2='8' y2='17'/%3E%3C/svg%3E"); }
+.icon-jobs { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='7' width='20' height='14' rx='2' ry='2'/%3E%3Cpath d='M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16'/%3E%3C/svg%3E"); }
+.icon-help { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E"); }
 
 /* ===== 帖子信息流 ===== */
-.post-section {
-  padding: 16rpx 24rpx 24rpx;
-}
-
-.section-header {
-  margin-bottom: 16rpx;
-}
-
-.section-title {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #2E3A33;
-}
-
-.post-list {
-  /* post-card 组件自带卡片样式，这里控制间距 */
-}
-
-/* 触底加载中与空态间距 */
-.post-section loading {
-  margin: 24rpx 0;
-}
-
-.no-more {
-  text-align: center;
-  padding: 32rpx 0;
-  font-size: 24rpx;
-  color: #8B958C;
-}
+.post-section { padding: 16rpx 24rpx 24rpx; }
+.section-header { margin-bottom: 16rpx; }
+.section-title { font-size: 32rpx; font-weight: 700; color: #2E3A33; }
+.no-more { text-align: center; padding: 32rpx 0; font-size: 24rpx; color: #8B958C; }

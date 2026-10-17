@@ -1,11 +1,9 @@
-<!-- pages/index/index.wxml —— 论坛首页（融合版：宫格 + 日历撕页热门榜 + post-card 组件） -->
+<!-- pages/index/index.wxml —— 论坛首页 -->
 <view class="page-index">
-  <!-- 顶部标题 -->
   <view class="page-header">
     <text class="page-title">论坛</text>
   </view>
 
-  <!-- 板块分类 Tab -->
   <scroll-view class="category-bar" scroll-x enable-flex>
     <view
       class="category-item {{currentCategory === index ? 'active' : ''}}"
@@ -16,29 +14,18 @@
     >{{item}}</view>
   </scroll-view>
 
-  <!-- 热门榜（日历撕页效果：swiper 垂直自动翻页，数据为真实 top10） -->
   <view class="hot-section" wx:if="{{hotPosts.length > 0}}">
     <view class="hot-header">
-      <text class="hot-title">🔥 热门榜</text>
+      <text class="hot-title">热门榜</text>
       <text class="hot-subtitle">本周热议</text>
     </view>
     <view class="hot-calendar-card">
-      <!-- 日历顶部装饰条 -->
       <view class="calendar-top-bar">
         <view class="calendar-hole"></view>
         <view class="calendar-line"></view>
         <view class="calendar-hole"></view>
       </view>
-      <swiper
-        class="hot-swiper"
-        vertical
-        autoplay
-        circular
-        interval="3000"
-        duration="600"
-        easing-function="easeInOutCubic"
-        display-multiple-items="1"
-      >
+      <swiper class="hot-swiper" vertical autoplay circular interval="3000" duration="600" easing-function="easeInOutCubic" display-multiple-items="1">
         <swiper-item wx:for="{{hotPosts}}" wx:key="_id">
           <view class="hot-item" data-id="{{item._id}}" bindtap="onHotTap">
             <view class="hot-rank">{{index + 1}}</view>
@@ -52,56 +39,27 @@
     </view>
   </view>
 
-  <!-- 功能宫格（问题1：案例库入口；未实现的功能 toast"开发中"） -->
   <view class="grid-section">
-    <view
-      class="grid-item"
-      wx:for="{{gridItems}}"
-      wx:key="id"
-      data-url="{{item.url}}"
-      bindtap="onTapGrid"
-    >
-      <view class="grid-icon">{{item.icon}}</view>
+    <view class="grid-item" wx:for="{{gridItems}}" wx:key="id" data-url="{{item.url}}" bindtap="onTapGrid">
+      <view class="grid-icon {{item.icon}}"></view>
       <text class="grid-name">{{item.name}}</text>
     </view>
   </view>
 
-  <!-- 帖子信息流 -->
   <view class="post-section">
     <view class="section-header">
       <text class="section-title">最新动态</text>
     </view>
-
-    <!-- 首次加载中（列表为空时显示） -->
     <loading wx:if="{{loading && posts.length === 0}}" text="加载中..." />
-
-    <!-- 帖子列表（post-card 组件：置顶仅 is_top 显示、匿名仅 is_anonymous 显示、♥/💬 常规样式） -->
     <view class="post-list">
-      <post-card
-        wx:for="{{posts}}"
-        wx:key="_id"
-        post="{{item}}"
-        bind:like="onPostLike"
-        bind:favorite="onPostFavorite"
-      />
+      <post-card wx:for="{{posts}}" wx:key="_id" post="{{item}}" bind:like="onPostLike" bind:favorite="onPostFavorite" />
     </view>
-
-    <!-- 触底加载中 -->
     <loading wx:if="{{loading && posts.length > 0}}" text="加载中..." />
-
-    <!-- 没有更多 -->
     <view class="no-more" wx:if="{{noMore && posts.length > 0}}">
       <text class="no-more-text">— 已经到底啦 —</text>
     </view>
-
-    <!-- 空状态 -->
-    <empty-state
-      wx:if="{{!loading && posts.length === 0}}"
-      icon="📝"
-      text="还没有帖子，来发第一条吧"
-    />
+    <empty-state wx:if="{{!loading && posts.length === 0}}" icon="📝" text="还没有帖子，来发第一条吧" />
   </view>
 
-  <!-- 登录弹窗（点赞/评论等需登录操作时弹出） -->
   <login-modal id="loginModal" bind:success="onLoginSuccess" />
 </view>
