@@ -14,8 +14,8 @@
   <view class="post-list">
     <block wx:for="{{postList}}" wx:key="_id">
       <view class="post-card">
-        <!-- 卡片背景图：同样用 widthFix 让图片完整撑开卡片 -->
-        <image class="card-bg-img" src="{{item.bgImage}}" mode="widthFix"></image>
+        <!-- 卡片背景图：铺满卡片（卡片高度由文字撑开，文字多自动拉长） -->
+        <image class="card-bg-img" src="{{item.bgImage}}" mode="aspectFill"></image>
         
         <view class="deco deco-top-left">{{item.deco1}}</view>
         <view class="deco deco-bottom-right">{{item.deco2}}</view>

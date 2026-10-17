@@ -62,6 +62,44 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 })
     }
+    // 静默刷新：在"我的-树洞"里删帖后，切回树洞主页保持一致（不闪加载态）
+    this.silentRefresh()
+  },
+
+  // 静默刷新列表（不显示 loading，防重入避免频繁切换重复请求）
+  async silentRefresh() {
+    if (this._refreshing) return
+    this._refreshing = true
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'treehole',
+        data: { action: 'list', page: 1, pageSize: 20 }
+      })
+      const r = res.result
+      if (r && r.code === 0) {
+        this.setData({ postList: this._buildList(r.data.list) })
+      }
+    } catch (err) {
+      console.error('静默刷新树洞失败：', err)
+    } finally {
+      this._refreshing = false
+    }
+  },
+
+  // 列表数据 → 卡片渲染数据（loadPosts / silentRefresh 共用）
+  _buildList(list) {
+    return list.map(item => ({
+      _id: item._id,
+      nickname: item.nickname,
+      content: item.content,
+      time: this.formatTime(item.created_at),
+      hugCount: item.hug_count || 0,
+      hugged: item.hugged || false,
+      hugBtnText: item.hugged ? '已抱抱' : '抱抱你',
+      deco1: this.data.decoPool[Math.floor(Math.random() * this.data.decoPool.length)],
+      deco2: this.data.decoPool[Math.floor(Math.random() * this.data.decoPool.length)],
+      bgImage: this.data.cardBackgrounds[Math.floor(Math.random() * this.data.cardBackgrounds.length)]
+    }))
   },
 
   // ========== 加载树洞列表 ==========
@@ -75,19 +113,7 @@ Page({
       })
       const r = res.result
       if (r && r.code === 0) {
-        const list = r.data.list.map(item => ({
-          _id: item._id,
-          nickname: item.nickname,
-          content: item.content,
-          time: this.formatTime(item.created_at),
-          hugCount: item.hug_count || 0,
-          hugged: item.hugged || false,
-          hugBtnText: item.hugged ? '已抱抱' : '抱抱你',
-          deco1: this.data.decoPool[Math.floor(Math.random() * this.data.decoPool.length)],
-          deco2: this.data.decoPool[Math.floor(Math.random() * this.data.decoPool.length)],
-          bgImage: this.data.cardBackgrounds[Math.floor(Math.random() * this.data.cardBackgrounds.length)]
-        }))
-        this.setData({ postList: list })
+        this.setData({ postList: this._buildList(r.data.list) })
       } else {
         wx.showToast({ title: (r && r.msg) || '加载失败', icon: 'none' })
       }
@@ -168,7 +194,13 @@ Page({
           deco2: this.data.decoPool[Math.floor(Math.random() * this.data.decoPool.length)],
           bgImage: this.data.cardBackgrounds[Math.floor(Math.random() * this.data.cardBackgrounds.length)]
         }
-        this.setData({ postList: [newPost, ...this.data.postList], moodInput: '' })
+        // 发送成功：新卡片插入列表 + 输入框完全复位（内容/高度/计数）
+        this.setData({
+          postList: [newPost, ...this.data.postList],
+          moodInput: '',
+          inputHeight: MIN_INPUT_HEIGHT,
+          inputCount: 0
+        })
         wx.showToast({ title: '已经投进树洞了', icon: 'success' })
       } else {
         wx.showToast({ title: (r && r.msg) || '投递失败', icon: 'none' })

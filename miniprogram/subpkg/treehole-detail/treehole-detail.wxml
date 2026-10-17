@@ -1,4 +1,4 @@
-<!-- subpkg/treehole-detail/treehole-detail.wxml —— 树洞帖详情页（匿名卡片 + 右上角"···"删除） -->
+<!-- subpkg/treehole-detail/treehole-detail.wxml —— 树洞帖详情页（背景图卡片 + 右上角"···"删除） -->
 <view class="page-wrap">
 
   <!-- 加载占位 -->
@@ -7,22 +7,34 @@
     <text class="loading-text">加载中...</text>
   </view>
 
-  <!-- 树洞内容 -->
-  <view class="tree-card" wx:if="{{post && !loading}}">
-    <view class="card-head">
-      <view class="head-left">
-        <text class="anon-tag">匿名树洞</text>
-        <text class="card-time">{{post.timeText}}</text>
+  <!-- 树洞卡片（与树洞主页同款背景图卡片） -->
+  <view class="post-card" wx:if="{{post && !loading}}">
+    <!-- 卡片背景图：铺满卡片（卡片高度由文字撑开，文字多自动拉长） -->
+    <image class="card-bg-img" src="{{bgImage}}" mode="aspectFill"></image>
+
+    <!-- 随机装饰 -->
+    <view class="deco deco-top-left">{{deco1}}</view>
+    <view class="deco deco-bottom-right">{{deco2}}</view>
+
+    <!-- 右上角"···"：仅本人可见 → 删除 -->
+    <view class="more-btn" wx:if="{{isOwner}}" bindtap="onMoreTap">···</view>
+
+    <!-- 文字内容：绝对居中 -->
+    <view class="card-content">
+      <view class="post-header">
+        <image class="avatar" src="/images/anonymous/anon-7-treehole.png" mode="aspectFill"></image>
+        <view class="user-info">
+          <view class="user-name">{{post.nickname}}</view>
+          <view class="post-time">{{post.timeText}}</view>
+        </view>
       </view>
-      <!-- 右上角"···"：仅本人可见 → 删除 -->
-      <view class="more-btn" wx:if="{{isOwner}}" bindtap="onMoreTap">···</view>
-    </view>
 
-    <text class="card-content">{{post.content}}</text>
+      <view class="post-content">{{post.content}}</view>
 
-    <view class="card-footer">
-      <view class="hug-item">🤗 抱抱 {{post.hugCount}}</view>
-      <text class="hint-text">这里没人认识你，只属于你的树洞</text>
+      <view class="post-footer">
+        <view class="hug-count">已有 {{post.hugCount}} 位妈妈抱过你</view>
+        <view class="hug-btn hugged">已抱抱</view>
+      </view>
     </view>
   </view>
 

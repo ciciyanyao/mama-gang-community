@@ -42,27 +42,31 @@ page {
 /* ========== 帖子列表及卡片 ========== */
 .post-list { padding: 20rpx 30rpx; padding-bottom: calc(280rpx + env(safe-area-inset-bottom)); }
 
-/* 卡片容器：靠图片撑开高度，不再设置 min-height */
+/* 卡片容器：图片铺满背景，高度由内容撑开（文字少时保持最小高度，文字多自动拉长） */
 .post-card {
   position: relative;
   margin-bottom: 40rpx;
   width: 100%;
+  min-height: 900rpx; /* 原卡片图自然高度的折中（方图 750rpx / 竖图 1036rpx） */
   border-radius: 20rpx; /* 保持圆角，防止图片直角溢出 */
   overflow: hidden; /* 保证图片不超过卡片圆角 */
 }
 
+/* 背景图：绝对定位铺满整个卡片（含被文字撑高的部分） */
 .card-bg-img {
-  width: 100%;
-  display: block;
-}
-
-/* 🌟 内容绝对定位覆盖在卡片上 */
-.card-content {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+/* 🌟 内容覆盖在卡片上（参与撑高卡片） */
+.card-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 900rpx;
   /* 内边距是关键，让文字避开边缘的图案，必须大于图片边缘空白区域 */
   padding: 130rpx 100rpx 120rpx 100rpx; 
   display: flex;

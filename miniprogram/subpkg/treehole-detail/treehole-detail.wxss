@@ -1,4 +1,4 @@
-/* subpkg/treehole-detail/treehole-detail.wxss —— 树洞详情（暖米×森林绿 + 匿名卡片风） */
+/* subpkg/treehole-detail/treehole-detail.wxss —— 树洞详情（背景图卡片，与树洞主页同款） */
 .page-wrap {
   min-height: 100vh;
   background-color: #F8F3E8;
@@ -31,79 +31,133 @@
   font-size: 26rpx;
 }
 
-/* ========== 树洞卡片 ========== */
-.tree-card {
-  background: linear-gradient(135deg, #FDFBF4 0%, #F4F0E2 100%);
-  border-radius: 32rpx;
-  padding: 40rpx 36rpx;
-  box-shadow: 0 8rpx 24rpx rgba(58, 122, 92, 0.10), 0 2rpx 6rpx rgba(58, 122, 92, 0.06);
-  border: 2rpx solid #EAE4D4;
+/* ========== 背景图卡片（与主页 post-card 一致，高度由内容撑开） ========== */
+.post-card {
+  position: relative;
+  width: 100%;
+  min-height: 900rpx; /* 文字少时保持卡片图自然高度 */
+  border-radius: 20rpx;
+  overflow: hidden;
 }
 
-.card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.head-left {
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-}
-.anon-tag {
-  display: inline-block;
-  font-size: 20rpx;
-  color: #3A7A5C;
-  background: #E3EFE7;
-  border-radius: 8rpx;
-  padding: 4rpx 12rpx;
-  font-weight: 600;
-}
-.card-time {
-  font-size: 22rpx;
-  color: #A8B2AC;
+/* 背景图：绝对定位铺满整个卡片（含被文字撑高的部分） */
+.card-bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-/* 右上角"···"：紧凑三黑点（与论坛详情一致） */
+/* 内容覆盖在卡片上（参与撑高卡片） */
+.card-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 900rpx;
+  /* 内边距避开图片边缘图案 */
+  padding: 130rpx 100rpx 120rpx 100rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.deco {
+  position: absolute;
+  font-size: 40rpx;
+  z-index: 5;
+}
+.deco-top-left { top: 10rpx; left: 10rpx; }
+.deco-bottom-right { bottom: 10rpx; right: 10rpx; }
+
+/* 右上角"···"：实底白底 + 深绿三点，清晰可见（不用半透明） */
 .more-btn {
-  font-size: 26rpx;
-  letter-spacing: 0;
+  position: absolute;
+  top: 24rpx;
+  right: 28rpx;
+  z-index: 9;
+  font-size: 30rpx;
   font-weight: 700;
-  color: #2E3A33;
-  padding: 8rpx 16rpx;
+  color: #2B5C45;
+  padding: 14rpx 24rpx;
   line-height: 1;
-  border-radius: 12rpx;
+  border-radius: 16rpx;
+  background: #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(43, 92, 69, 0.18);
 }
 .more-btn:active {
-  background: rgba(46, 58, 51, 0.06);
+  background: #F1EFE6;
 }
 
-.card-content {
-  display: block;
-  margin-top: 32rpx;
-  font-size: 30rpx;
-  line-height: 1.7;
-  color: #2E3A33;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.card-footer {
-  margin-top: 40rpx;
-  padding-top: 24rpx;
-  border-top: 2rpx dashed #E2DCCB;
+.post-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 20rpx;
 }
-.hug-item {
+.avatar {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+  display: block;
+}
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.user-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #2B5C45;
+}
+.post-time {
   font-size: 24rpx;
-  color: #3A7A5C;
-  font-weight: 600;
+  color: #7C887E;
+  margin-top: 4rpx;
 }
-.hint-text {
-  font-size: 20rpx;
-  color: #A8B2AC;
+
+.post-content {
+  font-size: 30rpx;
+  color: #2B5C45;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+  font-weight: 500;
+  word-break: break-all;
+  text-align: center;
+  width: 100%;
+  white-space: pre-wrap;
+  max-height: 420rpx;
+  overflow-y: auto;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border-top: 3rpx dashed #B8DCC4;
+  padding-top: 20rpx;
+}
+.hug-count {
+  font-size: 24rpx;
+  color: #7C887E;
+  font-weight: bold;
+}
+.hug-btn {
+  background-color: #3A7A5C;
+  color: #FFFFFF;
+  font-size: 24rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 4rpx solid #B8DCC4;
+  box-shadow: 3rpx 3rpx 0 #B8DCC4;
+  font-weight: bold;
 }
 
 /* ========== 不存在 ========== */

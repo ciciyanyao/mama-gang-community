@@ -3,12 +3,25 @@
 // 删除：右上角"···" → 操作菜单 → 二次确认 → treehole.delete（物理删除，仅本人）
 const { relativeTime } = require('../../utils/util.js')
 
+// 卡片随机背景图（与树洞主页共用同一组素材，展示层不入库）
+const CARD_BACKGROUNDS = [
+  '/pages/tree-hole/images/card1.png',
+  '/pages/tree-hole/images/card2.png',
+  '/pages/tree-hole/images/card3.png',
+  '/pages/tree-hole/images/card4.png',
+  '/pages/tree-hole/images/card5.png'
+]
+const DECO_POOL = ['🐻', '🥪', '🥗', '☁️', '⭐', '🍞', '🍃', '☀️']
+
 Page({
   data: {
     treeholeId: '',
     post: null,
     isOwner: false,
-    loading: true
+    loading: true,
+    bgImage: CARD_BACKGROUNDS[Math.floor(Math.random() * CARD_BACKGROUNDS.length)],
+    deco1: DECO_POOL[Math.floor(Math.random() * DECO_POOL.length)],
+    deco2: DECO_POOL[Math.floor(Math.random() * DECO_POOL.length)]
   },
 
   onLoad(options) {
@@ -31,6 +44,7 @@ Page({
         const d = r.data
         this.setData({
           post: {
+            nickname: d.nickname || 'Mummy',
             content: d.content || '',
             timeText: relativeTime(d.created_at),
             hugCount: d.hug_count || 0
