@@ -12,7 +12,7 @@
     <view class="inbox-row">
       <view class="inbox-card" data-view="likes" bindtap="onTapEntry">
         <view class="inbox-icon-wrap">
-          <view class="inbox-icon icon-like"></view>
+          <image class="inbox-icon" src="/images/icons/msg-like-line.svg" mode="aspectFit" />
           <view wx:if="{{badges.likeFav > 0}}" class="inbox-badge">{{badges.likeFav > 99 ? '99+' : badges.likeFav}}</view>
         </view>
         <text class="inbox-label">点赞与收藏</text>
@@ -20,7 +20,7 @@
 
       <view class="inbox-card" data-view="follows" bindtap="onTapEntry">
         <view class="inbox-icon-wrap">
-          <view class="inbox-icon icon-follow"></view>
+          <image class="inbox-icon" src="/images/icons/msg-follow-line.svg" mode="aspectFit" />
           <view wx:if="{{badges.follow > 0}}" class="inbox-badge">{{badges.follow > 99 ? '99+' : badges.follow}}</view>
         </view>
         <text class="inbox-label">新增关注</text>
@@ -28,7 +28,7 @@
 
       <view class="inbox-card" data-view="comments" bindtap="onTapEntry">
         <view class="inbox-icon-wrap">
-          <view class="inbox-icon icon-comment"></view>
+          <image class="inbox-icon" src="/images/icons/msg-comment-line.svg" mode="aspectFit" />
           <view wx:if="{{badges.comment > 0}}" class="inbox-badge">{{badges.comment > 99 ? '99+' : badges.comment}}</view>
         </view>
         <text class="inbox-label">评论</text>
