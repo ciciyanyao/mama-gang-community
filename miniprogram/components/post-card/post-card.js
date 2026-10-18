@@ -1,5 +1,5 @@
 // components/post-card/post-card.js —— 帖子卡片组件
-const { pickAnonymous } = require('../../utils/anonymous.js')
+const { pickAnonymous, pickFallback } = require('../../utils/anonymous.js')
 const { resolveTempUrls } = require('../../utils/image-url.js') // 统一云图转换：前端换 + media 云函数兜底
 
 Component({
@@ -16,16 +16,23 @@ Component({
         } else {
           this.setData({ anonAvatar: '', anonNickname: '' })
         }
+        // 非匿名帖但作者信息缺失（历史数据/手工插入）：用匿名池随机兜底，不用"宝妈用户"旧兜底
+        if (!newVal.is_anonymous && !newVal.authorName) {
+          const fb = pickFallback()
+          this.setData({ fallbackAvatar: fb.avatar, fallbackNickname: fb.nickname })
+        }
         // cloud:// 图片不能直接渲染，转临时 https 链接
         this._resolveCloudUrls(newVal)
       }
     }
   },
   data: {
-    // 默认匿名头像
-    defaultAvatar: '/images/user-3-line.svg',
+    // 默认匿名头像（兜底头像池，非匿名帖无作者头像时也用）
+    defaultAvatar: '/images/anonymous/anon-1-sail.png',
     anonAvatar: '',
     anonNickname: '',
+    fallbackAvatar: '/images/anonymous/anon-1-sail.png',
+    fallbackNickname: '',
     // cloud:// 转换结果（用于渲染）
     avatarUrl: '',
     imageList: []

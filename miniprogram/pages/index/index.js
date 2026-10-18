@@ -73,18 +73,28 @@ Page({
 
   async loadHotPosts() {
     try {
+      // 置顶帖（is_top）永远排第一，其余按点赞数降序；多拉一些，前端按标题去重后再取前 10
       const res = await POSTS
         .where({ status: _.neq(-1) })
+        .orderBy('is_top', 'desc')
         .orderBy('likeCount', 'desc')
-        .limit(10)
+        .limit(20)
         .field({ title: true, likeCount: true, commentCount: true, _id: true })
         .get()
 
-      const hotPosts = res.data.map((item) => ({
-        _id: item._id,
-        title: item.title || '未命名帖子',
-        heat: (item.likeCount || 0) + (item.commentCount || 0)
-      }))
+      const seen = new Set()
+      const hotPosts = []
+      for (const item of res.data) {
+        const key = (item.title || '').trim()
+        if (!key || seen.has(key)) continue // 跳过空标题和重复标题
+        seen.add(key)
+        hotPosts.push({
+          _id: item._id,
+          title: item.title,
+          heat: (item.likeCount || 0) + (item.commentCount || 0)
+        })
+        if (hotPosts.length >= 10) break
+      }
       this.setData({ hotPosts })
     } catch (err) {
       console.error('[loadHotPosts] 失败：', err)

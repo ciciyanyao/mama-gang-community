@@ -2,7 +2,7 @@
 const db = wx.cloud.database()
 const _ = db.command
 const auth = require('../../utils/auth.js')
-const { pickAnonymous } = require('../../utils/anonymous.js')
+const { pickAnonymous, pickFallback } = require('../../utils/anonymous.js')
 const { resolveTempUrls } = require('../../utils/image-url.js')
 const COMMENTS = db.collection('comments')
 
@@ -16,6 +16,9 @@ Page({
     // 帖子作者匿名身份（匿名帖时用）
     postAnonAvatar: '',
     postAnonNickname: '',
+    // 无作者信息时的兜底身份（匿名池随机，非"宝妈用户"旧兜底）
+    fallbackAvatar: '/images/anonymous/anon-1-sail.png',
+    fallbackNickname: '',
 
     // 评论
     comments: [],
@@ -87,6 +90,10 @@ Page({
         postAnonAvatar = anon.avatar
         postAnonNickname = anon.nickname
       }
+      // 非匿名帖但作者信息缺失（历史数据/手工插入）：匿名池随机兜底
+      const fb = pickFallback()
+      const fallbackAvatar = post.is_anonymous ? '' : fb.avatar
+      const fallbackNickname = post.is_anonymous ? '' : fb.nickname
 
       const openid = getApp().globalData.openid
       // 本人（authorId/openid 双兼容）或管理员 → 显示删除入口
@@ -116,6 +123,8 @@ Page({
         post,
         postAnonAvatar,
         postAnonNickname,
+        fallbackAvatar,
+        fallbackNickname,
         likeCount: post.likeCount || 0,
         isLiked: !!post.isLiked,
         previewImages,

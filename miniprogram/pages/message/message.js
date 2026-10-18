@@ -1,6 +1,7 @@
 // pages/message/message.js —— 消息页
 const { relativeTime, showError } = require('../../utils/util.js')
 const { resolveTempUrls } = require('../../utils/image-url.js') // cloud:// 头像 → https 临时链接
+const { pickFallback } = require('../../utils/anonymous.js') // 头像缺失时的匿名池兜底
 
 Page({
   data: {
@@ -139,9 +140,10 @@ Page({
           }
         }
         const cleanAvatar = list => (list || []).map(it => {
-          if (!it || !it.avatar) return it
+          if (!it) return it
+          if (!it.avatar) return { ...it, avatar: pickFallback().avatar } // 无头像 → 匿名池随机
           if (it.avatar.indexOf('cloud://') === 0) {
-            return { ...it, avatar: avatarMap[it.avatar] || '' } // 转不出来 → 空，走默认头像
+            return { ...it, avatar: avatarMap[it.avatar] || pickFallback().avatar } // 转换失败 → 匿名池随机
           }
           return it
         })

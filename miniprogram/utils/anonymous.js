@@ -47,4 +47,12 @@ function getTreeholeIdentity() {
   }
 }
 
-module.exports = { pickAnonymous, getTreeholeIdentity, hash }
+// 无作者信息（authorName/authorAvatar 缺失）时的兜底身份：从匿名池随机挑，不再用"宝妈用户"等旧兜底
+function pickFallback() {
+  return {
+    avatar: AVATARS[Math.floor(Math.random() * AVATARS.length)],
+    nickname: NICKNAMES[Math.floor(Math.random() * NICKNAMES.length)]
+  }
+}
+
+module.exports = { pickAnonymous, getTreeholeIdentity, pickFallback, hash }

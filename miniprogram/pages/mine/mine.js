@@ -11,6 +11,7 @@ const db = wx.cloud.database()
 const _ = db.command
 const auth = require('../../utils/auth.js')
 const { showError, showSuccess, relativeTime } = require('../../utils/util.js')
+const { pickFallback } = require('../../utils/anonymous.js')
 
 Page({
   data: {
@@ -200,7 +201,7 @@ Page({
             title: post.title || '无标题',
             excerpt: post.content ? post.content.substring(0, 60) : '',
             category: post.category || '',
-            authorName: post.authorName || '宝妈用户',
+            authorName: post.authorName || pickFallback().nickname,
             authorAvatar: post.authorAvatar || '',
             likeCount: post.likeCount || 0,
             commentCount: post.commentCount || 0,
@@ -242,7 +243,7 @@ Page({
             title: post.title || '无标题',
             excerpt: post.content ? post.content.substring(0, 60) : '',
             category: post.category || '',
-            authorName: post.authorName || '宝妈用户',
+            authorName: post.authorName || pickFallback().nickname,
             authorAvatar: post.authorAvatar || '',
             likeCount: post.likeCount || 0,
             commentCount: post.commentCount || 0,

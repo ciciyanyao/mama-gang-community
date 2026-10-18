@@ -4,12 +4,12 @@
   <view class="post-header">
     <image
       class="post-avatar"
-      src="{{post.is_anonymous ? anonAvatar : (avatarUrl || defaultAvatar)}}"
+      src="{{post.is_anonymous ? anonAvatar : (avatarUrl || fallbackAvatar)}}"
       mode="aspectFill"
     />
     <view class="post-author-info">
       <view class="post-author-name">
-        {{post.is_anonymous ? anonNickname : (post.authorName || '宝妈用户')}}
+        {{post.is_anonymous ? anonNickname : (post.authorName || fallbackNickname)}}
         <!-- 匿名标识 -->
         <text wx:if="{{post.is_anonymous}}" class="anon-tag">匿名</text>
       </view>

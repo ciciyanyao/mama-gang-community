@@ -52,7 +52,7 @@
           bindtap="onTapChat"
         >
           <view class="chat-avatar-wrap">
-            <image class="chat-avatar" src="{{item.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
+            <image class="chat-avatar" src="{{item.avatar }}" mode="aspectFill" />
             <view wx:if="{{item.unread > 0}}" class="chat-unread-dot"></view>
           </view>
           <view class="chat-body">
@@ -93,7 +93,7 @@
     >
       <view class="msg-item-left">
         <view class="msg-avatar-wrap">
-          <image class="msg-avatar" src="{{item.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
+          <image class="msg-avatar" src="{{item.avatar }}" mode="aspectFill" />
         </view>
         <view class="msg-dot" wx:if="{{!item.isRead}}"></view>
       </view>
@@ -137,7 +137,7 @@
     >
       <view class="msg-item-left">
         <view class="msg-avatar-wrap">
-          <image class="msg-avatar" src="{{item.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
+          <image class="msg-avatar" src="{{item.avatar }}" mode="aspectFill" />
         </view>
         <view class="msg-dot" wx:if="{{!item.isRead}}"></view>
       </view>
@@ -182,7 +182,7 @@
         >
           <view class="msg-item-left">
             <view class="msg-avatar-wrap">
-              <image class="msg-avatar" src="{{c.avatar || '/images/user-3-line.svg'}}" mode="aspectFill" />
+              <image class="msg-avatar" src="{{c.avatar }}" mode="aspectFill" />
             </view>
             <view class="msg-dot" wx:if="{{!c.isRead}}"></view>
           </view>

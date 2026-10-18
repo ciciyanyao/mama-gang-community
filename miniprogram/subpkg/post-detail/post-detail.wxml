@@ -14,12 +14,12 @@
     <view class="detail-header">
       <image
         class="detail-avatar"
-        src="{{post.is_anonymous ? postAnonAvatar : (post.authorAvatar || '/images/default-avatar.svg')}}"
+        src="{{post.is_anonymous ? postAnonAvatar : (post.authorAvatar || fallbackAvatar)}}"
         mode="aspectFill"
       />
       <view class="detail-user-info">
         <text class="detail-nickname">
-          {{post.is_anonymous ? postAnonNickname : (post.authorName || '宝妈用户')}}
+          {{post.is_anonymous ? postAnonNickname : (post.authorName || fallbackNickname)}}
           <text wx:if="{{post.is_anonymous}}" class="anon-tag">匿名</text>
         </text>
         <text class="detail-time">{{post.timeText}}</text>
@@ -90,13 +90,13 @@
       <view class="comment-item" wx:for="{{comments}}" wx:key="_id">
         <image
           class="comment-avatar"
-          src="{{item.is_anonymous ? item.anonAvatar : (item.authorAvatar || '/images/default-avatar.svg')}}"
+          src="{{item.is_anonymous ? item.anonAvatar : (item.authorAvatar || fallbackAvatar)}}"
           mode="aspectFill"
         />
         <view class="comment-body">
           <view class="comment-meta">
             <text class="comment-nickname">
-              {{item.is_anonymous ? item.anonNickname : (item.authorName || '宝妈用户')}}
+              {{item.is_anonymous ? item.anonNickname : (item.authorName || fallbackNickname)}}
               <text wx:if="{{item.is_anonymous}}" class="anon-tag">匿名</text>
             </text>
             <text class="comment-time">{{item.timeText}}</text>
@@ -113,7 +113,7 @@
             <view
               class="reply-btn"
               data-commentid="{{item._id}}"
-              data-nickname="{{item.is_anonymous ? item.anonNickname : (item.authorName || '宝妈用户')}}"
+              data-nickname="{{item.is_anonymous ? item.anonNickname : (item.authorName || fallbackNickname)}}"
               bindtap="onReplyTap"
             >回复</view>
           </view>
