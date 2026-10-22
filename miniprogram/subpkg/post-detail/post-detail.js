@@ -4,7 +4,6 @@ const _ = db.command
 const auth = require('../../utils/auth.js')
 const { pickAnonymous, pickFallback } = require('../../utils/anonymous.js')
 const { resolveTempUrls } = require('../../utils/image-url.js')
-const COMMENTS = db.collection('comments')
 
 Page({
   data: {
@@ -146,13 +145,19 @@ Page({
   async loadComments(postId) {
     this.setData({ commentLoading: true })
     try {
-      const res = await COMMENTS
-        .where({ postId, status: _.neq(-1) })
-        .orderBy('create_time', 'asc')
-        .limit(100)
-        .get()
+      // 统一走 comment 云函数 list（服务端读，不受客户端集合权限限制；
+      // 云函数已 hydrate 头像 cloud:// → 临时 URL，本地 /images 路径可直接显示）
+      const res = await wx.cloud.callFunction({
+        name: 'comment',
+        data: { action: 'list', postId, page: 1, pageSize: 100 }
+      })
+      if (!res.result || res.result.code !== 0) {
+        console.error('[loadComments] 云函数返回失败：', res.result)
+        return
+      }
 
-      const comments = res.data.map(c => {
+      const list = res.result.data.list || []
+      const comments = list.map(c => {
         // 匿名评论：根据 anonymousId 算头像/昵称
         let anonAvatar = ''
         let anonNickname = ''
@@ -169,22 +174,9 @@ Page({
         }
       })
 
-      // 评论作者头像：fileID → 临时 https 链接（转换失败置空，wxml 有默认头像兜底，绝不透传 cloud://）
-      const avatarIDs = comments
-        .map(c => c.authorAvatar)
-        .filter(a => a && a.indexOf('cloud://') === 0)
-      if (avatarIDs.length > 0) {
-        const { map } = await resolveTempUrls(avatarIDs)
-        comments.forEach(c => {
-          if (c.authorAvatar && c.authorAvatar.indexOf('cloud://') === 0) {
-            c.authorAvatar = map[c.authorAvatar] || ''
-          }
-        })
-      }
-
       this.setData({
         comments,
-        commentCount: comments.length
+        commentCount: res.result.data.total || comments.length
       })
     } catch (err) {
       console.error('[loadComments] 失败：', err)

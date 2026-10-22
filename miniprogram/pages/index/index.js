@@ -6,7 +6,7 @@ const _ = db.command
 const POSTS = db.collection('posts')
 
 const PAGE_SIZE = 20
-const CATEGORIES = ['全部', '求职交流', '职场经验', '育儿互助', '情绪倾诉', '政策资讯']
+const CATEGORIES = ['全部', '政策资讯', '求职交流', '职场经验', '育儿互助', '情绪倾诉']
 
 // 功能宫格（图标已改为简笔画风格类名）
 const GRID_ITEMS = [

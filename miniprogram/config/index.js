@@ -6,11 +6,11 @@ module.exports = {
 
   // 板块枚举（发帖时选择；树洞 = 情绪倾诉 + 匿名）
   CATEGORIES: [
+    { value: '政策资讯', label: '政策资讯' },
     { value: '求职交流', label: '求职交流' },
     { value: '职场经验', label: '职场经验' },
     { value: '育儿互助', label: '育儿互助' },
-    { value: '情绪倾诉', label: '情绪倾诉' },
-    { value: '政策资讯', label: '政策资讯' }
+    { value: '情绪倾诉', label: '情绪倾诉' }
   ],
 
   // 角色枚举

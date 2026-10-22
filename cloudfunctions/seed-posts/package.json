@@ -1,0 +1,9 @@
+{
+  "name": "seed-posts",
+  "version": "1.0.0",
+  "description": "种子数据：模拟账号+妈妈岗劳动权益帖子+点赞+评论；topup 补评论",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
